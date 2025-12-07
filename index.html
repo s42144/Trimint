@@ -2,26 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trimint - Telegram Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src='//libtl.com/sdk.js' data-zone='10290264' data-sdk='show_10290264'></script>
     <style>
         :root {
-            --primary: #6366f1;
-            --secondary: #8b5cf6;
-            --accent: #ec4899;
+            --primary: #4a6cf7;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
             --dark: #1f2937;
             --light: #f3f4f6;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
+            --white: #ffffff;
             --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -32,270 +27,269 @@
         }
 
         body {
-            background: var(--gradient);
-            color: var(--dark);
+            background: linear-gradient(135deg, #1a1c20 0%, #2d3748 100%);
+            color: var(--white);
             min-height: 100vh;
             padding-bottom: 70px;
-            position: relative;
             overflow-x: hidden;
         }
 
         .container {
             max-width: 100%;
             padding: 15px;
-            margin: 0 auto;
         }
 
-        /* Header Section */
+        /* Header Styles */
         .header {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
+            background: var(--gradient);
             padding: 15px;
+            border-radius: 15px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--card-shadow);
             display: flex;
             align-items: center;
+            gap: 15px;
             cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .header:hover {
-            transform: translateY(-3px);
         }
 
         .user-avatar {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            margin-right: 15px;
-            border: 3px solid var(--primary);
+            border: 3px solid var(--white);
+            object-fit: cover;
         }
 
         .user-info h2 {
-            font-size: 18px;
+            font-size: 1.2rem;
             margin-bottom: 5px;
-            color: var(--dark);
         }
 
         .user-info p {
-            font-size: 14px;
-            color: #6B7280;
+            font-size: 0.9rem;
+            opacity: 0.9;
         }
 
-        .user-level {
-            margin-left: auto;
-            background: var(--accent);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-weight: bold;
-        }
-
-        /* Balance Section */
+        /* Balance Card */
         .balance-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
         }
 
-        .balance-title {
-            font-size: 16px;
-            color: #6B7280;
-            margin-bottom: 10px;
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: rotate 20s linear infinite;
         }
 
-        .balance-amount {
-            font-size: 32px;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 5px;
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .balance-token {
+        .coin-container {
+            position: relative;
+            margin: 20px auto;
+            width: 180px;
+            height: 180px;
+        }
+
+        .coin {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--white);
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.5);
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
         }
 
-        .token-icon {
-            width: 80px;
-            height: 80px;
-            margin-right: 10px;
+        .coin.farming {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .balance-label {
+            font-size: 1rem;
+            opacity: 0.8;
         }
 
         /* Farming Section */
         .farming-section {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
 
-        .farming-button {
+        .farming-timer {
+            font-size: 1.5rem;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .farming-progress {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .farming-progress-bar {
+            height: 100%;
             background: var(--success);
-            color: white;
+            width: 0%;
+            transition: width 1s linear;
+        }
+
+        .btn {
+            background: var(--gradient);
+            color: var(--white);
             border: none;
             padding: 12px 25px;
-            border-radius: 30px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-bottom: 15px;
+            display: inline-block;
+            margin: 5px;
         }
 
-        .farming-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
-        .farming-button:disabled {
-            background: #9CA3AF;
+        .btn:disabled {
+            opacity: 0.5;
             cursor: not-allowed;
         }
 
-        .farming-timer {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--dark);
-            margin-bottom: 10px;
+        .btn-primary {
+            background: var(--primary);
         }
 
-        .farming-rate {
-            font-size: 14px;
-            color: #6B7280;
+        .btn-success {
+            background: var(--success);
         }
 
-        .farming-animation {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 15px;
-            position: relative;
-        }
-
-        .coin {
-            width: 100%;
-            height: 100%;
+        .btn-warning {
             background: var(--warning);
-            border-radius: 50%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 24px;
-            box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
-            animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
-            }
-            70% {
-                transform: scale(1.05);
-                box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
-            }
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
-            }
+        .btn-danger {
+            background: var(--danger);
         }
 
-        .token-addition {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-            animation: floatUp 2s ease-out forwards;
-            pointer-events: none;
+        /* Section Styles */
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
         }
 
-        @keyframes floatUp {
-            0% {
-                opacity: 1;
-                transform: translate(-50%, -50%);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -150%);
-            }
+        .section.active {
+            display: block;
         }
 
-        /* Leaderboard Section */
-        .leaderboard-section {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .section-title {
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 3px;
+        }
+
+        /* Card Styles */
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
             margin-bottom: 15px;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
+            box-shadow: var(--card-shadow);
         }
 
-        .section-title i {
-            margin-right: 10px;
-            color: var(--primary);
-        }
-
-        .leaderboard-list {
-            list-style: none;
-        }
-
+        /* Leaderboard */
         .leaderboard-item {
             display: flex;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #E5E7EB;
-        }
-
-        .leaderboard-item:last-child {
-            border-bottom: none;
-        }
-
-        .leaderboard-item.current-user {
-            background: rgba(99, 102, 241, 0.1);
+            padding: 15px;
             border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
         }
 
         .leaderboard-rank {
-            width: 30px;
-            height: 30px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 1.5rem;
             font-weight: bold;
-            margin-right: 15px;
+            width: 40px;
+            text-align: center;
         }
 
         .leaderboard-avatar {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             margin-right: 15px;
+            object-fit: cover;
         }
 
         .leaderboard-info {
@@ -304,221 +298,146 @@
 
         .leaderboard-name {
             font-weight: bold;
-            margin-bottom: 3px;
+            margin-bottom: 5px;
+        }
+
+        .leaderboard-balance {
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
 
         .leaderboard-score {
-            font-size: 14px;
-            color: #6B7280;
-        }
-
-        .leaderboard-amount {
+            font-size: 1.2rem;
             font-weight: bold;
-            color: var(--primary);
+            color: var(--warning);
         }
 
-        /* Tab Content */
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Quiz Section */
+        /* Quiz Styles */
         .quiz-container {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .quiz-question {
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 1.2rem;
             margin-bottom: 20px;
-            color: var(--dark);
+            text-align: center;
         }
 
         .quiz-options {
-            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
         }
 
         .quiz-option {
-            background: var(--light);
-            padding: 15px;
-            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
             border-radius: 10px;
+            padding: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .quiz-option:hover {
-            background: #E5E7EB;
-            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary);
         }
 
         .quiz-option.selected {
-            background: var(--primary);
-            color: white;
+            background: rgba(74, 108, 247, 0.3);
+            border-color: var(--primary);
         }
 
         .quiz-option.correct {
-            background: var(--success);
-            color: white;
+            background: rgba(16, 185, 129, 0.3);
+            border-color: var(--success);
         }
 
         .quiz-option.incorrect {
-            background: var(--error);
-            color: white;
+            background: rgba(239, 68, 68, 0.3);
+            border-color: var(--danger);
         }
 
-        .quiz-actions {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .quiz-button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .quiz-button:hover {
-            background: #3A5BDB;
-        }
-
-        .quiz-button:disabled {
-            background: #9CA3AF;
-            cursor: not-allowed;
-        }
-
-        /* Blog Section */
-        .blog-container {
-            background: rgba(255, 255, 255, 0.9);
+        /* Blog Styles */
+        .blog-post {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .blog-form {
-            margin-bottom: 20px;
-        }
-
-        .blog-textarea {
-            width: 100%;
-            min-height: 100px;
-            padding: 10px;
-            border: 1px solid #E5E7EB;
-            border-radius: 10px;
-            font-size: 16px;
-            resize: vertical;
-        }
-
-        .blog-button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .blog-button:hover {
-            background: #3A5BDB;
-        }
-
-        .blog-posts {
-            list-style: none;
-        }
-
-        .blog-post {
-            background: var(--light);
-            padding: 15px;
-            border-radius: 10px;
             margin-bottom: 15px;
         }
 
-        .blog-author {
+        .blog-header {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .blog-avatar {
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             margin-right: 10px;
+            object-fit: cover;
         }
 
-        .blog-name {
+        .blog-info {
+            flex-grow: 1;
+        }
+
+        .blog-author {
             font-weight: bold;
         }
 
+        .blog-date {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
         .blog-content {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            line-height: 1.5;
         }
 
         .blog-actions {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            gap: 15px;
         }
 
         .blog-action {
             display: flex;
             align-items: center;
-            margin-right: 20px;
+            gap: 5px;
             cursor: pointer;
-            color: #6B7280;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
         }
 
         .blog-action:hover {
-            color: var(--primary);
+            opacity: 1;
         }
 
-        .blog-action i {
-            margin-right: 5px;
+        .blog-action.liked {
+            color: var(--danger);
         }
 
-        .blog-delete {
-            color: var(--error);
-            cursor: pointer;
-        }
-
-        .blog-delete:hover {
-            color: #dc2626;
-        }
-
-        /* Tasks Section */
-        .tasks-container {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
+        /* Task Styles */
         .task-item {
-            background: var(--light);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
             display: flex;
             align-items: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .task-icon {
@@ -526,130 +445,103 @@
             height: 50px;
             border-radius: 10px;
             margin-right: 15px;
-            background: var(--primary);
-            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            background: var(--gradient);
+            font-size: 1.5rem;
         }
 
         .task-info {
             flex-grow: 1;
         }
 
-        .task-name {
+        .task-title {
             font-weight: bold;
             margin-bottom: 5px;
         }
 
         .task-reward {
-            font-size: 14px;
-            color: var(--primary);
+            font-size: 0.9rem;
+            color: var(--warning);
         }
 
         .task-button {
-            background: var(--primary);
-            color: white;
-            border: none;
             padding: 8px 15px;
-            border-radius: 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            border: none;
         }
 
-        .task-button:hover {
-            background: #3A5BDB;
+        .task-button.open {
+            background: var(--primary);
+            color: var(--white);
         }
 
         .task-button.processing {
             background: var(--warning);
+            color: var(--white);
         }
 
         .task-button.completed {
             background: var(--success);
+            color: var(--white);
         }
 
         /* Friends Section */
-        .friends-container {
-            background: rgba(255, 255, 255, 0.9);
+        .referral-card {
+            background: var(--gradient);
             border-radius: 15px;
             padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .referral-link {
-            background: var(--light);
-            padding: 15px;
-            border-radius: 10px;
             margin-bottom: 20px;
             text-align: center;
         }
 
-        .referral-link-text {
-            font-size: 14px;
-            color: #6B7280;
-            margin-bottom: 10px;
-        }
-
-        .referral-link-value {
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 10px;
+        .referral-link {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
             word-break: break-all;
-        }
-
-        .copy-button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .copy-button:hover {
-            background: #3A5BDB;
+            font-family: monospace;
+            font-size: 0.9rem;
         }
 
         .referral-stats {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 20px;
+            margin: 20px 0;
         }
 
         .referral-stat {
             text-align: center;
         }
 
-        .referral-stat-value {
-            font-size: 24px;
+        .referral-value {
+            font-size: 1.5rem;
             font-weight: bold;
-            color: var(--primary);
+            margin-bottom: 5px;
         }
 
-        .referral-stat-label {
-            font-size: 14px;
-            color: #6B7280;
+        .referral-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
 
         .referral-list {
-            list-style: none;
+            margin-top: 20px;
         }
 
         .referral-item {
             display: flex;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #E5E7EB;
-        }
-
-        .referral-item:last-child {
-            border-bottom: none;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .referral-avatar {
@@ -657,6 +549,7 @@
             height: 40px;
             border-radius: 50%;
             margin-right: 15px;
+            object-fit: cover;
         }
 
         .referral-info {
@@ -668,94 +561,39 @@
         }
 
         .referral-date {
-            font-size: 14px;
-            color: #6B7280;
+            font-size: 0.8rem;
+            opacity: 0.7;
         }
 
         .referral-reward {
-            font-weight: bold;
             color: var(--success);
+            font-weight: bold;
         }
 
         /* Profile Section */
-        .profile-container {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .profile-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            border: 3px solid var(--primary);
-        }
-
-        .profile-name {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .profile-level {
-            display: inline-block;
-            background: var(--accent);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
         .profile-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
         }
 
         .profile-stat {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
             text-align: center;
         }
 
         .profile-stat-value {
-            font-size: 24px;
+            font-size: 1.5rem;
             font-weight: bold;
-            color: var(--primary);
+            margin-bottom: 5px;
         }
 
         .profile-stat-label {
-            font-size: 14px;
-            color: #6B7280;
-        }
-
-        .wallet-button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .wallet-button:hover {
-            background: #3A5BDB;
-        }
-
-        .wallet-button.connected {
-            background: var(--success);
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
 
         /* Bottom Navigation */
@@ -764,8 +602,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            background: rgba(31, 41, 55, 0.95);
+            backdrop-filter: blur(10px);
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
@@ -776,10 +614,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #6B7280;
+            padding: 5px 10px;
+            color: var(--white);
+            text-decoration: none;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .nav-item.active {
@@ -787,348 +626,320 @@
         }
 
         .nav-item i {
-            font-size: 20px;
+            font-size: 1.2rem;
             margin-bottom: 5px;
         }
 
         .nav-item span {
-            font-size: 12px;
+            font-size: 0.8rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--dark);
+            border-radius: 15px;
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            font-family: inherit;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
         }
 
         /* Toast Notification */
         .toast {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
             background: var(--dark);
-            color: white;
-            padding: 15px 20px;
+            color: var(--white);
+            padding: 15px 25px;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transform: translateX(150%);
-            transition: transform 0.3s ease;
-            z-index: 2000;
+            box-shadow: var(--card-shadow);
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .toast.show {
-            transform: translateX(0);
+            opacity: 1;
         }
 
         /* Loading Spinner */
         .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 4px solid white;
+            display: inline-block;
             width: 20px;
             height: 20px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-left: 10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--white);
+            animation: spin 1s ease-in-out infinite;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
 
-        /* Ads Container */
-        .ads-container {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .ads-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: var(--dark);
-        }
-
-        /* Comments Section */
-        .comments-section {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #E5E7EB;
-        }
-
-        .comment-form {
-            display: flex;
-            margin-bottom: 10px;
-        }
-
-        .comment-input {
-            flex-grow: 1;
-            padding: 8px;
-            border: 1px solid #E5E7EB;
-            border-radius: 20px;
-            margin-right: 10px;
-        }
-
-        .comment-button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .comments-list {
-            list-style: none;
-        }
-
-        .comment-item {
-            display: flex;
-            margin-bottom: 10px;
-        }
-
-        .comment-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        .comment-content {
-            flex-grow: 1;
-            background: #F9FAFB;
-            padding: 8px 12px;
-            border-radius: 10px;
-        }
-
-        .comment-author {
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 3px;
-        }
-
-        .comment-text {
-            font-size: 14px;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 480px) {
+        /* Responsive */
+        @media (min-width: 768px) {
             .container {
-                padding: 10px;
-            }
-            
-            .balance-amount {
-                font-size: 24px;
-            }
-            
-            .farming-button {
-                padding: 10px 20px;
-                font-size: 14px;
+                max-width: 768px;
+                margin: 0 auto;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Home Tab -->
-        <div id="home-tab" class="tab-content active">
+        <!-- Home Section -->
+        <div id="home" class="section active">
             <!-- User Header -->
             <div class="header" onclick="showProfile()">
-                <img id="user-avatar" src="https://picsum.photos/seed/user123/60/60.jpg" alt="User Avatar" class="user-avatar">
+                <img id="userAvatar" src="https://via.placeholder.com/60" alt="User Avatar" class="user-avatar">
                 <div class="user-info">
-                    <h2 id="user-name">Loading...</h2>
-                    <p id="user-id">@username</p>
+                    <h2 id="userName">Loading...</h2>
+                    <p id="userLevel">Level 1</p>
                 </div>
-                <div class="user-level">Level <span id="user-level">1</span></div>
+                <div class="user-balance">
+                    <div class="balance-amount" id="headerBalance">0 TRM</div>
+                </div>
             </div>
 
             <!-- Balance Card -->
             <div class="balance-card">
-                <div class="balance-title">Your Balance</div>
-                <div class="balance-token">
-                    <img src="https://github.com/s42144/Trimint/blob/458d3d743b279877c11199b833cc212dffb5ef45/main.png?raw=true" alt="TRM Token" class="token-icon">
+                <div class="balance-label">Your Balance</div>
+                <div class="balance-amount" id="mainBalance">0 TRM</div>
+                <div class="coin-container">
+                    <div id="coin" class="coin">
+                        <i class="fas fa-coins"></i>
+                    </div>
                 </div>
-                <div class="balance-amount" id="balance-amount">0.0000 TRM</div>
-                <div class="balance-title">≈ $0.00 USD</div>
             </div>
 
             <!-- Farming Section -->
             <div class="farming-section">
-                <div class="farming-animation">
-                    <div class="coin" id="farming-coin">TRM</div>
+                <div class="farming-timer" id="farmingTimer">Start Farming</div>
+                <div class="farming-progress">
+                    <div class="farming-progress-bar" id="farmingProgress"></div>
                 </div>
-                <div class="farming-timer" id="farming-timer">Start farming to earn TRM</div>
-                <div class="farming-rate">Rate: 0.001 TRM per second</div>
-                <button class="farming-button" id="farming-button" onclick="toggleFarming()">Start Farming</button>
+                <button id="farmingBtn" class="btn btn-success">Start Farming</button>
             </div>
 
-            <!-- Leaderboard Section -->
-            <div class="leaderboard-section">
-                <div class="section-title">
-                    <i class="fas fa-trophy"></i>
-                    Leaderboard
-                </div>
-                <ul class="leaderboard-list" id="leaderboard-list">
+            <!-- Leaderboard -->
+            <div class="card">
+                <h3 class="section-title">Leaderboard</h3>
+                <div id="leaderboard">
                     <!-- Leaderboard items will be populated here -->
-                </ul>
-            </div>
-        </div>
-
-        <!-- Quiz Tab -->
-        <div id="quiz-tab" class="tab-content">
-            <div class="quiz-container">
-                <div class="section-title">
-                    <i class="fas fa-question-circle"></i>
-                    TON Network Quiz
-                </div>
-                <div class="quiz-question" id="quiz-question">Loading quiz...</div>
-                <ul class="quiz-options" id="quiz-options">
-                    <!-- Quiz options will be populated here -->
-                </ul>
-                <div class="quiz-actions">
-                    <div id="quiz-feedback"></div>
-                    <button class="quiz-button" id="quiz-submit-button" onclick="submitQuizAnswer()" disabled>Submit Answer</button>
-                    <button class="quiz-button" id="quiz-next-button" onclick="nextQuizQuestion()" style="display: none;">Next Question</button>
                 </div>
             </div>
         </div>
 
-        <!-- Blogs Tab -->
-        <div id="blogs-tab" class="tab-content">
-            <div class="blog-container">
-                <div class="section-title">
-                    <i class="fas fa-blog"></i>
-                    Community Blogs
-                </div>
-                <div class="blog-form">
-                    <textarea class="blog-textarea" id="blog-textarea" placeholder="Share your experience with Trimint..."></textarea>
-                    <button class="blog-button" onclick="postBlog()">Post Blog</button>
-                </div>
-                <ul class="blog-posts" id="blog-posts">
-                    <!-- Blog posts will be populated here -->
-                </ul>
+        <!-- Quiz Section -->
+        <div id="quiz" class="section">
+            <h2 class="section-title">Quiz</h2>
+            <div id="quizContainer">
+                <!-- Quiz content will be populated here -->
             </div>
         </div>
 
-        <!-- Tasks Tab -->
-        <div id="tasks-tab" class="tab-content">
-            <div class="tasks-container">
-                <div class="section-title">
-                    <i class="fas fa-tasks"></i>
-                    Complete Tasks for TRM
-                </div>
-                <div id="tasks-list">
-                    <!-- Tasks will be populated here -->
+        <!-- Blogs Section -->
+        <div id="blogs" class="section">
+            <h2 class="section-title">Blogs</h2>
+            <button class="btn btn-primary" onclick="showCreateBlogModal()">Create Blog Post</button>
+            <div id="blogsContainer" style="margin-top: 20px;">
+                <!-- Blog posts will be populated here -->
+            </div>
+        </div>
+
+        <!-- Tasks Section -->
+        <div id="tasks" class="section">
+            <h2 class="section-title">Tasks</h2>
+            <div id="tasksContainer">
+                <!-- Tasks will be populated here -->
+            </div>
+        </div>
+
+        <!-- Friends Section -->
+        <div id="friends" class="section">
+            <h2 class="section-title">Friends</h2>
+            <div class="referral-card">
+                <h3>Invite Friends</h3>
+                <p>Share this link with your friends and earn 5000 TRM for each referral!</p>
+                <div class="referral-link" id="referralLink">http://t.me/TrimintBot/open?start=</div>
+                <button class="btn btn-primary" onclick="copyReferralLink()">Copy Link</button>
+                
+                <div class="referral-stats">
+                    <div class="referral-stat">
+                        <div class="referral-value" id="totalReferrals">0</div>
+                        <div class="referral-label">Total Referrals</div>
+                    </div>
+                    <div class="referral-stat">
+                        <div class="referral-value" id="referralEarnings">0 TRM</div>
+                        <div class="referral-label">Referral Earnings</div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Ads Section -->
-            <div class="ads-container">
-                <div class="ads-title">Watch Ads for TRM</div>
-                <div id="ads-container">
-                    <!-- Ads will be displayed here -->
-                </div>
-                <button class="farming-button" id="watch-ads-button" onclick="watchAds()">Watch Ads (1 TRM)</button>
+            <h3>Your Referrals</h3>
+            <div class="referral-list" id="referralList">
+                <!-- Referrals will be populated here -->
             </div>
         </div>
 
-        <!-- Friends Tab -->
-        <div id="friends-tab" class="tab-content">
-            <div class="friends-container">
-                <div class="section-title">
-                    <i class="fas fa-user-friends"></i>
-                    Invite Friends
-                </div>
-                <div class="referral-link">
-                    <div class="referral-link-text">Your Referral Link</div>
-                    <div class="referral-link-value" id="referral-link">http://t.me/TrimintBot/open?start=123456</div>
-                    <button class="copy-button" onclick="copyReferralLink()">Copy Link</button>
-                </div>
-                <div class="referral-stats">
-                    <div class="referral-stat">
-                        <div class="referral-stat-value" id="total-referrals">0</div>
-                        <div class="referral-stat-label">Total Referrals</div>
-                    </div>
-                    <div class="referral-stat">
-                        <div class="referral-stat-value" id="referral-earnings">0</div>
-                        <div class="referral-stat-label">Referral Earnings (TRM)</div>
-                    </div>
-                </div>
-                <div class="section-title">
-                    <i class="fas fa-users"></i>
-                    Your Referrals
-                </div>
-                <ul class="referral-list" id="referral-list">
-                    <!-- Referrals will be populated here -->
-                </ul>
-            </div>
-        </div>
-
-        <!-- Profile Tab -->
-        <div id="profile-tab" class="tab-content">
-            <div class="profile-container">
-                <div class="profile-header">
-                    <img id="profile-avatar" src="https://picsum.photos/seed/user123/100/100.jpg" alt="Profile Avatar" class="profile-avatar">
-                    <div class="profile-name" id="profile-name">Loading...</div>
-                    <div class="profile-level">Level <span id="profile-level">1</span></div>
+        <!-- Profile Section (Modal) -->
+        <div id="profileModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Profile</h3>
+                    <button class="modal-close" onclick="closeProfileModal()">&times;</button>
                 </div>
                 <div class="profile-stats">
                     <div class="profile-stat">
-                        <div class="profile-stat-value" id="profile-level-stat">1</div>
+                        <div class="profile-stat-value" id="profileLevel">1</div>
                         <div class="profile-stat-label">Level</div>
                     </div>
                     <div class="profile-stat">
-                        <div class="profile-stat-value" id="profile-quizzes">0</div>
+                        <div class="profile-stat-value" id="profileBalance">0 TRM</div>
+                        <div class="profile-stat-label">Balance</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value" id="profileQuizzes">0</div>
                         <div class="profile-stat-label">Completed Quizzes</div>
                     </div>
                     <div class="profile-stat">
-                        <div class="profile-stat-value" id="profile-friends">0</div>
+                        <div class="profile-stat-value" id="profileReferrals">0</div>
                         <div class="profile-stat-label">Friends Invited</div>
                     </div>
                 </div>
-                <button class="wallet-button" id="wallet-button" onclick="connectTonWallet()">
+                <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="connectTonWallet()">
                     <i class="fas fa-wallet"></i> Connect TON Wallet
                 </button>
-                <div class="section-title">
-                    <i class="fas fa-chart-line"></i>
-                    Your Activity
-                </div>
-                <div id="activity-list">
-                    <!-- Activity items will be populated here -->
-                </div>
             </div>
         </div>
+
+        <!-- Create Blog Modal -->
+        <div id="createBlogModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Create Blog Post</h3>
+                    <button class="modal-close" onclick="closeCreateBlogModal()">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" id="blogTitle" class="form-input" placeholder="Enter blog title">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Content</label>
+                    <textarea id="blogContent" class="form-textarea" placeholder="Share your experience..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="createBlogPost()">Publish</button>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast"></div>
     </div>
 
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="showTab('home-tab')">
+        <a class="nav-item active" onclick="showSection('home')">
             <i class="fas fa-home"></i>
             <span>Home</span>
-        </div>
-        <div class="nav-item" onclick="showTab('quiz-tab')">
+        </a>
+        <a class="nav-item" onclick="showSection('quiz')">
             <i class="fas fa-question-circle"></i>
             <span>Quiz</span>
-        </div>
-        <div class="nav-item" onclick="showTab('blogs-tab')">
+        </a>
+        <a class="nav-item" onclick="showSection('blogs')">
             <i class="fas fa-blog"></i>
             <span>Blogs</span>
-        </div>
-        <div class="nav-item" onclick="showTab('tasks-tab')">
+        </a>
+        <a class="nav-item" onclick="showSection('tasks')">
             <i class="fas fa-tasks"></i>
             <span>Tasks</span>
-        </div>
-        <div class="nav-item" onclick="showTab('friends-tab')">
+        </a>
+        <a class="nav-item" onclick="showSection('friends')">
             <i class="fas fa-user-friends"></i>
             <span>Friends</span>
-        </div>
+        </a>
     </div>
 
-    <!-- Toast Notification -->
-    <div class="toast" id="toast"></div>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Monetag Ads Script -->
+    <script src='//libtl.com/sdk.js' data-zone='10290264' data-sdk='show_10290264'></script>
 
     <script>
-        // Initialize Firebase
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAt9PRbvok0g5XL4187btrPvGx6VjfurJU",
             authDomain: "msc-by-shawon.firebaseapp.com",
@@ -1139,440 +950,439 @@
             measurementId: "G-8LHGLJSSEE"
         };
 
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        const database = firebase.database();
 
-        // Telegram Web App initialization
-        let tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+        // Telegram Bot API Key
+        const telegramBotApiKey = "8099896534:AAFmOTkOjLC8RSSJy-dXtjPQotF3hJlyXTQ";
 
-        // User data
-        let user = {
-            id: tg.initDataUnsafe.user?.id || 123456,
-            firstName: tg.initDataUnsafe.user?.first_name || "User",
-            lastName: tg.initDataUnsafe.user?.last_name || "",
-            username: tg.initDataUnsafe.user?.username || "username",
-            photoUrl: tg.initDataUnsafe.user?.photo_url || "https://picsum.photos/seed/user123/60/60.jpg",
-            balance: 0,
-            level: 1,
-            completedQuizzes: 0,
-            invitedFriends: 0,
-            farming: false,
-            farmingEndTime: null,
-            walletConnected: false,
-            tonWalletAddress: null
-        };
+        // Global variables
+        let telegramUser = null;
+        let userData = null;
+        let farmingInterval = null;
+        let farmingEndTime = null;
+        let currentQuiz = null;
+        let quizAnswered = false;
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            loadUserData();
-            updateUI();
-            loadLeaderboard();
-            loadQuiz();
-            loadBlogs();
-            loadTasks();
-            loadReferrals();
-            checkFarmingStatus();
-            initializeAds();
-        });
-
-        // Load user data from Firestore
-        function loadUserData() {
-            db.collection('users').doc(user.id.toString()).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const userData = doc.data();
-                        user = { ...user, ...userData };
-                    } else {
-                        // Create new user document
-                        db.collection('users').doc(user.id.toString()).set(user);
-                    }
-                    updateUI();
-                })
-                .catch(error => {
-                    console.error("Error getting user data:", error);
-                    showToast("Failed to load user data");
-                });
-        }
-
-        // Update UI with user data
-        function updateUI() {
-            document.getElementById('user-name').textContent = `${user.firstName} ${user.lastName}`;
-            document.getElementById('user-id').textContent = `@${user.username}`;
-            document.getElementById('user-avatar').src = user.photoUrl;
-            document.getElementById('user-level').textContent = user.level;
-            document.getElementById('balance-amount').textContent = `${user.balance.toFixed(4)} TRM`;
-            
-            document.getElementById('profile-name').textContent = `${user.firstName} ${user.lastName}`;
-            document.getElementById('profile-avatar').src = user.photoUrl;
-            document.getElementById('profile-level').textContent = user.level;
-            document.getElementById('profile-level-stat').textContent = user.level;
-            document.getElementById('profile-quizzes').textContent = user.completedQuizzes;
-            document.getElementById('profile-friends').textContent = user.invitedFriends;
-            
-            document.getElementById('referral-link').textContent = `http://t.me/TrimintBot/open?start=${user.id}`;
-            document.getElementById('total-referrals').textContent = user.invitedFriends;
-            document.getElementById('referral-earnings').textContent = (user.invitedFriends * 5000).toFixed(4);
-            
-            if (user.walletConnected) {
-                document.getElementById('wallet-button').innerHTML = '<i class="fas fa-check-circle"></i> TON Wallet Connected';
-                document.getElementById('wallet-button').classList.add('connected');
+        // Initialize Telegram Web App
+        function initTelegramApp() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+                tg.ready();
+                tg.expand();
+                
+                telegramUser = tg.initDataUnsafe?.user;
+                
+                if (telegramUser) {
+                    // Load user data from Firebase
+                    loadUserData(telegramUser.id);
+                    
+                    // Update UI with Telegram user data
+                    document.getElementById('userName').textContent = telegramUser.first_name + ' ' + (telegramUser.last_name || '');
+                    document.getElementById('userAvatar').src = telegramUser.photo_url || 'https://via.placeholder.com/60';
+                    
+                    // Set referral link
+                    document.getElementById('referralLink').textContent = `http://t.me/TrimintBot/open?start=${telegramUser.id}`;
+                }
+            } else {
+                // Fallback for testing outside Telegram
+                telegramUser = {
+                    id: 123456789,
+                    first_name: 'Test',
+                    last_name: 'User',
+                    photo_url: 'https://via.placeholder.com/60'
+                };
+                
+                // Load user data from Firebase
+                loadUserData(telegramUser.id);
+                
+                // Update UI with test user data
+                document.getElementById('userName').textContent = telegramUser.first_name + ' ' + telegramUser.last_name;
+                document.getElementById('userAvatar').src = telegramUser.photo_url;
+                
+                // Set referral link
+                document.getElementById('referralLink').textContent = `http://t.me/TrimintBot/open?start=${telegramUser.id}`;
             }
         }
 
-        // Tab navigation
-        function showTab(tabId) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
+        // Load user data from Firebase
+        function loadUserData(userId) {
+            database.ref('users/' + userId).once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        userData = snapshot.val();
+                        updateUIWithUserData();
+                    } else {
+                        // Create new user data
+                        userData = {
+                            id: userId,
+                            name: telegramUser.first_name + ' ' + (telegramUser.last_name || ''),
+                            photo: telegramUser.photo_url || 'https://via.placeholder.com/60',
+                            balance: 0,
+                            level: 1,
+                            completedQuizzes: 0,
+                            referrals: [],
+                            farmingEndTime: null,
+                            tasksCompleted: []
+                        };
+                        saveUserData();
+                    }
+                    
+                    // Load leaderboard
+                    loadLeaderboard();
+                    
+                    // Load quizzes
+                    loadQuizzes();
+                    
+                    // Load tasks
+                    loadTasks();
+                    
+                    // Load blogs
+                    loadBlogs();
+                    
+                    // Check if farming is active
+                    checkFarmingStatus();
+                })
+                .catch((error) => {
+                    console.error("Error loading user data:", error);
+                    showToast("Error loading user data");
+                });
+        }
+
+        // Save user data to Firebase
+        function saveUserData() {
+            if (userData) {
+                database.ref('users/' + userData.id).set(userData)
+                    .then(() => {
+                        console.log("User data saved successfully");
+                    })
+                    .catch((error) => {
+                        console.error("Error saving user data:", error);
+                    });
+            }
+        }
+
+        // Update UI with user data
+        function updateUIWithUserData() {
+            if (userData) {
+                document.getElementById('mainBalance').textContent = userData.balance + ' TRM';
+                document.getElementById('headerBalance').textContent = userData.balance + ' TRM';
+                document.getElementById('userLevel').textContent = 'Level ' + userData.level;
+                
+                // Update profile modal
+                document.getElementById('profileLevel').textContent = userData.level;
+                document.getElementById('profileBalance').textContent = userData.balance + ' TRM';
+                document.getElementById('profileQuizzes').textContent = userData.completedQuizzes;
+                document.getElementById('profileReferrals').textContent = userData.referrals.length;
+                
+                // Update friends section
+                document.getElementById('totalReferrals').textContent = userData.referrals.length;
+                document.getElementById('referralEarnings').textContent = (userData.referrals.length * 5000) + ' TRM';
+                
+                // Load referrals
+                loadReferrals();
+            }
+        }
+
+        // Show section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
             });
             
-            // Show selected tab
-            document.getElementById(tabId).classList.add('active');
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
             
-            // Update nav items
+            // Update navigation
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
             
-            // Find and activate the corresponding nav item
-            const navItems = document.querySelectorAll('.nav-item');
-            const tabIndex = ['home-tab', 'quiz-tab', 'blogs-tab', 'tasks-tab', 'friends-tab'].indexOf(tabId);
-            if (tabIndex !== -1 && navItems[tabIndex]) {
-                navItems[tabIndex].classList.add('active');
-            }
+            event.target.closest('.nav-item').classList.add('active');
         }
 
-        // Show profile tab
+        // Show profile modal
         function showProfile() {
-            showTab('profile-tab');
-            loadUserActivity();
+            document.getElementById('profileModal').classList.add('active');
         }
 
-        // Load user activity
-        function loadUserActivity() {
-            db.collection('users').doc(user.id.toString()).collection('activities')
-                .orderBy('timestamp', 'desc')
-                .limit(10)
-                .get()
-                .then(snapshot => {
-                    const activityList = document.getElementById('activity-list');
-                    activityList.innerHTML = '';
-                    
-                    if (snapshot.empty) {
-                        activityList.innerHTML = '<p>No activity yet</p>';
-                        return;
-                    }
-                    
-                    snapshot.forEach(doc => {
-                        const activity = doc.data();
-                        const activityItem = document.createElement('div');
-                        activityItem.className = 'activity-item';
-                        activityItem.innerHTML = `
-                            <div class="activity-type">${activity.type}</div>
-                            <div class="activity-description">${activity.description}</div>
-                            <div class="activity-time">${new Date(activity.timestamp.toDate()).toLocaleString()}</div>
-                        `;
-                        activityList.appendChild(activityItem);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error loading user activity:", error);
-                });
+        // Close profile modal
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('active');
         }
 
-        // Connect TON Wallet
+        // Connect TON wallet
         function connectTonWallet() {
-            if (!user.walletConnected) {
-                // Open TON wallet connection page
-                window.open('https://trimint.vercel.app/', '_blank');
-                
-                // Simulate wallet connection (in a real app, you would handle the callback)
-                showToast('Connecting to TON wallet...');
-                setTimeout(() => {
-                    user.walletConnected = true;
-                    user.tonWalletAddress = 'EQD...'; // Simulated address
-                    
-                    db.collection('users').doc(user.id.toString()).update({
-                        walletConnected: user.walletConnected,
-                        tonWalletAddress: user.tonWalletAddress
-                    });
-                    
-                    updateUI();
-                    showToast('TON wallet connected successfully!');
-                }, 3000);
-            } else {
-                showToast('TON wallet already connected');
-            }
+            // Redirect to TON wallet connection page
+            window.open('https://trimint.vercel.app/', '_blank');
+            showToast('Redirecting to TON wallet connection...');
         }
 
-        // Farming functionality
-        let farmingInterval;
-        let farmingTimerInterval;
-
-        function toggleFarming() {
-            if (user.farming) {
-                // Stop farming
-                stopFarming();
-            } else {
-                // Start farming
-                startFarming();
-            }
-        }
-
+        // Start farming
         function startFarming() {
-            user.farming = true;
-            user.farmingEndTime = new Date(Date.now() + 12 * 60 * 60 * 1000); // 12 hours from now
-            
-            db.collection('users').doc(user.id.toString()).update({
-                farming: user.farming,
-                farmingEndTime: user.farmingEndTime
-            });
-            
-            document.getElementById('farming-button').textContent = 'Stop Farming';
-            document.getElementById('farming-timer').textContent = 'Farming in progress...';
-            
-            // Add animation to coin
-            document.getElementById('farming-coin').style.animation = 'pulse 2s infinite';
-            
-            // Start farming interval (add 0.001 TRM per second)
-            farmingInterval = setInterval(() => {
-                user.balance += 0.001;
-                updateUI();
-                
-                // Show token addition animation
-                showTokenAddition();
-                
-                // Update farming timer
-                updateFarmingTimer();
-            }, 1000);
-            
-            showToast('Farming started! You will earn 0.001 TRM per second.');
-        }
-
-        function stopFarming() {
-            user.farming = false;
-            user.farmingEndTime = null;
-            
-            db.collection('users').doc(user.id.toString()).update({
-                farming: user.farming,
-                farmingEndTime: firebase.firestore.FieldValue.delete()
-            });
-            
-            document.getElementById('farming-button').textContent = 'Start Farming';
-            document.getElementById('farming-timer').textContent = 'Start farming to earn TRM';
-            
-            // Remove animation from coin
-            document.getElementById('farming-coin').style.animation = '';
-            
-            // Clear intervals
-            clearInterval(farmingInterval);
-            clearInterval(farmingTimerInterval);
-            
-            showToast('Farming stopped.');
-        }
-
-        function updateFarmingTimer() {
-            if (!user.farming || !user.farmingEndTime) return;
-            
-            const now = new Date();
-            const endTime = user.farmingEndTime.toDate();
-            const remainingTime = Math.max(0, endTime - now);
-            
-            if (remainingTime <= 0) {
-                stopFarming();
-                showToast('Farming completed! You can start farming again.');
+            if (farmingInterval) {
+                // Farming is already active
                 return;
             }
             
-            const hours = Math.floor(remainingTime / (1000 * 60 * 60));
-            const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+            // Set farming end time (12 hours from now)
+            farmingEndTime = Date.now() + (12 * 60 * 60 * 1000);
+            userData.farmingEndTime = farmingEndTime;
+            saveUserData();
             
-            document.getElementById('farming-timer').textContent = `Time remaining: ${hours}h ${minutes}m ${seconds}s`;
+            // Update UI
+            document.getElementById('farmingBtn').textContent = 'Farming...';
+            document.getElementById('farmingBtn').disabled = true;
+            document.getElementById('coin').classList.add('farming');
+            
+            // Start farming interval
+            farmingInterval = setInterval(updateFarming, 1000);
+            
+            // Initial update
+            updateFarming();
+            
+            showToast('Farming started! You will earn 0.001 TRM per second for 12 hours.');
         }
 
-        function checkFarmingStatus() {
-            if (user.farming && user.farmingEndTime) {
-                const now = new Date();
-                const endTime = user.farmingEndTime.toDate();
+        // Update farming
+        function updateFarming() {
+            if (!farmingEndTime) return;
+            
+            const now = Date.now();
+            const remaining = Math.max(0, farmingEndTime - now);
+            
+            if (remaining > 0) {
+                // Update timer
+                const hours = Math.floor(remaining / (1000 * 60 * 60));
+                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
                 
-                if (endTime > now) {
-                    // Continue farming
-                    document.getElementById('farming-button').textContent = 'Stop Farming';
-                    
-                    // Add animation to coin
-                    document.getElementById('farming-coin').style.animation = 'pulse 2s infinite';
+                document.getElementById('farmingTimer').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Update progress bar
+                const totalTime = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+                const progress = ((totalTime - remaining) / totalTime) * 100;
+                document.getElementById('farmingProgress').style.width = progress + '%';
+                
+                // Add 0.001 TRM to balance
+                userData.balance += 0.001;
+                updateUIWithUserData();
+                
+                // Show animation
+                showEarningAnimation('0.001 TRM');
+            } else {
+                // Farming completed
+                endFarming();
+            }
+        }
+
+        // End farming
+        function endFarming() {
+            if (farmingInterval) {
+                clearInterval(farmingInterval);
+                farmingInterval = null;
+            }
+            
+            farmingEndTime = null;
+            userData.farmingEndTime = null;
+            saveUserData();
+            
+            // Update UI
+            document.getElementById('farmingBtn').textContent = 'Start Farming';
+            document.getElementById('farmingBtn').disabled = false;
+            document.getElementById('farmingTimer').textContent = 'Start Farming';
+            document.getElementById('farmingProgress').style.width = '0%';
+            document.getElementById('coin').classList.remove('farming');
+            
+            showToast('Farming completed! You can start farming again.');
+        }
+
+        // Check farming status
+        function checkFarmingStatus() {
+            if (userData && userData.farmingEndTime) {
+                farmingEndTime = userData.farmingEndTime;
+                
+                if (farmingEndTime > Date.now()) {
+                    // Farming is still active
+                    document.getElementById('farmingBtn').textContent = 'Farming...';
+                    document.getElementById('farmingBtn').disabled = true;
+                    document.getElementById('coin').classList.add('farming');
                     
                     // Start farming interval
-                    farmingInterval = setInterval(() => {
-                        user.balance += 0.001;
-                        updateUI();
-                        updateFarmingTimer();
-                        showTokenAddition();
-                    }, 1000);
+                    farmingInterval = setInterval(updateFarming, 1000);
                     
-                    // Update timer immediately
-                    updateFarmingTimer();
+                    // Initial update
+                    updateFarming();
                 } else {
-                    // Farming period ended
-                    user.farming = false;
-                    user.farmingEndTime = null;
-                    
-                    db.collection('users').doc(user.id.toString()).update({
-                        farming: user.farming,
-                        farmingEndTime: firebase.firestore.FieldValue.delete()
-                    });
+                    // Farming has ended
+                    endFarming();
                 }
             }
         }
 
-        function showTokenAddition() {
-            const farmingAnimation = document.querySelector('.farming-animation');
-            const tokenAddition = document.createElement('div');
-            tokenAddition.className = 'token-addition';
-            tokenAddition.textContent = '+0.001 TRM';
-            farmingAnimation.appendChild(tokenAddition);
+        // Show earning animation
+        function showEarningAnimation(amount) {
+            const earningElement = document.createElement('div');
+            earningElement.textContent = '+' + amount;
+            earningElement.style.position = 'fixed';
+            earningElement.style.bottom = '250px';
+            earningElement.style.left = '50%';
+            earningElement.style.transform = 'translateX(-50%)';
+            earningElement.style.color = '#10b981';
+            earningElement.style.fontSize = '1.5rem';
+            earningElement.style.fontWeight = 'bold';
+            earningElement.style.zIndex = '1000';
+            earningElement.style.pointerEvents = 'none';
+            earningElement.style.animation = 'floatUp 2s ease-out forwards';
             
-            // Remove the element after animation completes
+            document.body.appendChild(earningElement);
+            
+            // Remove element after animation
             setTimeout(() => {
-                farmingAnimation.removeChild(tokenAddition);
+                document.body.removeChild(earningElement);
             }, 2000);
         }
 
         // Load leaderboard
         function loadLeaderboard() {
-            db.collection('users')
-                .orderBy('balance', 'desc')
-                .limit(25)
-                .get()
-                .then(snapshot => {
-                    const leaderboardList = document.getElementById('leaderboard-list');
-                    leaderboardList.innerHTML = '';
+            database.ref('users').orderByChild('balance').limitToLast(25).once('value')
+                .then((snapshot) => {
+                    const leaderboardData = [];
                     
-                    let userRank = 0;
-                    
-                    snapshot.forEach((doc, index) => {
-                        const userData = doc.data();
-                        const leaderboardItem = document.createElement('li');
-                        
-                        // Check if this is the current user
-                        const isCurrentUser = doc.id === user.id.toString();
-                        if (isCurrentUser) {
-                            userRank = index + 1;
-                            leaderboardItem.className = 'leaderboard-item current-user';
-                        } else {
-                            leaderboardItem.className = 'leaderboard-item';
-                        }
-                        
-                        leaderboardItem.innerHTML = `
-                            <div class="leaderboard-rank">${index + 1}</div>
-                            <img src="${userData.photoUrl || 'https://picsum.photos/seed/user' + doc.id + '/40/40.jpg'}" alt="${userData.firstName}" class="leaderboard-avatar">
-                            <div class="leaderboard-info">
-                                <div class="leaderboard-name">${userData.firstName} ${userData.lastName}</div>
-                                <div class="leaderboard-score">Level ${userData.level || 1}</div>
-                            </div>
-                            <div class="leaderboard-amount">${userData.balance.toFixed(4)} TRM</div>
-                        `;
-                        
-                        leaderboardList.appendChild(leaderboardItem);
+                    snapshot.forEach((childSnapshot) => {
+                        const user = childSnapshot.val();
+                        leaderboardData.push(user);
                     });
                     
-                    // If user is not in top 25, add them at the end
-                    if (userRank === 0) {
-                        // Get user's rank
-                        db.collection('users')
-                            .where('balance', '>', user.balance)
-                            .get()
-                            .then(countSnapshot => {
-                                userRank = countSnapshot.size + 1;
+                    // Sort by balance (descending)
+                    leaderboardData.sort((a, b) => b.balance - a.balance);
+                    
+                    // Update leaderboard UI
+                    const leaderboardElement = document.getElementById('leaderboard');
+                    leaderboardElement.innerHTML = '';
+                    
+                    leaderboardData.forEach((user, index) => {
+                        const rank = index + 1;
+                        const isCurrentUser = user.id === userData.id;
+                        
+                        const leaderboardItem = document.createElement('div');
+                        leaderboardItem.className = 'leaderboard-item' + (isCurrentUser ? ' current-user' : '');
+                        leaderboardItem.innerHTML = `
+                            <div class="leaderboard-rank">${rank}</div>
+                            <img src="${user.photo || 'https://via.placeholder.com/50'}" alt="${user.name}" class="leaderboard-avatar">
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">${user.name} ${isCurrentUser ? '(You)' : ''}</div>
+                                <div class="leaderboard-balance">Level ${user.level}</div>
+                            </div>
+                            <div class="leaderboard-score">${user.balance.toFixed(2)} TRM</div>
+                        `;
+                        
+                        leaderboardElement.appendChild(leaderboardItem);
+                    });
+                    
+                    // Show user's rank if not in top 25
+                    const userRank = leaderboardData.findIndex(user => user.id === userData.id);
+                    if (userRank === -1) {
+                        database.ref('users').orderByChild('balance').once('value')
+                            .then((allUsersSnapshot) => {
+                                const allUsers = [];
+                                allUsersSnapshot.forEach((childSnapshot) => {
+                                    allUsers.push(childSnapshot.val());
+                                });
                                 
-                                const userItem = document.createElement('li');
-                                userItem.className = 'leaderboard-item current-user';
-                                userItem.innerHTML = `
-                                    <div class="leaderboard-rank">${userRank}</div>
-                                    <img src="${user.photoUrl}" alt="${user.firstName}" class="leaderboard-avatar">
+                                allUsers.sort((a, b) => b.balance - a.balance);
+                                const userGlobalRank = allUsers.findIndex(user => user.id === userData.id) + 1;
+                                
+                                const rankElement = document.createElement('div');
+                                rankElement.className = 'leaderboard-item current-user';
+                                rankElement.innerHTML = `
+                                    <div class="leaderboard-rank">${userGlobalRank}</div>
+                                    <img src="${userData.photo || 'https://via.placeholder.com/50'}" alt="${userData.name}" class="leaderboard-avatar">
                                     <div class="leaderboard-info">
-                                        <div class="leaderboard-name">${user.firstName} ${user.lastName}</div>
-                                        <div class="leaderboard-score">Level ${user.level}</div>
+                                        <div class="leaderboard-name">${userData.name} (You)</div>
+                                        <div class="leaderboard-balance">Level ${userData.level}</div>
                                     </div>
-                                    <div class="leaderboard-amount">${user.balance.toFixed(4)} TRM</div>
+                                    <div class="leaderboard-score">${userData.balance.toFixed(2)} TRM</div>
                                 `;
                                 
-                                leaderboardList.appendChild(userItem);
+                                leaderboardElement.appendChild(rankElement);
                             });
                     }
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.error("Error loading leaderboard:", error);
-                    showToast("Failed to load leaderboard");
+                    showToast("Error loading leaderboard");
                 });
         }
 
-        // Quiz functionality
-        let currentQuiz = null;
-        let selectedAnswer = null;
-
-        function loadQuiz() {
-            // First, check if there are quizzes in the database
-            db.collection('quizzes').get()
-                .then(snapshot => {
-                    if (snapshot.empty) {
-                        // If no quizzes in database, create default quizzes
-                        createDefaultQuizzes().then(() => {
-                            loadQuizFromDatabase();
-                        });
+        // Load quizzes
+        function loadQuizzes() {
+            database.ref('quizzes').once('value')
+                .then((snapshot) => {
+                    const quizzes = [];
+                    
+                    snapshot.forEach((childSnapshot) => {
+                        quizzes.push(childSnapshot.val());
+                    });
+                    
+                    // If no quizzes, create default ones
+                    if (quizzes.length === 0) {
+                        createDefaultQuizzes();
                     } else {
-                        loadQuizFromDatabase();
+                        displayQuiz(quizzes[Math.floor(Math.random() * quizzes.length)]);
                     }
                 })
-                .catch(error => {
-                    console.error("Error checking quizzes:", error);
-                    showToast("Failed to load quiz");
+                .catch((error) => {
+                    console.error("Error loading quizzes:", error);
+                    showToast("Error loading quizzes");
                 });
         }
 
+        // Create default quizzes
         function createDefaultQuizzes() {
             const defaultQuizzes = [
                 {
-                    question: "What is TON Blockchain?",
+                    id: 1,
+                    question: "What is TON?",
                     options: [
                         "The Open Network",
-                        "Telegram Only Network",
-                        "Token Only Network",
-                        "The Official Network"
+                        "Telegram Open Network",
+                        "Both of the above",
+                        "None of the above"
                     ],
-                    correctAnswer: 0,
-                    reward: 1500,
-                    active: true
+                    correctAnswer: 2,
+                    reward: 1500
                 },
                 {
-                    question: "Who originally created TON?",
+                    id: 2,
+                    question: "Who created TON?",
                     options: [
-                        "Vitalik Buterin",
                         "Pavel Durov",
-                        "Satoshi Nakamoto",
-                        "Charles Hoskinson"
+                        "Nikolai Durov",
+                        "Both Pavel and Nikolai Durov",
+                        "Mark Zuckerberg"
                     ],
-                    correctAnswer: 1,
-                    reward: 1500,
-                    active: true
+                    correctAnswer: 2,
+                    reward: 1500
                 },
                 {
-                    question: "What is the native token of TON?",
+                    id: 3,
+                    question: "What is the native cryptocurrency of TON?",
                     options: [
-                        "TON",
-                        "ETH",
-                        "BTC",
-                        "GRAM"
+                        "TON Coin",
+                        "TON Crystal",
+                        "TON Token",
+                        "Gram"
                     ],
                     correctAnswer: 0,
-                    reward: 1500,
-                    active: true
+                    reward: 1500
                 },
                 {
-                    question: "What consensus mechanism does TON use?",
+                    id: 4,
+                    question: "What is the consensus mechanism used by TON?",
                     options: [
                         "Proof of Work",
                         "Proof of Stake",
@@ -1580,143 +1390,115 @@
                         "Delegated Proof of Stake"
                     ],
                     correctAnswer: 1,
-                    reward: 1500,
-                    active: true
+                    reward: 1500
                 },
                 {
-                    question: "What is TON DNS?",
+                    id: 5,
+                    question: "What is the maximum supply of TON coins?",
                     options: [
-                        "A decentralized domain name system",
-                        "A centralized DNS provider",
-                        "A VPN service",
-                        "A web browser"
-                    ],
-                    correctAnswer: 0,
-                    reward: 1500,
-                    active: true
-                },
-                {
-                    question: "What is TON Storage?",
-                    options: [
-                        "A decentralized file storage system",
-                        "A cloud storage service",
-                        "A hardware wallet",
-                        "A mining pool"
-                    ],
-                    correctAnswer: 0,
-                    reward: 1500,
-                    active: true
-                },
-                {
-                    question: "What is TON Proxy?",
-                    options: [
-                        "A decentralized VPN service",
-                        "A centralized proxy server",
-                        "A web browser extension",
-                        "A mining software"
-                    ],
-                    correctAnswer: 0,
-                    reward: 1500,
-                    active: true
-                },
-                {
-                    question: "What programming language is used for smart contracts on TON?",
-                    options: [
-                        "Solidity",
-                        "FunC",
-                        "Rust",
-                        "JavaScript"
+                        "1 billion",
+                        "5 billion",
+                        "10 billion",
+                        "Unlimited"
                     ],
                     correctAnswer: 1,
-                    reward: 1500,
-                    active: true
+                    reward: 1500
                 },
                 {
-                    question: "What is TON NFT?",
+                    id: 6,
+                    question: "What is TON DNS?",
                     options: [
-                        "A decentralized NFT standard",
-                        "A centralized NFT marketplace",
-                        "A digital art gallery",
-                        "A gaming platform"
+                        "A decentralized naming system",
+                        "A centralized DNS provider",
+                        "A web browser",
+                        "A social network"
                     ],
                     correctAnswer: 0,
-                    reward: 1500,
-                    active: true
+                    reward: 1500
                 },
                 {
-                    question: "What is TON Crystal?",
+                    id: 7,
+                    question: "What is TON Storage?",
                     options: [
-                        "A blockchain explorer",
-                        "A cryptocurrency exchange",
+                        "A cloud storage service",
+                        "A decentralized file storage system",
                         "A hardware wallet",
-                        "A mining pool"
+                        "A crypto exchange"
+                    ],
+                    correctAnswer: 1,
+                    reward: 1500
+                },
+                {
+                    id: 8,
+                    question: "What is TON Proxy?",
+                    options: [
+                        "A VPN service",
+                        "A decentralized proxy network",
+                        "A web browser",
+                        "A messaging app"
+                    ],
+                    correctAnswer: 1,
+                    reward: 1500
+                },
+                {
+                    id: 9,
+                    question: "What is the block time of TON?",
+                    options: [
+                        "5 seconds",
+                        "10 seconds",
+                        "30 seconds",
+                        "1 minute"
                     ],
                     correctAnswer: 0,
-                    reward: 1500,
-                    active: true
+                    reward: 1500
+                },
+                {
+                    id: 10,
+                    question: "What is the transaction speed of TON?",
+                    options: [
+                        "1,000 TPS",
+                        "10,000 TPS",
+                        "100,000 TPS",
+                        "1,000,000 TPS"
+                    ],
+                    correctAnswer: 2,
+                    reward: 1500
                 }
             ];
-
-            const batch = db.batch();
             
+            // Save default quizzes to Firebase
             defaultQuizzes.forEach(quiz => {
-                const docRef = db.collection('quizzes').doc();
-                batch.set(docRef, quiz);
+                database.ref('quizzes/' + quiz.id).set(quiz);
             });
             
-            return batch.commit();
+            // Display a random quiz
+            displayQuiz(defaultQuizzes[Math.floor(Math.random() * defaultQuizzes.length)]);
         }
 
-        function loadQuizFromDatabase() {
-            db.collection('quizzes')
-                .where('active', '==', true)
-                .get()
-                .then(snapshot => {
-                    if (snapshot.empty) {
-                        document.getElementById('quiz-question').textContent = 'No quizzes available at the moment.';
-                        return;
-                    }
-                    
-                    // Get a random quiz
-                    const quizzes = [];
-                    snapshot.forEach(doc => {
-                        quizzes.push({ id: doc.id, ...doc.data() });
-                    });
-                    
-                    currentQuiz = quizzes[Math.floor(Math.random() * quizzes.length)];
-                    displayQuiz();
-                })
-                .catch(error => {
-                    console.error("Error loading quiz:", error);
-                    showToast("Failed to load quiz");
-                });
+        // Display quiz
+        function displayQuiz(quiz) {
+            currentQuiz = quiz;
+            quizAnswered = false;
+            
+            const quizContainer = document.getElementById('quizContainer');
+            quizContainer.innerHTML = `
+                <div class="quiz-container">
+                    <div class="quiz-question">${quiz.question}</div>
+                    <div class="quiz-options">
+                        ${quiz.options.map((option, index) => `
+                            <div class="quiz-option" onclick="selectQuizOption(${index})">${option}</div>
+                        `).join('')}
+                    </div>
+                    <button id="submitQuizBtn" class="btn btn-primary" onclick="submitQuizAnswer()" disabled>Submit Answer</button>
+                    <div id="quizResult" style="margin-top: 20px; text-align: center;"></div>
+                </div>
+            `;
         }
 
-        function displayQuiz() {
-            if (!currentQuiz) return;
+        // Select quiz option
+        function selectQuizOption(index) {
+            if (quizAnswered) return;
             
-            document.getElementById('quiz-question').textContent = currentQuiz.question;
-            
-            const optionsList = document.getElementById('quiz-options');
-            optionsList.innerHTML = '';
-            
-            currentQuiz.options.forEach((option, index) => {
-                const optionItem = document.createElement('li');
-                optionItem.className = 'quiz-option';
-                optionItem.textContent = option;
-                optionItem.onclick = () => selectAnswer(index);
-                optionsList.appendChild(optionItem);
-            });
-            
-            // Reset UI
-            selectedAnswer = null;
-            document.getElementById('quiz-submit-button').disabled = true;
-            document.getElementById('quiz-feedback').innerHTML = '';
-            document.getElementById('quiz-next-button').style.display = 'none';
-            document.getElementById('quiz-submit-button').style.display = 'inline-block';
-        }
-
-        function selectAnswer(index) {
             // Remove previous selection
             document.querySelectorAll('.quiz-option').forEach(option => {
                 option.classList.remove('selected');
@@ -1724,628 +1506,553 @@
             
             // Add selection to clicked option
             document.querySelectorAll('.quiz-option')[index].classList.add('selected');
-            selectedAnswer = index;
             
             // Enable submit button
-            document.getElementById('quiz-submit-button').disabled = false;
+            document.getElementById('submitQuizBtn').disabled = false;
         }
 
+        // Submit quiz answer
         function submitQuizAnswer() {
-            if (selectedAnswer === null) return;
+            if (quizAnswered || !currentQuiz) return;
             
-            // Check if answer is correct
-            const isCorrect = selectedAnswer === currentQuiz.correctAnswer;
+            const selectedOption = document.querySelector('.quiz-option.selected');
+            if (!selectedOption) return;
             
-            // Show feedback
-            const feedbackElement = document.getElementById('quiz-feedback');
-            if (isCorrect) {
-                feedbackElement.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> Correct! You earned ' + currentQuiz.reward + ' TRM.';
-                
-                // Update user balance
-                user.balance += currentQuiz.reward;
-                user.completedQuizzes += 1;
-                
-                db.collection('users').doc(user.id.toString()).update({
-                    balance: user.balance,
-                    completedQuizzes: user.completedQuizzes
-                });
-                
-                // Add activity
-                addActivity('Quiz Completed', `Earned ${currentQuiz.reward} TRM by completing a quiz`);
-                
-                updateUI();
-            } else {
-                feedbackElement.innerHTML = '<i class="fas fa-times-circle" style="color: var(--error);"></i> Incorrect. Try again!';
-            }
+            const selectedIndex = Array.from(document.querySelectorAll('.quiz-option')).indexOf(selectedOption);
+            const isCorrect = selectedIndex === currentQuiz.correctAnswer;
             
-            // Highlight correct and incorrect answers
+            quizAnswered = true;
+            
+            // Update UI
             document.querySelectorAll('.quiz-option').forEach((option, index) => {
+                option.style.pointerEvents = 'none';
+                
                 if (index === currentQuiz.correctAnswer) {
                     option.classList.add('correct');
-                } else if (index === selectedAnswer && !isCorrect) {
+                } else if (index === selectedIndex && !isCorrect) {
                     option.classList.add('incorrect');
                 }
             });
             
-            // Disable options
-            document.querySelectorAll('.quiz-option').forEach(option => {
-                option.onclick = null;
-            });
-            
-            // Show next button and hide submit button
-            document.getElementById('quiz-submit-button').style.display = 'none';
-            document.getElementById('quiz-next-button').style.display = 'inline-block';
-        }
-
-        function nextQuizQuestion() {
-            loadQuizFromDatabase();
-        }
-
-        // Blog functionality
-        function loadBlogs() {
-            db.collection('blogs')
-                .orderBy('timestamp', 'desc')
-                .get()
-                .then(snapshot => {
-                    const blogPosts = document.getElementById('blog-posts');
-                    blogPosts.innerHTML = '';
-                    
-                    if (snapshot.empty) {
-                        blogPosts.innerHTML = '<p>No blog posts yet. Be the first to share your experience!</p>';
-                        return;
-                    }
-                    
-                    snapshot.forEach(doc => {
-                        const blog = doc.data();
-                        displayBlog(doc.id, blog);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error loading blogs:", error);
-                    showToast("Failed to load blogs");
-                });
-        }
-
-        function displayBlog(blogId, blog) {
-            const blogPosts = document.getElementById('blog-posts');
-            const blogItem = document.createElement('li');
-            blogItem.className = 'blog-post';
-            blogItem.id = `blog-${blogId}`;
-            
-            const date = blog.timestamp.toDate();
-            const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-            
-            blogItem.innerHTML = `
-                <div class="blog-author">
-                    <img src="${blog.authorPhotoUrl || 'https://picsum.photos/seed/user' + blog.authorId + '/30/30.jpg'}" alt="${blog.authorName}" class="blog-avatar">
-                    <div class="blog-name">${blog.authorName}</div>
-                    <div class="blog-date">${formattedDate}</div>
-                </div>
-                <div class="blog-content">${blog.content}</div>
-                <div class="blog-actions">
-                    <div class="blog-action" onclick="likeBlog('${blogId}')">
-                        <i class="fas fa-heart"></i>
-                        <span id="likes-${blogId}">${blog.likes || 0}</span>
-                    </div>
-                    <div class="blog-action" onclick="toggleComments('${blogId}')">
-                        <i class="fas fa-comment"></i>
-                        <span id="comments-count-${blogId}">${blog.comments || 0}</span>
-                    </div>
-                    ${blog.authorId === user.id.toString() ? `<div class="blog-delete" onclick="deleteBlog('${blogId}')"><i class="fas fa-trash"></i></div>` : ''}
-                </div>
-                <div class="comments-section" id="comments-section-${blogId}" style="display: none;">
-                    <div class="comment-form">
-                        <input type="text" class="comment-input" id="comment-input-${blogId}" placeholder="Add a comment...">
-                        <button class="comment-button" onclick="addComment('${blogId}')">Post</button>
-                    </div>
-                    <ul class="comments-list" id="comments-list-${blogId}">
-                        <!-- Comments will be loaded here -->
-                    </ul>
-                </div>
-            `;
-            
-            blogPosts.appendChild(blogItem);
-            
-            // Load comments for this blog
-            loadComments(blogId);
-        }
-
-        function postBlog() {
-            const content = document.getElementById('blog-textarea').value.trim();
-            
-            if (!content) {
-                showToast('Please write something before posting.');
-                return;
-            }
-            
-            const blog = {
-                authorId: user.id,
-                authorName: `${user.firstName} ${user.lastName}`,
-                authorPhotoUrl: user.photoUrl,
-                content: content,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                likes: 0,
-                comments: 0
-            };
-            
-            db.collection('blogs').add(blog)
-                .then(() => {
-                    document.getElementById('blog-textarea').value = '';
-                    showToast('Blog posted successfully!');
-                    loadBlogs();
-                    
-                    // Add activity
-                    addActivity('Blog Posted', 'Shared your experience with the community');
-                })
-                .catch(error => {
-                    console.error("Error posting blog:", error);
-                    showToast("Failed to post blog");
-                });
-        }
-
-        function deleteBlog(blogId) {
-            if (confirm('Are you sure you want to delete this blog post?')) {
-                db.collection('blogs').doc(blogId).delete()
-                    .then(() => {
-                        showToast('Blog post deleted successfully!');
-                        document.getElementById(`blog-${blogId}`).remove();
-                        
-                        // Add activity
-                        addActivity('Blog Deleted', 'Deleted your blog post');
-                    })
-                    .catch(error => {
-                        console.error("Error deleting blog:", error);
-                        showToast("Failed to delete blog post");
-                    });
-            }
-        }
-
-        function likeBlog(blogId) {
-            // Check if user already liked this blog
-            db.collection('blogs').doc(blogId).collection('likes').doc(user.id.toString()).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        // Unlike
-                        db.collection('blogs').doc(blogId).collection('likes').doc(user.id.toString()).delete();
-                        db.collection('blogs').doc(blogId).update({
-                            likes: firebase.firestore.FieldValue.increment(-1)
-                        });
-                        showToast('Like removed');
-                    } else {
-                        // Like
-                        db.collection('blogs').doc(blogId).collection('likes').doc(user.id.toString()).set({
-                            userId: user.id,
-                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                        db.collection('blogs').doc(blogId).update({
-                            likes: firebase.firestore.FieldValue.increment(1)
-                        });
-                        showToast('Liked!');
-                    }
-                    
-                    // Update likes count
-                    db.collection('blogs').doc(blogId).get().then(doc => {
-                        if (doc.exists) {
-                            const likes = doc.data().likes || 0;
-                            document.getElementById(`likes-${blogId}`).textContent = likes;
-                        }
-                    });
-                })
-                .catch(error => {
-                    console.error("Error liking blog:", error);
-                    showToast("Failed to like blog");
-                });
-        }
-
-        function toggleComments(blogId) {
-            const commentsSection = document.getElementById(`comments-section-${blogId}`);
-            if (commentsSection.style.display === 'none') {
-                commentsSection.style.display = 'block';
+            // Update result
+            const resultElement = document.getElementById('quizResult');
+            if (isCorrect) {
+                resultElement.innerHTML = `<div style="color: #10b981; font-weight: bold;">Correct! You earned ${currentQuiz.reward} TRM.</div>`;
+                
+                // Update user balance and completed quizzes
+                userData.balance += currentQuiz.reward;
+                userData.completedQuizzes += 1;
+                saveUserData();
+                updateUIWithUserData();
+                
+                // Load new quiz after delay
+                setTimeout(() => {
+                    loadQuizzes();
+                }, 3000);
             } else {
-                commentsSection.style.display = 'none';
-            }
-        }
-
-        function loadComments(blogId) {
-            db.collection('blogs').doc(blogId).collection('comments')
-                .orderBy('timestamp', 'desc')
-                .get()
-                .then(snapshot => {
-                    const commentsList = document.getElementById(`comments-list-${blogId}`);
-                    commentsList.innerHTML = '';
-                    
-                    if (snapshot.empty) {
-                        commentsList.innerHTML = '<p style="font-size: 14px; color: #6B7280;">No comments yet. Be the first to comment!</p>';
-                        return;
-                    }
-                    
-                    snapshot.forEach(doc => {
-                        const comment = doc.data();
-                        const commentItem = document.createElement('li');
-                        commentItem.className = 'comment-item';
-                        
-                        const date = comment.timestamp.toDate();
-                        const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-                        
-                        commentItem.innerHTML = `
-                            <img src="${comment.authorPhotoUrl || 'https://picsum.photos/seed/user' + comment.authorId + '/30/30.jpg'}" alt="${comment.authorName}" class="comment-avatar">
-                            <div class="comment-content">
-                                <div class="comment-author">${comment.authorName}</div>
-                                <div class="comment-text">${comment.text}</div>
-                            </div>
-                        `;
-                        
-                        commentsList.appendChild(commentItem);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error loading comments:", error);
-                });
-        }
-
-        function addComment(blogId) {
-            const commentInput = document.getElementById(`comment-input-${blogId}`);
-            const text = commentInput.value.trim();
-            
-            if (!text) {
-                showToast('Please write a comment.');
-                return;
+                resultElement.innerHTML = `<div style="color: #ef4444; font-weight: bold;">Incorrect. The correct answer is: ${currentQuiz.options[currentQuiz.correctAnswer]}</div>`;
+                
+                // Load new quiz after delay
+                setTimeout(() => {
+                    loadQuizzes();
+                }, 5000);
             }
             
-            const comment = {
-                authorId: user.id,
-                authorName: `${user.firstName} ${user.lastName}`,
-                authorPhotoUrl: user.photoUrl,
-                text: text,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            // Disable submit button
+            document.getElementById('submitQuizBtn').disabled = true;
+            document.getElementById('submitQuizBtn').textContent = 'Next Question';
+            document.getElementById('submitQuizBtn').onclick = () => {
+                loadQuizzes();
             };
-            
-            db.collection('blogs').doc(blogId).collection('comments').add(comment)
-                .then(() => {
-                    commentInput.value = '';
-                    
-                    // Update comment count
-                    db.collection('blogs').doc(blogId).update({
-                        comments: firebase.firestore.FieldValue.increment(1)
-                    });
-                    
-                    // Reload comments
-                    loadComments(blogId);
-                    
-                    // Update comment count in UI
-                    db.collection('blogs').doc(blogId).get().then(doc => {
-                        if (doc.exists) {
-                            const comments = doc.data().comments || 0;
-                            document.getElementById(`comments-count-${blogId}`).textContent = comments;
-                        }
-                    });
-                    
-                    showToast('Comment added!');
-                })
-                .catch(error => {
-                    console.error("Error adding comment:", error);
-                    showToast("Failed to add comment");
-                });
         }
 
-        // Tasks functionality
+        // Load tasks
         function loadTasks() {
-            // First, check if there are tasks in the database
-            db.collection('tasks').get()
-                .then(snapshot => {
-                    if (snapshot.empty) {
-                        // If no tasks in database, create default tasks
-                        createDefaultTasks().then(() => {
-                            loadTasksFromDatabase();
-                        });
+            database.ref('tasks').once('value')
+                .then((snapshot) => {
+                    const tasks = [];
+                    
+                    snapshot.forEach((childSnapshot) => {
+                        tasks.push(childSnapshot.val());
+                    });
+                    
+                    // If no tasks, create default ones
+                    if (tasks.length === 0) {
+                        createDefaultTasks();
                     } else {
-                        loadTasksFromDatabase();
+                        displayTasks(tasks);
                     }
                 })
-                .catch(error => {
-                    console.error("Error checking tasks:", error);
-                    showToast("Failed to load tasks");
+                .catch((error) => {
+                    console.error("Error loading tasks:", error);
+                    showToast("Error loading tasks");
                 });
         }
 
+        // Create default tasks
         function createDefaultTasks() {
             const defaultTasks = [
                 {
-                    name: "Join our Telegram Channel",
-                    description: "Join our official Telegram channel for updates",
-                    icon: "fab fa-telegram",
-                    link: "https://t.me/trimint",
-                    reward: 10,
-                    active: true,
-                    order: 1
+                    id: 1,
+                    title: "Watch Ads",
+                    description: "Watch ads to earn TRM tokens",
+                    icon: "fa-ad",
+                    reward: 1,
+                    link: "#watch_ads",
+                    isSpecial: true
                 },
                 {
-                    name: "Follow us on Twitter",
+                    id: 2,
+                    title: "Join our Telegram Channel",
+                    description: "Join our official Telegram channel",
+                    icon: "fa-telegram",
+                    reward: 100,
+                    link: "https://t.me/trimint"
+                },
+                {
+                    id: 3,
+                    title: "Follow us on Twitter",
                     description: "Follow our official Twitter account",
-                    icon: "fab fa-twitter",
-                    link: "https://twitter.com/trimint",
-                    reward: 5,
-                    active: true,
-                    order: 2
+                    icon: "fa-twitter",
+                    reward: 100,
+                    link: "https://twitter.com/trimint"
                 },
                 {
-                    name: "Visit our Website",
-                    description: "Visit our official website for more information",
-                    icon: "fas fa-globe",
-                    link: "https://trimint.vercel.app",
-                    reward: 5,
-                    active: true,
-                    order: 3
-                },
-                {
-                    name: "Share on Social Media",
-                    description: "Share about Trimint on your social media",
-                    icon: "fas fa-share-alt",
-                    link: "#",
-                    reward: 15,
-                    active: true,
-                    order: 4
-                },
-                {
-                    name: "Watch a Video",
-                    description: "Watch our promotional video",
-                    icon: "fas fa-play-circle",
-                    link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                    reward: 8,
-                    active: true,
-                    order: 5
+                    id: 4,
+                    title: "Subscribe to our YouTube",
+                    description: "Subscribe to our YouTube channel",
+                    icon: "fa-youtube",
+                    reward: 200,
+                    link: "https://youtube.com/@trimint"
                 }
             ];
-
-            const batch = db.batch();
             
+            // Save default tasks to Firebase
             defaultTasks.forEach(task => {
-                const docRef = db.collection('tasks').doc();
-                batch.set(docRef, task);
+                database.ref('tasks/' + task.id).set(task);
             });
             
-            return batch.commit();
+            // Display tasks
+            displayTasks(defaultTasks);
         }
 
-        function loadTasksFromDatabase() {
-            db.collection('tasks')
-                .where('active', '==', true)
-                .orderBy('order')
-                .get()
-                .then(snapshot => {
-                    const tasksList = document.getElementById('tasks-list');
-                    tasksList.innerHTML = '';
-                    
-                    if (snapshot.empty) {
-                        tasksList.innerHTML = '<p>No tasks available at the moment.</p>';
-                        return;
-                    }
-                    
-                    snapshot.forEach(doc => {
-                        const task = { id: doc.id, ...doc.data() };
-                        displayTask(task);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error loading tasks:", error);
-                    showToast("Failed to load tasks");
-                });
-        }
-
-        function displayTask(task) {
-            const tasksList = document.getElementById('tasks-list');
-            const taskItem = document.createElement('div');
-            taskItem.className = 'task-item';
-            taskItem.id = `task-${task.id}`;
+        // Display tasks
+        function displayTasks(tasks) {
+            const tasksContainer = document.getElementById('tasksContainer');
+            tasksContainer.innerHTML = '';
             
-            // Check if user completed this task
-            db.collection('users').doc(user.id.toString()).collection('completedTasks').doc(task.id).get()
-                .then(taskDoc => {
-                    const isCompleted = taskDoc.exists && !taskDoc.data().processing;
-                    const isProcessing = taskDoc.exists && taskDoc.data().processing;
-                    
-                    let buttonText = 'OPEN';
-                    let buttonClass = 'task-button';
-                    
-                    if (isProcessing) {
-                        buttonText = 'PROCESSING';
-                        buttonClass = 'task-button processing';
-                    } else if (isCompleted) {
-                        buttonText = 'COMPLETED';
-                        buttonClass = 'task-button completed';
-                    }
-                    
-                    taskItem.innerHTML = `
-                        <div class="task-icon">
-                            <i class="${task.icon || 'fas fa-tasks'}"></i>
-                        </div>
-                        <div class="task-info">
-                            <div class="task-name">${task.name}</div>
-                            <div class="task-reward">Reward: ${task.reward} TRM</div>
-                        </div>
-                        <button class="${buttonClass}" onclick="openTask('${task.id}', '${task.link}', ${task.reward})">${buttonText}</button>
-                    `;
-                });
+            // Sort tasks: special task first, then by ID
+            tasks.sort((a, b) => {
+                if (a.isSpecial && !b.isSpecial) return -1;
+                if (!a.isSpecial && b.isSpecial) return 1;
+                return a.id - b.id;
+            });
             
-            tasksList.appendChild(taskItem);
+            tasks.forEach(task => {
+                const isCompleted = userData.tasksCompleted && userData.tasksCompleted.includes(task.id);
+                
+                const taskItem = document.createElement('div');
+                taskItem.className = 'task-item';
+                taskItem.innerHTML = `
+                    <div class="task-icon">
+                        <i class="fas ${task.icon}"></i>
+                    </div>
+                    <div class="task-info">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-reward">Reward: ${task.reward} TRM</div>
+                    </div>
+                    <button class="task-button ${isCompleted ? 'completed' : 'open'}" 
+                            onclick="openTask(${task.id}, '${task.link}', ${task.reward}, ${task.isSpecial || false})">
+                        ${isCompleted ? 'Completed' : 'Open'}
+                    </button>
+                `;
+                
+                tasksContainer.appendChild(taskItem);
+            });
         }
 
-        function openTask(taskId, link, reward) {
+        // Open task
+        function openTask(taskId, taskLink, taskReward, isSpecial) {
             // Check if task is already completed
-            db.collection('users').doc(user.id.toString()).collection('completedTasks').doc(taskId).get()
-                .then(doc => {
-                    if (doc.exists && !doc.data().processing) {
-                        // Task already completed, just open the link
-                        window.open(link, '_blank');
-                        return;
+            if (userData.tasksCompleted && userData.tasksCompleted.includes(taskId)) {
+                // Still open the link
+                if (isSpecial && taskId === 1) {
+                    // Show ads
+                    showAds();
+                } else {
+                    window.open(taskLink, '_blank');
+                }
+                return;
+            }
+            
+            // Open the link
+            if (isSpecial && taskId === 1) {
+                // Show ads
+                showAds();
+            } else {
+                window.open(taskLink, '_blank');
+            }
+            
+            // Change button to processing
+            const button = event.target;
+            button.textContent = 'Processing...';
+            button.className = 'task-button processing';
+            button.disabled = true;
+            
+            // Simulate task completion after 10 seconds
+            setTimeout(() => {
+                // Add reward to user balance
+                userData.balance += taskReward;
+                
+                // Mark task as completed
+                if (!userData.tasksCompleted) {
+                    userData.tasksCompleted = [];
+                }
+                userData.tasksCompleted.push(taskId);
+                
+                // Save user data
+                saveUserData();
+                updateUIWithUserData();
+                
+                // Update button
+                button.textContent = 'Completed';
+                button.className = 'task-button completed';
+                button.disabled = false;
+                
+                showToast(`Task completed! You earned ${taskReward} TRM.`);
+            }, 10000);
+        }
+
+        // Show ads
+        function showAds() {
+            // Check if Monetag SDK is loaded
+            if (typeof show_10290264 !== 'undefined') {
+                show_10290264();
+            } else {
+                showToast('Loading ads...');
+                // Retry after a delay
+                setTimeout(() => {
+                    if (typeof show_10290264 !== 'undefined') {
+                        show_10290264();
+                    } else {
+                        showToast('Ads could not be loaded. Please try again later.');
+                    }
+                }, 2000);
+            }
+        }
+
+        // Load blogs
+        function loadBlogs() {
+            database.ref('blogs').orderByChild('timestamp').limitToLast(20).once('value')
+                .then((snapshot) => {
+                    const blogs = [];
+                    
+                    snapshot.forEach((childSnapshot) => {
+                        blogs.push({
+                            id: childSnapshot.key,
+                            ...childSnapshot.val()
+                        });
+                    });
+                    
+                    // Sort by timestamp (newest first)
+                    blogs.sort((a, b) => b.timestamp - a.timestamp);
+                    
+                    // Display blogs
+                    displayBlogs(blogs);
+                })
+                .catch((error) => {
+                    console.error("Error loading blogs:", error);
+                    showToast("Error loading blogs");
+                });
+        }
+
+        // Display blogs
+        function displayBlogs(blogs) {
+            const blogsContainer = document.getElementById('blogsContainer');
+            
+            if (blogs.length === 0) {
+                blogsContainer.innerHTML = '<p style="text-align: center; opacity: 0.7;">No blog posts yet. Be the first to share your experience!</p>';
+                return;
+            }
+            
+            blogsContainer.innerHTML = '';
+            
+            blogs.forEach(blog => {
+                const blogDate = new Date(blog.timestamp).toLocaleDateString();
+                const isLiked = userData.likedBlogs && userData.likedBlogs.includes(blog.id);
+                const isAuthor = blog.authorId === userData.id;
+                
+                const blogPost = document.createElement('div');
+                blogPost.className = 'blog-post';
+                blogPost.innerHTML = `
+                    <div class="blog-header">
+                        <img src="${blog.authorPhoto || 'https://via.placeholder.com/40'}" alt="${blog.authorName}" class="blog-avatar">
+                        <div class="blog-info">
+                            <div class="blog-author">${blog.authorName}</div>
+                            <div class="blog-date">${blogDate}</div>
+                        </div>
+                        ${isAuthor ? `<button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" onclick="deleteBlog('${blog.id}')">Delete</button>` : ''}
+                    </div>
+                    <h3 style="margin-bottom: 10px;">${blog.title}</h3>
+                    <div class="blog-content">${blog.content}</div>
+                    <div class="blog-actions">
+                        <div class="blog-action ${isLiked ? 'liked' : ''}" onclick="toggleLikeBlog('${blog.id}')">
+                            <i class="fas fa-heart"></i>
+                            <span>${blog.likes || 0}</span>
+                        </div>
+                        <div class="blog-action" onclick="showComments('${blog.id}')">
+                            <i class="fas fa-comment"></i>
+                            <span>${blog.comments ? Object.keys(blog.comments).length : 0}</span>
+                        </div>
+                    </div>
+                `;
+                
+                blogsContainer.appendChild(blogPost);
+            });
+        }
+
+        // Show create blog modal
+        function showCreateBlogModal() {
+            document.getElementById('createBlogModal').classList.add('active');
+        }
+
+        // Close create blog modal
+        function closeCreateBlogModal() {
+            document.getElementById('createBlogModal').classList.remove('active');
+            document.getElementById('blogTitle').value = '';
+            document.getElementById('blogContent').value = '';
+        }
+
+        // Create blog post
+        function createBlogPost() {
+            const title = document.getElementById('blogTitle').value.trim();
+            const content = document.getElementById('blogContent').value.trim();
+            
+            if (!title || !content) {
+                showToast('Please enter both title and content');
+                return;
+            }
+            
+            // Create blog post
+            const blogId = database.ref('blogs').push().key;
+            const blogData = {
+                id: blogId,
+                title: title,
+                content: content,
+                authorId: userData.id,
+                authorName: userData.name,
+                authorPhoto: userData.photo,
+                timestamp: Date.now(),
+                likes: 0
+            };
+            
+            // Save to Firebase
+            database.ref('blogs/' + blogId).set(blogData)
+                .then(() => {
+                    showToast('Blog post published successfully!');
+                    closeCreateBlogModal();
+                    
+                    // Reload blogs
+                    loadBlogs();
+                })
+                .catch((error) => {
+                    console.error("Error creating blog post:", error);
+                    showToast("Error publishing blog post");
+                });
+        }
+
+        // Delete blog post
+        function deleteBlog(blogId) {
+            if (confirm('Are you sure you want to delete this blog post?')) {
+                database.ref('blogs/' + blogId).remove()
+                    .then(() => {
+                        showToast('Blog post deleted successfully!');
+                        
+                        // Reload blogs
+                        loadBlogs();
+                    })
+                    .catch((error) => {
+                        console.error("Error deleting blog post:", error);
+                        showToast("Error deleting blog post");
+                    });
+            }
+        }
+
+        // Toggle like on blog
+        function toggleLikeBlog(blogId) {
+            database.ref('blogs/' + blogId).once('value')
+                .then((snapshot) => {
+                    const blog = snapshot.val();
+                    if (!blog) return;
+                    
+                    // Initialize likedBlogs array if it doesn't exist
+                    if (!userData.likedBlogs) {
+                        userData.likedBlogs = [];
                     }
                     
-                    if (doc.exists && doc.data().processing) {
-                        // Task is processing, show remaining time
-                        const startTime = doc.data().startTime.toDate();
-                        const elapsed = Date.now() - startTime.getTime();
-                        const remaining = Math.max(0, 10000 - elapsed); // 10 seconds processing time
+                    // Check if user already liked this blog
+                    const index = userData.likedBlogs.indexOf(blogId);
+                    
+                    if (index === -1) {
+                        // User hasn't liked this blog yet
+                        userData.likedBlogs.push(blogId);
                         
-                        if (remaining > 0) {
-                            showToast(`Please wait ${Math.ceil(remaining / 1000)} seconds before completing this task.`);
-                            return;
-                        } else {
-                            // Processing time is over, complete the task
-                            completeTask(taskId, reward);
-                            return;
+                        // Increment likes count
+                        blog.likes = (blog.likes || 0) + 1;
+                        
+                        // Add user to liked users
+                        if (!blog.likedUsers) {
+                            blog.likedUsers = {};
+                        }
+                        blog.likedUsers[userData.id] = true;
+                    } else {
+                        // User has already liked this blog
+                        userData.likedBlogs.splice(index, 1);
+                        
+                        // Decrement likes count
+                        blog.likes = Math.max(0, (blog.likes || 0) - 1);
+                        
+                        // Remove user from liked users
+                        if (blog.likedUsers) {
+                            delete blog.likedUsers[userData.id];
                         }
                     }
                     
-                    // Start processing the task
-                    db.collection('users').doc(user.id.toString()).collection('completedTasks').doc(taskId).set({
-                        processing: true,
-                        startTime: firebase.firestore.FieldValue.serverTimestamp()
-                    });
+                    // Save changes
+                    saveUserData();
+                    database.ref('blogs/' + blogId).set(blog);
                     
-                    // Open the task link
-                    window.open(link, '_blank');
-                    
-                    // Update UI
-                    const taskItem = document.getElementById(`task-${taskId}`);
-                    const button = taskItem.querySelector('.task-button');
-                    button.textContent = 'PROCESSING';
-                    button.className = 'task-button processing';
-                    
-                    // Set a timer to complete the task after 10 seconds
-                    setTimeout(() => {
-                        completeTask(taskId, reward);
-                    }, 10000);
+                    // Reload blogs
+                    loadBlogs();
                 })
-                .catch(error => {
-                    console.error("Error opening task:", error);
-                    showToast("Failed to open task");
+                .catch((error) => {
+                    console.error("Error toggling like:", error);
+                    showToast("Error updating like");
                 });
         }
 
-        function completeTask(taskId, reward) {
-            // Update task status
-            db.collection('users').doc(user.id.toString()).collection('completedTasks').doc(taskId).update({
-                processing: false,
-                completed: true,
-                completedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            
-            // Update user balance
-            user.balance += reward;
-            db.collection('users').doc(user.id.toString()).update({
-                balance: user.balance
-            });
-            
-            // Add activity
-            addActivity('Task Completed', `Earned ${reward} TRM by completing a task`);
-            
-            updateUI();
-            
-            // Update UI
-            const taskItem = document.getElementById(`task-${taskId}`);
-            const button = taskItem.querySelector('.task-button');
-            button.textContent = 'COMPLETED';
-            button.className = 'task-button completed';
-            
-            showToast(`Task completed! You earned ${reward} TRM.`);
+        // Show comments (placeholder for now)
+        function showComments(blogId) {
+            showToast('Comments feature coming soon!');
         }
 
-        // Ads functionality
-        function initializeAds() {
-            // Initialize the monetag ads
-            // This is a placeholder for the actual ads initialization
-            console.log('Ads initialized');
-        }
-
-        function watchAds() {
-            // Show the ads
-            const adsContainer = document.getElementById('ads-container');
-            adsContainer.innerHTML = '<div id="libtl-ad"></div>';
-            
-            // Initialize the ad
-            // This is a placeholder for the actual ad display
-            showToast('Loading ads...');
-            
-            // Simulate watching ads for 5 seconds
-            setTimeout(() => {
-                // Update user balance
-                user.balance += 1;
-                db.collection('users').doc(user.id.toString()).update({
-                    balance: user.balance
-                });
-                
-                // Add activity
-                addActivity('Watched Ads', 'Earned 1 TRM by watching ads');
-                
-                updateUI();
-                showToast('You earned 1 TRM by watching ads!');
-                
-                // Clear the ad container
-                adsContainer.innerHTML = '';
-            }, 5000);
-        }
-
-        // Friends/Referral functionality
+        // Load referrals
         function loadReferrals() {
-            db.collection('users').doc(user.id.toString()).collection('referrals')
-                .orderBy('timestamp', 'desc')
-                .get()
-                .then(snapshot => {
-                    const referralList = document.getElementById('referral-list');
-                    referralList.innerHTML = '';
-                    
-                    if (snapshot.empty) {
-                        referralList.innerHTML = '<p>No referrals yet. Invite your friends to earn TRM!</p>';
-                        return;
-                    }
-                    
-                    snapshot.forEach(doc => {
-                        const referral = doc.data();
-                        const referralItem = document.createElement('li');
-                        referralItem.className = 'referral-item';
-                        
-                        const date = referral.timestamp.toDate();
-                        const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-                        
-                        referralItem.innerHTML = `
-                            <img src="${referral.photoUrl || 'https://picsum.photos/seed/user' + referral.id + '/40/40.jpg'}" alt="${referral.name}" class="referral-avatar">
-                            <div class="referral-info">
-                                <div class="referral-name">${referral.name}</div>
-                                <div class="referral-date">${formattedDate}</div>
-                            </div>
-                            <div class="referral-reward">+5000 TRM</div>
-                        `;
-                        
-                        referralList.appendChild(referralItem);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error loading referrals:", error);
-                    showToast("Failed to load referrals");
-                });
-        }
-
-        function copyReferralLink() {
-            const referralLink = `http://t.me/TrimintBot/open?start=${user.id}`;
+            if (!userData.referrals || userData.referrals.length === 0) {
+                document.getElementById('referralList').innerHTML = '<p style="text-align: center; opacity: 0.7;">No referrals yet. Invite your friends to earn TRM!</p>';
+                return;
+            }
             
-            // Copy to clipboard
-            navigator.clipboard.writeText(referralLink)
-                .then(() => {
-                    showToast('Referral link copied to clipboard!');
-                })
-                .catch(err => {
-                    console.error('Failed to copy: ', err);
-                    showToast('Failed to copy referral link');
-                });
+            const referralList = document.getElementById('referralList');
+            referralList.innerHTML = '';
+            
+            userData.referrals.forEach(referralId => {
+                database.ref('users/' + referralId).once('value')
+                    .then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const referral = snapshot.val();
+                            
+                            const referralItem = document.createElement('div');
+                            referralItem.className = 'referral-item';
+                            referralItem.innerHTML = `
+                                <img src="${referral.photo || 'https://via.placeholder.com/40'}" alt="${referral.name}" class="referral-avatar">
+                                <div class="referral-info">
+                                    <div class="referral-name">${referral.name}</div>
+                                    <div class="referral-date">Referred</div>
+                                </div>
+                                <div class="referral-reward">+5000 TRM</div>
+                            `;
+                            
+                            referralList.appendChild(referralItem);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error loading referral:", error);
+                    });
+            });
         }
 
-        // Add user activity
-        function addActivity(type, description) {
-            db.collection('users').doc(user.id.toString()).collection('activities').add({
-                type: type,
-                description: description,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
+        // Copy referral link
+        function copyReferralLink() {
+            const referralLink = document.getElementById('referralLink').textContent;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(referralLink)
+                    .then(() => {
+                        showToast('Referral link copied to clipboard!');
+                    })
+                    .catch((error) => {
+                        console.error("Error copying referral link:", error);
+                        showToast("Error copying referral link");
+                    });
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = referralLink;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                showToast('Referral link copied to clipboard!');
+            }
+        }
+
+        // Process referral
+        function processReferral(referrerId) {
+            if (!userData || userData.id === referrerId) return;
+            
+            // Check if user already has a referrer
+            if (userData.referrer) return;
+            
+            // Update user data
+            userData.referrer = referrerId;
+            saveUserData();
+            
+            // Update referrer data
+            database.ref('users/' + referrerId).once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const referrer = snapshot.val();
+                        
+                        // Add user to referrer's referrals
+                        if (!referrer.referrals) {
+                            referrer.referrals = [];
+                        }
+                        referrer.referrals.push(userData.id);
+                        
+                        // Add referral reward to referrer's balance
+                        referrer.balance += 5000;
+                        
+                        // Save referrer data
+                        database.ref('users/' + referrerId).set(referrer);
+                        
+                        // Show notification to referrer
+                        if (window.Telegram && window.Telegram.WebApp) {
+                            // Send notification to referrer
+                            fetch(`https://api.telegram.org/bot${telegramBotApiKey}/sendMessage`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    chat_id: referrerId,
+                                    text: `Congratulations! ${userData.name} joined using your referral link. You earned 5000 TRM!`
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('Referral notification sent:', data);
+                            })
+                            .catch((error) => {
+                                console.error("Error sending referral notification:", error);
+                            });
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error processing referral:", error);
+                });
         }
 
         // Show toast notification
@@ -2359,39 +2066,37 @@
             }, 3000);
         }
 
-        // Check for referral on app load
-        function checkReferral() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const referralId = urlParams.get('start');
-            
-            if (referralId && referralId !== user.id.toString()) {
-                // Add referral to referrer
-                db.collection('users').doc(referralId).collection('referrals').doc(user.id.toString()).set({
-                    id: user.id,
-                    name: `${user.firstName} ${user.lastName}`,
-                    photoUrl: user.photoUrl,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                // Update referrer's balance and friend count
-                db.collection('users').doc(referralId).update({
-                    balance: firebase.firestore.FieldValue.increment(5000),
-                    invitedFriends: firebase.firestore.FieldValue.increment(1)
-                });
-                
-                // Add activity to referrer
-                db.collection('users').doc(referralId).collection('activities').add({
-                    type: 'New Referral',
-                    description: `Invited ${user.firstName} ${user.lastName} and earned 5000 TRM`,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                showToast('Welcome! Your referrer has been rewarded.');
+        // Add CSS animation for floating text
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes floatUp {
+                0% {
+                    opacity: 1;
+                    transform: translateX(-50%) translateY(0);
+                }
+                100% {
+                    opacity: 0;
+                    transform: translateX(-50%) translateY(-50px);
+                }
             }
-        }
+        `;
+        document.head.appendChild(style);
 
-        // Initialize referral check
-        checkReferral();
+        // Initialize app
+        window.onload = function() {
+            initTelegramApp();
+            
+            // Check for referral in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const referrerId = urlParams.get('start');
+            
+            if (referrerId) {
+                // Process referral after user data is loaded
+                setTimeout(() => {
+                    processReferral(referrerId);
+                }, 2000);
+            }
+        };
     </script>
 </body>
 </html>
