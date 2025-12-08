@@ -20,7 +20,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -40,14 +40,14 @@
         
         .coin-container {
             position: relative;
-            width: 200px;
-            height: 200px;
+            width: 250px;
+            height: 250px;
             margin: 0 auto;
         }
         
         .coin-circle {
-            width: 200px;
-            height: 200px;
+            width: 250px;
+            height: 250px;
             border-radius: 50%;
             background: linear-gradient(45deg, #FFD700, #FFA500, #FF8C00);
             display: flex;
@@ -103,9 +103,9 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(30, 60, 114, 0.95);
             backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 1000;
         }
         
@@ -115,23 +115,23 @@
         }
         
         .quiz-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             transition: all 0.3s ease;
         }
         
         .quiz-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 15px 30px rgba(30, 60, 114, 0.4);
         }
         
         .task-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #3a6186 0%, #89253e 100%);
             transition: all 0.3s ease;
         }
         
         .task-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(245, 87, 108, 0.4);
+            box-shadow: 0 10px 25px rgba(137, 37, 62, 0.4);
         }
         
         .blog-post {
@@ -184,17 +184,129 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0, 136, 204, 0.3);
         }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top: 8px solid #FFD700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .level-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-block;
+        }
+        
+        .bronze {
+            background: linear-gradient(45deg, #CD7F32, #B87333);
+            color: white;
+        }
+        
+        .gold {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+        }
+        
+        .diamond {
+            background: linear-gradient(45deg, #B9F2FF, #50C8E6);
+            color: #333;
+        }
+        
+        .quiz-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .quiz-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .quiz-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .attempts-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .congratulations {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .congratulations-content {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
     </style>
-<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+    <script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-spinner"></div>
+        <h2 class="text-white text-2xl font-bold mb-4">Loading Trimint...</h2>
+        <div id="referralInfo" class="text-white text-center hidden">
+            <p class="mb-2">You were referred by:</p>
+            <p id="referralName" class="text-yellow-400 text-xl font-bold"></p>
+        </div>
+    </div>
+
     <div id="app" class="min-h-screen">
         <!-- Header -->
         <header class="glass-effect p-4 sticky top-0 z-50">
             <div class="container mx-auto flex justify-between items-center">
                 <h1 class="text-2xl font-bold gradient-text">Trimint</h1>
-                <div id="userBalance" class="text-white font-semibold">
-                    <i class="fas fa-coins text-yellow-400"></i>
+                <div id="userBalance" class="text-white font-semibold flex items-center">
+                    <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" class="w-6 h-6 mr-2">
                     <span id="balanceAmount">0</span> TRM
                 </div>
             </div>
@@ -213,7 +325,9 @@
                         </div>
                         <div class="text-right">
                             <p class="text-white/70 text-sm">Level</p>
-                            <p id="userLevel" class="text-white font-bold">1</p>
+                            <p id="userLevel" class="text-white font-bold">
+                                <span id="userLevelBadge" class="level-badge bronze">Bronze</span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -222,7 +336,7 @@
                 <div class="glass-effect rounded-2xl p-6 mb-6">
                     <div class="coin-container mb-4">
                         <div id="coinCircle" class="coin-circle" onclick="toggleFarming()">
-                            <img src="https://raw.githubusercontent.com/s42144/Trimint/main.png" alt="TRM Coin" class="w-32 h-32 rounded-full">
+                            <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM Coin" class="w-40 h-40 rounded-full">
                         </div>
                     </div>
                     <div class="text-center">
@@ -234,25 +348,6 @@
                             <p id="farmingTime" class="text-2xl font-bold">12:00:00</p>
                             <p class="text-sm mt-2">Rate: 0.001 TRM/sec</p>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Quick Stats -->
-                <div class="grid grid-cols-3 gap-4 mb-6">
-                    <div class="glass-effect rounded-xl p-4 text-center">
-                        <i class="fas fa-trophy text-yellow-400 text-2xl mb-2"></i>
-                        <p class="text-white/70 text-sm">Rank</p>
-                        <p id="userRank" class="text-white font-bold">#1</p>
-                    </div>
-                    <div class="glass-effect rounded-xl p-4 text-center">
-                        <i class="fas fa-users text-blue-400 text-2xl mb-2"></i>
-                        <p class="text-white/70 text-sm">Friends</p>
-                        <p id="referralCount" class="text-white font-bold">0</p>
-                    </div>
-                    <div class="glass-effect rounded-xl p-4 text-center">
-                        <i class="fas fa-check-circle text-green-400 text-2xl mb-2"></i>
-                        <p class="text-white/70 text-sm">Completed</p>
-                        <p id="completedTasks" class="text-white font-bold">0</p>
                     </div>
                 </div>
             </div>
@@ -274,7 +369,9 @@
                         <div class="grid grid-cols-2 gap-4 mb-6">
                             <div class="text-center">
                                 <p class="text-white/70 text-sm">Level</p>
-                                <p id="profileLevel" class="text-white text-2xl font-bold">1</p>
+                                <p id="profileLevel" class="text-white text-2xl font-bold">
+                                    <span id="profileLevelBadge" class="level-badge bronze">Bronze</span>
+                                </p>
                             </div>
                             <div class="text-center">
                                 <p class="text-white/70 text-sm">Balance</p>
@@ -290,7 +387,20 @@
                             </div>
                         </div>
                         
-                        <button id="tonConnectBtn" class="ton-connect-btn w-full mb-4" onclick="toggleTonConnect()">
+                        <div id="tonWalletInfo" class="bg-white/10 rounded-xl p-4 mb-4 hidden">
+                            <p class="text-white/70 text-sm mb-2">Connected TON Wallet</p>
+                            <div class="flex items-center justify-between">
+                                <p id="tonWalletAddress" class="text-white font-mono text-sm truncate flex-1 mr-2"></p>
+                                <button onclick="copyWalletAddress()" class="bg-white/20 text-white px-3 py-1 rounded-full text-sm">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <button onclick="disconnectWallet()" class="bg-red-500 text-white px-4 py-2 rounded-full mt-3 w-full">
+                                <i class="fas fa-unlink mr-2"></i>Disconnect Wallet
+                            </button>
+                        </div>
+                        
+                        <button id="tonConnectBtn" class="ton-connect-btn w-full" onclick="toggleTonConnect()">
                             <i class="fas fa-wallet mr-2"></i>Connect TON Wallet
                         </button>
                     </div>
@@ -309,7 +419,7 @@
                                     <img src="https://picsum.photos/seed/top1/40/40" alt="User" class="w-10 h-10 rounded-full">
                                     <div>
                                         <p class="text-white font-semibold">You</p>
-                                        <p class="text-white/70 text-sm">Level 1</p>
+                                        <p class="text-white/70 text-sm">Level <span id="profileLevelSmall">Bronze</span></p>
                                     </div>
                                 </div>
                                 <div class="text-right">
@@ -328,28 +438,34 @@
                 <h2 class="text-white text-2xl font-bold mb-6">
                     <i class="fas fa-question-circle text-blue-400 mr-2"></i>TON Network Quiz
                 </h2>
-                <div id="quizContainer" class="space-y-4">
-                    <!-- Quiz questions will be loaded here -->
+                <div id="quizContainer" class="quiz-container">
+                    <!-- Quiz items will be loaded here -->
+                </div>
+                <div id="quizQuestionContainer" class="glass-effect rounded-2xl p-6 mt-6 hidden">
+                    <h3 id="quizQuestionTitle" class="text-white text-xl font-bold mb-4"></h3>
+                    <div id="quizQuestionOptions" class="space-y-3">
+                        <!-- Quiz options will be loaded here -->
+                    </div>
+                    <div id="quizAttempts" class="mt-4 text-white/70 text-sm">
+                        Attempts remaining: <span id="attemptsCount">3</span>
+                    </div>
                 </div>
                 <div id="quizResult" class="glass-effect rounded-2xl p-6 mt-6 hidden">
                     <h3 class="text-white text-xl font-bold mb-4">Quiz Completed!</h3>
                     <p class="text-green-400 text-lg">You earned <span id="quizReward">1500</span> TRM tokens!</p>
-                    <button onclick="nextQuiz()" class="bg-blue-500 text-white px-6 py-2 rounded-full mt-4">Next Quiz</button>
+                    <button onclick="backToQuizzes()" class="bg-blue-500 text-white px-6 py-2 rounded-full mt-4">Back to Quizzes</button>
                 </div>
             </div>
         </section>
 
-        <!-- Blog Section -->
-        <section id="blogSection" class="content-area section-hidden">
+        <!-- Leaderboard Section -->
+        <section id="leaderboardSection" class="content-area section-hidden">
             <div class="container mx-auto p-4">
                 <h2 class="text-white text-2xl font-bold mb-6">
-                    <i class="fas fa-blog text-purple-400 mr-2"></i>Community Blog
+                    <i class="fas fa-trophy text-yellow-400 mr-2"></i>Top 25 Leaders
                 </h2>
-                <button onclick="createBlogPost()" class="bg-purple-500 text-white px-6 py-3 rounded-full mb-6 w-full font-semibold">
-                    <i class="fas fa-plus mr-2"></i>Create New Post
-                </button>
-                <div id="blogContainer" class="space-y-4">
-                    <!-- Blog posts will be loaded here -->
+                <div id="leaderboardList" class="space-y-3">
+                    <!-- Leaderboard will be loaded here -->
                 </div>
             </div>
         </section>
@@ -400,7 +516,7 @@
                         <p class="text-white/70 mb-4">Invite friends and earn 5000 TRM each!</p>
                         <div class="bg-white/10 rounded-xl p-4 mb-4">
                             <p class="text-white text-sm mb-2">Your referral link:</p>
-                            <p id="referralLink" class="text-yellow-400 font-mono text-sm break-all">http://t.me/TrimintBot/open?ref=12345</p>
+                            <p id="referralLink" class="text-yellow-400 font-mono text-sm break-all">https://t.me/TrimintBot/mine?ref=12345</p>
                         </div>
                         <button onclick="copyReferralLink()" class="bg-blue-500 text-white px-6 py-3 rounded-full font-semibold w-full">
                             <i class="fas fa-copy mr-2"></i>Copy Link
@@ -428,45 +544,45 @@
             </div>
         </section>
 
-        <!-- Leaderboard Section -->
-        <section id="leaderboardSection" class="content-area section-hidden">
-            <div class="container mx-auto p-4">
-                <h2 class="text-white text-2xl font-bold mb-6">
-                    <i class="fas fa-trophy text-yellow-400 mr-2"></i>Top 25 Leaders
-                </h2>
-                <div id="leaderboardList" class="space-y-3">
-                    <!-- Leaderboard will be loaded here -->
-                </div>
-            </div>
-        </section>
-
         <!-- Bottom Navigation -->
         <nav class="bottom-nav">
             <div class="container mx-auto">
                 <div class="grid grid-cols-5 gap-1">
                     <button onclick="showHome()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
-                        <i class="fas fa-home text-xl mb-1" style="color: #667eea;"></i>
+                        <i class="fas fa-home text-xl mb-1" style="color: #FFD700;"></i>
                         <p class="text-xs font-medium">Home</p>
                     </button>
                     <button onclick="showQuiz()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
-                        <i class="fas fa-question-circle text-xl mb-1" style="color: #764ba2;"></i>
+                        <i class="fas fa-question-circle text-xl mb-1" style="color: #4A90E2;"></i>
                         <p class="text-xs font-medium">Quiz</p>
                     </button>
-                    <button onclick="showBlog()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
-                        <i class="fas fa-blog text-xl mb-1" style="color: #f093fb;"></i>
-                        <p class="text-xs font-medium">Blog</p>
+                    <button onclick="showLeaderboard()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
+                        <i class="fas fa-trophy text-xl mb-1" style="color: #FFD700;"></i>
+                        <p class="text-xs font-medium">Leaderboard</p>
                     </button>
                     <button onclick="showTasks()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
-                        <i class="fas fa-tasks text-xl mb-1" style="color: #f5576c;"></i>
+                        <i class="fas fa-tasks text-xl mb-1" style="color: #4CAF50;"></i>
                         <p class="text-xs font-medium">Tasks</p>
                     </button>
                     <button onclick="showFriends()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
-                        <i class="fas fa-user-friends text-xl mb-1" style="color: #4facfe;"></i>
+                        <i class="fas fa-user-friends text-xl mb-1" style="color: #2196F3;"></i>
                         <p class="text-xs font-medium">Friends</p>
                     </button>
                 </div>
             </div>
         </nav>
+    </div>
+
+    <!-- Congratulations Modal -->
+    <div id="congratulationsModal" class="congratulations hidden">
+        <div class="congratulations-content">
+            <i class="fas fa-trophy text-yellow-400 text-6xl mb-4"></i>
+            <h2 class="text-white text-3xl font-bold mb-4">Congratulations!</h2>
+            <p class="text-white text-lg mb-6">You've completed the quiz and earned <span id="congratsReward" class="text-yellow-400 font-bold">1500</span> TRM!</p>
+            <button onclick="closeCongratulations()" class="bg-blue-500 text-white px-6 py-3 rounded-full font-semibold">
+                Continue
+            </button>
+        </div>
     </div>
 
     <script>
@@ -495,21 +611,161 @@
         let userData = {
             userId: null,
             balance: 0,
-            level: 1,
+            level: 'Bronze',
             quizCompleted: 0,
             friendsInvited: 0,
             completedTasks: 0,
             referrals: [],
             farming: false,
             farmingEndTime: null,
-            tonWallet: null
+            tonWallet: null,
+            quizAttempts: {}
         };
+
+        // Quiz Data
+        const quizData = [
+            {
+                id: 1,
+                title: "TON Basics",
+                questions: [
+                    {
+                        question: "What is TON?",
+                        options: ["The Open Network", "Telegram Only Network", "Token Operating Network", "Trust On Network"],
+                        correct: 0,
+                        reward: 1500
+                    },
+                    {
+                        question: "Who created TON?",
+                        options: ["Vitalik Buterin", "Pavel Durov", "Satoshi Nakamoto", "Charles Hoskinson"],
+                        correct: 1,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is the native token of TON?",
+                        options: ["ETH", "TON", "BTC", "TRM"],
+                        correct: 1,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's consensus mechanism?",
+                        options: ["Proof of Work", "Proof of Stake", "Delegated Proof of Stake", "Proof of Authority"],
+                        correct: 2,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is Telegram's role in TON?",
+                        options: ["Full control", "No involvement", "Initial creator, now independent", "Mining operator"],
+                        correct: 2,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's block time?",
+                        options: ["5 seconds", "10 seconds", "30 seconds", "1 minute"],
+                        correct: 0,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's transaction fee model?",
+                        options: ["Fixed fee", "Dynamic fee", "No fee", "Gas-based fee"],
+                        correct: 1,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's smart contract language?",
+                        options: ["Solidity", "Rust", "FunC", "Go"],
+                        correct: 2,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's sharding approach?",
+                        options: ["No sharding", "Dynamic sharding", "Static sharding", "Hybrid sharding"],
+                        correct: 1,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's maximum supply?",
+                        options: ["1 billion", "5 billion", "10 billion", "Unlimited"],
+                        correct: 1,
+                        reward: 1500
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "TON Advanced",
+                questions: [
+                    {
+                        question: "What is TON's virtual machine called?",
+                        options: ["TON VM", "TVM", "TON EVM", "TON WASM"],
+                        correct: 1,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's storage fee model?",
+                        options: ["Fixed fee", "Per-byte fee", "No fee", "Subscription-based"],
+                        correct: 1,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's cross-chain bridge called?",
+                        options: ["TON Bridge", "TON Link", "TON Connect", "TON Bridge"],
+                        correct: 0,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's NFT standard?",
+                        options: ["TON NFT", "TIP-62", "TON-721", "TON-1155"],
+                        correct: 1,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's DeFi ecosystem called?",
+                        options: ["TON DeFi", "TON Finance", "TON Swap", "TON DeFi"],
+                        correct: 0,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's DEX called?",
+                        options: ["TON Swap", "TON DEX", "TON Exchange", "TON Swap"],
+                        correct: 0,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's stablecoin called?",
+                        options: ["TON USD", "TON Stable", "TON USDT", "TON USD"],
+                        correct: 0,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's oracle solution?",
+                        options: ["TON Oracle", "TON Link", "TON Feed", "TON Oracle"],
+                        correct: 0,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's governance model?",
+                        options: ["TON DAO", "TON Governance", "TON Vote", "TON DAO"],
+                        correct: 0,
+                        reward: 1500
+                    },
+                    {
+                        question: "What is TON's privacy solution?",
+                        options: ["TON Privacy", "TON Mix", "TON Secret", "TON Privacy"],
+                        correct: 0,
+                        reward: 1500
+                    }
+                ]
+            }
+        ];
+
+        let currentQuizId = null;
+        let currentQuestionIndex = 0;
+        let currentAttempts = 3;
 
         // Initialize App
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
             loadTasks();
-            loadBlogPosts();
             loadLeaderboard();
         });
 
@@ -527,7 +783,7 @@
                     document.getElementById('profilePhoto').src = telegramUser.photo_url || `https://picsum.photos/seed/${telegramUser.id}/120/120`;
                     
                     // Generate referral link
-                    document.getElementById('referralLink').textContent = `http://t.me/TrimintBot/open?ref=${telegramUser.id}`;
+                    document.getElementById('referralLink').textContent = `https://t.me/TrimintBot/mine?ref=${telegramUser.id}`;
                     
                     // Load user data from Firebase
                     loadUserData();
@@ -546,15 +802,26 @@
             tonConnectUI.onStatusChange(wallet => {
                 if (wallet) {
                     isWalletConnected = true;
-                    document.getElementById('tonConnectBtn').innerHTML = '<i class="fas fa-wallet mr-2"></i>Disconnect Wallet';
+                    document.getElementById('tonConnectBtn').innerHTML = '<i class="fas fa-wallet mr-2"></i>Connected';
+                    document.getElementById('tonWalletInfo').classList.remove('hidden');
+                    document.getElementById('tonWalletAddress').textContent = wallet.account.address.substring(0, 6) + '...' + wallet.account.address.substring(wallet.account.address.length - 4);
                     userData.tonWallet = wallet.account.address;
                     updateUserData();
                 } else {
                     isWalletConnected = false;
                     document.getElementById('tonConnectBtn').innerHTML = '<i class="fas fa-wallet mr-2"></i>Connect TON Wallet';
+                    document.getElementById('tonWalletInfo').classList.add('hidden');
                     userData.tonWallet = null;
                 }
             });
+
+            // Check for referral in URL
+            checkReferral();
+
+            // Hide loading screen after a short delay
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+            }, 2000);
         }
 
         function loadUserData() {
@@ -599,13 +866,38 @@
 
         function updateUI() {
             document.getElementById('balanceAmount').textContent = userData.balance.toLocaleString();
-            document.getElementById('userLevel').textContent = userData.level;
-            document.getElementById('profileLevel').textContent = userData.level;
+            
+            // Update level based on balance
+            let level = 'Bronze';
+            let levelClass = 'bronze';
+            
+            if (userData.balance >= 50000) {
+                level = 'Diamond';
+                levelClass = 'diamond';
+            } else if (userData.balance >= 10000) {
+                level = 'Gold';
+                levelClass = 'gold';
+            }
+            
+            userData.level = level;
+            
+            // Update level badges
+            const userLevelBadge = document.getElementById('userLevelBadge');
+            const profileLevelBadge = document.getElementById('profileLevelBadge');
+            const profileLevelSmall = document.getElementById('profileLevelSmall');
+            
+            userLevelBadge.textContent = level;
+            userLevelBadge.className = `level-badge ${levelClass}`;
+            
+            profileLevelBadge.textContent = level;
+            profileLevelBadge.className = `level-badge ${levelClass}`;
+            
+            profileLevelSmall.textContent = level;
+            
             document.getElementById('profileBalance').textContent = userData.balance.toLocaleString() + ' TRM';
             document.getElementById('quizCompleted').textContent = userData.quizCompleted;
             document.getElementById('friendsInvited').textContent = userData.friendsInvited;
             document.getElementById('completedTasks').textContent = userData.completedTasks;
-            document.getElementById('referralCount').textContent = userData.friendsInvited;
             document.getElementById('totalReferrals').textContent = userData.friendsInvited;
             document.getElementById('referralEarnings').textContent = (userData.friendsInvited * 5000).toLocaleString() + ' TRM';
             
@@ -711,9 +1003,24 @@
         // TON Connect Functions
         function toggleTonConnect() {
             if (isWalletConnected) {
-                tonConnectUI.disconnect();
+                // Wallet is already connected, do nothing
+                return;
             } else {
                 tonConnectUI.connectWallet();
+            }
+        }
+
+        function copyWalletAddress() {
+            if (userData.tonWallet) {
+                navigator.clipboard.writeText(userData.tonWallet).then(() => {
+                    alert('Wallet address copied to clipboard!');
+                });
+            }
+        }
+
+        function disconnectWallet() {
+            if (tonConnectUI) {
+                tonConnectUI.disconnect();
             }
         }
 
@@ -731,12 +1038,13 @@
         function showQuiz() {
             hideAllSections();
             document.getElementById('quizSection').classList.remove('section-hidden');
-            loadQuiz();
+            loadQuizzes();
         }
 
-        function showBlog() {
+        function showLeaderboard() {
             hideAllSections();
-            document.getElementById('blogSection').classList.remove('section-hidden');
+            document.getElementById('leaderboardSection').classList.remove('section-hidden');
+            loadLeaderboard();
         }
 
         function showTasks() {
@@ -749,11 +1057,6 @@
             document.getElementById('friendsSection').classList.remove('section-hidden');
         }
 
-        function showLeaderboard() {
-            hideAllSections();
-            document.getElementById('leaderboardSection').classList.remove('section-hidden');
-        }
-
         function hideAllSections() {
             document.querySelectorAll('section').forEach(section => {
                 section.classList.add('section-hidden');
@@ -761,211 +1064,171 @@
         }
 
         // Quiz Functions
-        const quizQuestions = [
-            {
-                question: "What is TON?",
-                options: ["The Open Network", "Telegram Only Network", "Token Operating Network", "Trust On Network"],
-                correct: 0,
-                reward: 1500
-            },
-            {
-                question: "Who created TON?",
-                options: ["Vitalik Buterin", "Pavel Durov", "Satoshi Nakamoto", "Charles Hoskinson"],
-                correct: 1,
-                reward: 1500
-            },
-            {
-                question: "What is the native token of TON?",
-                options: ["ETH", "TON", "BTC", "TRM"],
-                correct: 1,
-                reward: 1500
-            },
-            {
-                question: "What is TON's consensus mechanism?",
-                options: ["Proof of Work", "Proof of Stake", "Delegated Proof of Stake", "Proof of Authority"],
-                correct: 2,
-                reward: 1500
-            },
-            {
-                question: "What is Telegram's role in TON?",
-                options: ["Full control", "No involvement", "Initial creator, now independent", "Mining operator"],
-                correct: 2,
-                reward: 1500
-            }
-        ];
-
-        let currentQuizIndex = 0;
-
-        function loadQuiz() {
+        function loadQuizzes() {
             const container = document.getElementById('quizContainer');
             container.innerHTML = '';
             
-            const quiz = quizQuestions[currentQuizIndex];
-            const quizCard = document.createElement('div');
-            quizCard.className = 'quiz-card rounded-2xl p-6 text-white';
-            quizCard.innerHTML = `
-                <h3 class="text-xl font-bold mb-4">${quiz.question}</h3>
-                <div class="space-y-3">
-                    ${quiz.options.map((option, index) => `
-                        <button onclick="answerQuiz(${index})" class="w-full bg-white/20 p-4 rounded-xl text-left hover:bg-white/30 transition-all">
-                            ${option}
-                        </button>
-                    `).join('')}
-                </div>
-            `;
-            container.appendChild(quizCard);
-        }
-
-        function answerQuiz(answerIndex) {
-            const quiz = quizQuestions[currentQuizIndex];
-            if (answerIndex === quiz.correct) {
-                userData.balance += quiz.reward;
-                userData.quizCompleted++;
-                updateUserData();
+            quizData.forEach(quiz => {
+                const quizCard = document.createElement('div');
+                quizCard.className = 'quiz-item';
                 
-                document.getElementById('quizContainer').classList.add('hidden');
-                document.getElementById('quizResult').classList.remove('hidden');
-                document.getElementById('quizReward').textContent = quiz.reward;
-            } else {
-                alert('Wrong answer! Try again.');
-                loadQuiz();
-            }
-        }
-
-        function nextQuiz() {
-            currentQuizIndex = (currentQuizIndex + 1) % quizQuestions.length;
-            document.getElementById('quizContainer').classList.remove('hidden');
-            document.getElementById('quizResult').classList.add('hidden');
-            loadQuiz();
-        }
-
-        // Blog Functions
-        function loadBlogPosts() {
-            // Sample blog posts - in real app, load from Firebase
-            const samplePosts = [
-                {
-                    id: 1,
-                    author: "John Doe",
-                    content: "TON is the future of blockchain! Amazing technology and great community.",
-                    likes: 15,
-                    comments: 3,
-                    timestamp: new Date().toISOString()
-                },
-                {
-                    id: 2,
-                    author: "Jane Smith",
-                    content: "Just completed my first quiz and earned 1500 TRM! This app is awesome!",
-                    likes: 23,
-                    comments: 7,
-                    timestamp: new Date().toISOString()
-                }
-            ];
-            
-            displayBlogPosts(samplePosts);
-        }
-
-        function displayBlogPosts(posts) {
-            const container = document.getElementById('blogContainer');
-            container.innerHTML = '';
-            
-            posts.forEach(post => {
-                const postCard = document.createElement('div');
-                postCard.className = 'blog-post rounded-2xl p-6';
-                postCard.innerHTML = `
-                    <div class="flex items-start space-x-3 mb-4">
-                        <img src="https://picsum.photos/seed/${post.author}/40/40" alt="${post.author}" class="w-10 h-10 rounded-full">
-                        <div class="flex-1">
-                            <h4 class="font-semibold text-gray-800">${post.author}</h4>
-                            <p class="text-gray-500 text-sm">${new Date(post.timestamp).toLocaleDateString()}</p>
-                        </div>
-                        ${post.author === telegramUser?.first_name ? `
-                            <button onclick="deleteBlogPost(${post.id})" class="text-red-500 hover:text-red-700">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        ` : ''}
+                // Check if user has attempts left for this quiz
+                const attemptsLeft = userData.quizAttempts[quiz.id] ? 3 - userData.quizAttempts[quiz.id] : 3;
+                
+                quizCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-white font-bold text-lg">${quiz.title}</h3>
+                        <span class="attempts-badge">${attemptsLeft} attempts left</span>
                     </div>
-                    <p class="text-gray-700 mb-4">${post.content}</p>
-                    <div class="flex items-center space-x-4">
-                        <button onclick="likeBlogPost(${post.id})" class="flex items-center space-x-1 text-gray-600 hover:text-red-500">
-                            <i class="fas fa-heart"></i>
-                            <span>${post.likes}</span>
-                        </button>
-                        <button onclick="commentOnPost(${post.id})" class="flex items-center space-x-1 text-gray-600 hover:text-blue-500">
-                            <i class="fas fa-comment"></i>
-                            <span>${post.comments}</span>
-                        </button>
-                    </div>
+                    <p class="text-white/70 mb-4">${quiz.questions.length} questions</p>
+                    <button onclick="startQuiz(${quiz.id})" class="bg-blue-500 text-white px-4 py-2 rounded-full w-full">
+                        Start Quiz
+                    </button>
                 `;
-                container.appendChild(postCard);
+                container.appendChild(quizCard);
             });
         }
 
-        function createBlogPost() {
-            const content = prompt('Write your blog post:');
-            if (content && telegramUser) {
-                const newPost = {
-                    id: Date.now(),
-                    author: telegramUser.first_name,
-                    content: content,
-                    likes: 0,
-                    comments: 0,
-                    timestamp: new Date().toISOString()
-                };
+        function startQuiz(quizId) {
+            currentQuizId = quizId;
+            currentQuestionIndex = 0;
+            
+            // Check if user has attempts left
+            const attemptsUsed = userData.quizAttempts[quizId] || 0;
+            currentAttempts = 3 - attemptsUsed;
+            
+            if (currentAttempts <= 0) {
+                alert('You have no attempts left for this quiz!');
+                return;
+            }
+            
+            // Hide quiz list and show question container
+            document.getElementById('quizContainer').classList.add('hidden');
+            document.getElementById('quizQuestionContainer').classList.remove('hidden');
+            document.getElementById('attemptsCount').textContent = currentAttempts;
+            
+            // Load first question
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const quiz = quizData.find(q => q.id === currentQuizId);
+            if (!quiz || currentQuestionIndex >= quiz.questions.length) {
+                // Quiz completed
+                completeQuiz();
+                return;
+            }
+            
+            const question = quiz.questions[currentQuestionIndex];
+            
+            document.getElementById('quizQuestionTitle').textContent = `Question ${currentQuestionIndex + 1}: ${question.question}`;
+            
+            const optionsContainer = document.getElementById('quizQuestionOptions');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionButton = document.createElement('button');
+                optionButton.className = 'w-full bg-white/20 p-4 rounded-xl text-left hover:bg-white/30 transition-all text-white';
+                optionButton.textContent = option;
+                optionButton.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(optionButton);
+            });
+        }
+
+        function checkAnswer(answerIndex) {
+            const quiz = quizData.find(q => q.id === currentQuizId);
+            if (!quiz) return;
+            
+            const question = quiz.questions[currentQuestionIndex];
+            
+            if (answerIndex === question.correct) {
+                // Correct answer
+                userData.balance += question.reward;
+                userData.quizCompleted++;
+                updateUserData();
                 
-                // In real app, save to Firebase
-                console.log('New blog post:', newPost);
-                alert('Blog post created successfully!');
-                loadBlogPosts();
+                // Move to next question
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                // Wrong answer
+                currentAttempts--;
+                document.getElementById('attemptsCount').textContent = currentAttempts;
+                
+                if (currentAttempts <= 0) {
+                    // No attempts left, deduct penalty
+                    userData.balance -= 500;
+                    updateUserData();
+                    
+                    alert('You have no attempts left! 500 TRM has been deducted from your balance.');
+                    backToQuizzes();
+                } else {
+                    alert(`Wrong answer! You have ${currentAttempts} attempts left.`);
+                }
             }
         }
 
-        function deleteBlogPost(postId) {
-            if (confirm('Are you sure you want to delete this post?')) {
-                // In real app, delete from Firebase
-                console.log('Delete post:', postId);
-                alert('Post deleted successfully!');
-                loadBlogPosts();
-            }
+        function completeQuiz() {
+            // Show congratulations modal
+            document.getElementById('congratsReward').textContent = '1500';
+            document.getElementById('congratulationsModal').classList.remove('hidden');
+            
+            // Update quiz attempts
+            userData.quizAttempts[currentQuizId] = (userData.quizAttempts[currentQuizId] || 0) + 1;
+            updateUserData();
         }
 
-        function likeBlogPost(postId) {
-            // In real app, update likes in Firebase
-            console.log('Like post:', postId);
-            loadBlogPosts();
+        function backToQuizzes() {
+            document.getElementById('quizContainer').classList.remove('hidden');
+            document.getElementById('quizQuestionContainer').classList.add('hidden');
+            document.getElementById('quizResult').classList.add('hidden');
+            loadQuizzes();
         }
 
-        function commentOnPost(postId) {
-            const comment = prompt('Write your comment:');
-            if (comment) {
-                // In real app, add comment to Firebase
-                console.log('Comment on post:', postId, comment);
-                alert('Comment added successfully!');
-            }
+        function closeCongratulations() {
+            document.getElementById('congratulationsModal').classList.add('hidden');
+            backToQuizzes();
         }
 
         // Tasks Functions
         function loadTasks() {
-            // Sample tasks - in real app, load from Firebase
-            const sampleTasks = [
-                {
-                    id: 1,
-                    name: "Join TON Community",
-                    description: "Join our official TON community group",
-                    reward: 1000,
-                    link: "https://t.me/toncoin",
-                    completed: false
-                },
-                {
-                    id: 2,
-                    name: "Follow us on X",
-                    description: "Follow our official X account",
-                    reward: 500,
-                    link: "https://twitter.com/ton_blockchain",
-                    completed: false
-                }
-            ];
-            
-            displayTasks(sampleTasks);
+            // Load tasks from Firebase
+            db.collection('tasks').orderBy('order').get()
+                .then(querySnapshot => {
+                    const tasks = [];
+                    querySnapshot.forEach(doc => {
+                        tasks.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    displayTasks(tasks);
+                })
+                .catch(error => {
+                    console.error('Error loading tasks:', error);
+                    // If Firebase fails, load sample tasks
+                    const sampleTasks = [
+                        {
+                            id: 'sample1',
+                            name: "Join TON Community",
+                            description: "Join our official TON community group",
+                            reward: 1000,
+                            link: "https://t.me/toncoin",
+                            photo: "https://picsum.photos/seed/task1/60/60",
+                            completed: false
+                        },
+                        {
+                            id: 'sample2',
+                            name: "Follow us on X",
+                            description: "Follow our official X account",
+                            reward: 500,
+                            link: "https://twitter.com/ton_blockchain",
+                            photo: "https://picsum.photos/seed/task2/60/60",
+                            completed: false
+                        }
+                    ];
+                    displayTasks(sampleTasks);
+                });
         }
 
         function displayTasks(tasks) {
@@ -975,12 +1238,14 @@
             tasks.forEach(task => {
                 const taskCard = document.createElement('div');
                 taskCard.className = 'task-card rounded-2xl p-4';
+                
+                // Check if user has completed this task
+                const isCompleted = userData.completedTasksList && userData.completedTasksList.includes(task.id);
+                
                 taskCard.innerHTML = `
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <div class="bg-white/20 p-3 rounded-xl">
-                                <i class="fas fa-external-link-alt text-white text-xl"></i>
-                            </div>
+                            <img src="${task.photo || 'https://picsum.photos/seed/task/60/60'}" alt="${task.name}" class="w-12 h-12 rounded-xl">
                             <div>
                                 <h3 class="text-white font-bold">${task.name}</h3>
                                 <p class="text-white/70 text-sm">${task.description}</p>
@@ -988,8 +1253,8 @@
                         </div>
                         <div class="text-right">
                             <p class="text-yellow-400 font-bold">${task.reward} TRM</p>
-                            <button id="taskBtn${task.id}" onclick="completeTask(${task.id}, '${task.link}', ${task.reward})" class="bg-white/20 text-white px-4 py-2 rounded-full text-sm mt-1">
-                                ${task.completed ? 'Completed' : 'Open'}
+                            <button id="taskBtn${task.id}" onclick="completeTask('${task.id}', '${task.link}', ${task.reward})" class="bg-white/20 text-white px-4 py-2 rounded-full text-sm mt-1">
+                                ${isCompleted ? 'Completed' : 'Open'}
                             </button>
                         </div>
                     </div>
@@ -999,18 +1264,26 @@
         }
 
         function completeTask(taskId, link, reward) {
-            const button = document.getElementById(`taskBtn${taskId}`);
-            if (button.textContent === 'Completed') {
+            // Check if task is already completed
+            if (userData.completedTasksList && userData.completedTasksList.includes(taskId)) {
                 window.open(link, '_blank');
                 return;
             }
             
             window.open(link, '_blank');
+            const button = document.getElementById(`taskBtn${taskId}`);
             button.textContent = 'Processing...';
             
             setTimeout(() => {
                 userData.balance += reward;
                 userData.completedTasks++;
+                
+                // Add task to completed tasks list
+                if (!userData.completedTasksList) {
+                    userData.completedTasksList = [];
+                }
+                userData.completedTasksList.push(taskId);
+                
                 updateUserData();
                 button.textContent = 'Completed';
             }, 10000);
@@ -1041,7 +1314,43 @@
         function loadReferrals() {
             // In real app, load from Firebase
             const referralsList = document.getElementById('referralsList');
-            referralsList.innerHTML = '<p class="text-white/70 text-center">No referrals yet</p>';
+            
+            if (userData.referrals && userData.referrals.length > 0) {
+                referralsList.innerHTML = '';
+                
+                userData.referrals.forEach(referralId => {
+                    // Get referral data from Firebase
+                    db.collection('users').doc(referralId.toString()).get()
+                        .then(doc => {
+                            if (doc.exists) {
+                                const referralData = doc.data();
+                                const referralCard = document.createElement('div');
+                                referralCard.className = 'leaderboard-item rounded-xl p-3';
+                                referralCard.innerHTML = `
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3">
+                                            <img src="${referralData.photoUrl || `https://picsum.photos/seed/${referralId}/40/40`}" alt="${referralData.name}" class="w-10 h-10 rounded-full">
+                                            <div>
+                                                <p class="text-white font-semibold">${referralData.name}</p>
+                                                <p class="text-white/70 text-sm">ID: ${referralId}</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-yellow-400 font-bold">${referralData.balance.toLocaleString()} TRM</p>
+                                            <p class="text-white/70 text-sm">Earned: ${(referralData.balance * 0.1).toLocaleString()} TRM</p>
+                                        </div>
+                                    </div>
+                                `;
+                                referralsList.appendChild(referralCard);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error loading referral data:', error);
+                        });
+                });
+            } else {
+                referralsList.innerHTML = '<p class="text-white/70 text-center">No referrals yet</p>';
+            }
         }
 
         function processReferral(referrerId) {
@@ -1049,38 +1358,92 @@
                 // Check if this user was already referred
                 // In real app, check Firebase
                 userData.balance += 5000;
+                
+                // Add user to referrer's referrals list
+                db.collection('users').doc(referrerId.toString()).get()
+                    .then(doc => {
+                        if (doc.exists) {
+                            const referrerData = doc.data();
+                            if (!referrerData.referrals) {
+                                referrerData.referrals = [];
+                            }
+                            referrerData.referrals.push(userData.userId);
+                            referrerData.friendsInvited = referrerData.referrals.length;
+                            
+                            db.collection('users').doc(referrerId.toString()).update(referrerData);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating referrer data:', error);
+                    });
+                
                 updateUserData();
-                alert('Welcome bonus! You received 5000 TRM from referral!');
+                
+                // Show referral info on loading screen
+                db.collection('users').doc(referrerId.toString()).get()
+                    .then(doc => {
+                        if (doc.exists) {
+                            const referrerData = doc.data();
+                            document.getElementById('referralInfo').classList.remove('hidden');
+                            document.getElementById('referralName').textContent = referrerData.name || 'Unknown';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading referrer name:', error);
+                    });
             }
         }
 
         // Leaderboard Functions
         function loadLeaderboard() {
-            // Sample leaderboard data - in real app, load from Firebase
-            const sampleLeaderboard = [
-                { rank: 1, name: "Alice", balance: 50000, level: 10, photo: "alice" },
-                { rank: 2, name: "Bob", balance: 45000, level: 9, photo: "bob" },
-                { rank: 3, name: "Charlie", balance: 40000, level: 8, photo: "charlie" }
-            ];
-            
-            displayLeaderboard(sampleLeaderboard);
+            // Load top 25 users from Firebase
+            db.collection('users').orderBy('balance', 'desc').limit(25).get()
+                .then(querySnapshot => {
+                    const leaderboard = [];
+                    querySnapshot.forEach(doc => {
+                        leaderboard.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    displayLeaderboard(leaderboard);
+                })
+                .catch(error => {
+                    console.error('Error loading leaderboard:', error);
+                    // If Firebase fails, load sample data
+                    const sampleLeaderboard = [
+                        { rank: 1, name: "Alice", balance: 50000, level: "Diamond", photoUrl: "https://picsum.photos/seed/alice/40/40" },
+                        { rank: 2, name: "Bob", balance: 45000, level: "Gold", photoUrl: "https://picsum.photos/seed/bob/40/40" },
+                        { rank: 3, name: "Charlie", balance: 40000, level: "Gold", photoUrl: "https://picsum.photos/seed/charlie/40/40" }
+                    ];
+                    displayLeaderboard(sampleLeaderboard);
+                });
         }
 
         function displayLeaderboard(leaderboard) {
             const container = document.getElementById('leaderboardList');
             container.innerHTML = '';
             
-            leaderboard.forEach(user => {
+            leaderboard.forEach((user, index) => {
                 const userCard = document.createElement('div');
                 userCard.className = 'leaderboard-item rounded-xl p-3';
+                
+                // Determine level class
+                let levelClass = 'bronze';
+                if (user.level === 'Gold') {
+                    levelClass = 'gold';
+                } else if (user.level === 'Diamond') {
+                    levelClass = 'diamond';
+                }
+                
                 userCard.innerHTML = `
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <span class="text-yellow-400 font-bold">#${user.rank}</span>
-                            <img src="https://picsum.photos/seed/${user.photo}/40/40" alt="${user.name}" class="w-10 h-10 rounded-full">
+                            <span class="text-yellow-400 font-bold">#${index + 1}</span>
+                            <img src="${user.photoUrl || `https://picsum.photos/seed/${user.id}/40/40`}" alt="${user.name}" class="w-10 h-10 rounded-full">
                             <div>
                                 <p class="text-white font-semibold">${user.name}</p>
-                                <p class="text-white/70 text-sm">Level ${user.level}</p>
+                                <p class="text-white/70 text-sm">Level <span class="level-badge ${levelClass}">${user.level}</span></p>
                             </div>
                         </div>
                         <div class="text-right">
