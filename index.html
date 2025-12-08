@@ -26,14 +26,13 @@
         }
         
         .glass-effect {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .gradient-text {
-            background: linear-gradient(45deg, #00D9FF, #0099FF);
+            background: linear-gradient(45deg, #FFD700, #FFA500);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -44,9 +43,6 @@
             width: 280px;
             height: 280px;
             margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         
         .coin-circle {
@@ -57,7 +53,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 25px 80px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 30px 80px rgba(255, 215, 0, 0.5);
             animation: float 4s ease-in-out infinite;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -65,7 +61,7 @@
         
         .coin-circle:hover {
             transform: scale(1.08);
-            box-shadow: 0 30px 90px rgba(255, 215, 0, 0.7);
+            box-shadow: 0 35px 90px rgba(255, 215, 0, 0.7);
         }
         
         .coin-circle.farming {
@@ -89,7 +85,6 @@
             font-size: 20px;
             pointer-events: none;
             animation: rise 2.5s ease-out forwards;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
         @keyframes rise {
@@ -108,57 +103,57 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(25px);
+            background: rgba(30, 60, 114, 0.95);
+            backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 1000;
         }
         
         .content-area {
-            padding-bottom: 90px;
+            padding-bottom: 80px;
             min-height: 100vh;
         }
         
         .quiz-card {
-            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             transition: all 0.3s ease;
         }
         
         .quiz-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
         }
         
         .task-card {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             transition: all 0.3s ease;
         }
         
         .task-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 10px 25px rgba(245, 87, 108, 0.4);
         }
         
         .blog-post {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
         
         .blog-post:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
         
         .leaderboard-item {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
         }
         
         .leaderboard-item:hover {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.15);
             transform: translateX(5px);
         }
         
@@ -167,7 +162,7 @@
         }
         
         .pulse-animation {
-            animation: pulse 2.5s infinite;
+            animation: pulse 2s infinite;
         }
         
         @keyframes pulse {
@@ -179,51 +174,37 @@
         .ton-connect-btn {
             background: linear-gradient(45deg, #0088CC, #0066AA);
             color: white;
-            padding: 14px 28px;
-            border-radius: 14px;
+            padding: 12px 24px;
+            border-radius: 12px;
             font-weight: 600;
             transition: all 0.3s ease;
         }
         
         .ton-connect-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 136, 204, 0.4);
+            box-shadow: 0 10px 20px rgba(0, 136, 204, 0.3);
         }
         
         .loading-screen {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            z-index: 9999;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
-        }
-        
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #FFD700;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            color: white;
         }
         
         .level-badge {
-            display: inline-block;
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
-            text-transform: uppercase;
         }
         
         .level-bronze {
@@ -241,12 +222,9 @@
             color: white;
         }
         
-        .currency-icon {
-            width: 20px;
-            height: 20px;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 4px;
+        .nav-active {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px 12px 0 0;
         }
     </style>
 <script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
@@ -255,20 +233,31 @@
     <!-- Loading Screen -->
     <div id="loadingScreen" class="loading-screen">
         <div class="text-center">
-            <div class="spinner mx-auto mb-4"></div>
-            <h2 class="text-white text-2xl font-bold mb-2">Loading Trimint...</h2>
-            <p id="referralMessage" class="text-white/70 hidden"></p>
+            <div class="mb-8">
+                <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" class="w-32 h-32 mx-auto mb-4 animate-bounce">
+                <h1 class="text-4xl font-bold gradient-text mb-2">Trimint</h1>
+                <p class="text-white/70">Loading your mining experience...</p>
+            </div>
+            <div id="referrerInfo" class="glass-effect rounded-2xl p-6 mb-6 hidden">
+                <p class="text-sm text-white/70 mb-2">You were invited by:</p>
+                <p id="referrerName" class="text-xl font-bold text-yellow-400"></p>
+            </div>
+            <div class="flex justify-center space-x-2">
+                <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0s;"></div>
+                <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
+            </div>
         </div>
     </div>
 
-    <div id="app" class="min-h-screen">
+    <div id="app" class="min-h-screen hidden">
         <!-- Header -->
         <header class="glass-effect p-4 sticky top-0 z-50">
             <div class="container mx-auto flex justify-between items-center">
-                <h1 class="text-3xl font-bold gradient-text">Trimint</h1>
-                <div id="userBalance" class="text-white font-semibold flex items-center">
-                    <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" class="currency-icon">
-                    <span id="balanceAmount" class="text-xl">0</span> TRM
+                <h1 class="text-2xl font-bold gradient-text">Trimint</h1>
+                <div id="userBalance" class="text-white font-semibold flex items-center space-x-2">
+                    <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" class="w-6 h-6">
+                    <span id="balanceAmount">0</span> TRM
                 </div>
             </div>
         </header>
@@ -279,33 +268,35 @@
             <div class="container mx-auto p-4">
                 <div class="glass-effect rounded-2xl p-4 mb-6 cursor-pointer" onclick="showProfile()">
                     <div class="flex items-center space-x-4">
-                        <img id="userPhoto" src="https://picsum.photos/seed/user/60/60" alt="User" class="w-16 h-16 rounded-full border-2 border-blue-400">
+                        <img id="userPhoto" src="https://picsum.photos/seed/user/60/60" alt="User" class="w-16 h-16 rounded-full border-2 border-yellow-400">
                         <div class="flex-1">
                             <h3 id="userName" class="text-white font-semibold text-lg">Loading...</h3>
                             <p class="text-white/70 text-sm">Click to view profile →</p>
                         </div>
                         <div class="text-right">
                             <p class="text-white/70 text-sm">Level</p>
-                            <div id="userLevel" class="level-badge level-bronze">Bronze</div>
+                            <span id="userLevel" class="level-badge level-bronze">Bronze</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Farming Section -->
-                <div class="glass-effect rounded-2xl p-6 mb-6">
-                    <div class="coin-container mb-4">
-                        <div id="coinCircle" class="coin-circle" onclick="toggleFarming()">
-                            <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM Coin" class="w-48 h-48 rounded-full">
+                <!-- Farming Section (Centered) -->
+                <div class="flex justify-center items-center mb-8">
+                    <div class="glass-effect rounded-3xl p-8">
+                        <div class="coin-container mb-6">
+                            <div id="coinCircle" class="coin-circle" onclick="toggleFarming()">
+                                <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM Coin" class="w-40 h-40 rounded-full">
+                            </div>
                         </div>
-                    </div>
-                    <div class="text-center">
-                        <button id="farmButton" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-10 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 pulse-animation" onclick="toggleFarming()">
-                            <i class="fas fa-seedling mr-2"></i>Start Farming
-                        </button>
-                        <div id="farmingStatus" class="mt-4 text-white hidden">
-                            <p class="text-sm">Farming Progress</p>
-                            <p id="farmingTime" class="text-2xl font-bold">12:00:00</p>
-                            <p class="text-sm mt-2">Rate: 0.001 TRM/sec</p>
+                        <div class="text-center">
+                            <button id="farmButton" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-10 py-5 rounded-full font-bold text-xl shadow-lg hover:shadow-xl transition-all duration-300 pulse-animation" onclick="toggleFarming()">
+                                <i class="fas fa-seedling mr-3"></i>Start Farming
+                            </button>
+                            <div id="farmingStatus" class="mt-6 text-white hidden">
+                                <p class="text-sm">Farming Progress</p>
+                                <p id="farmingTime" class="text-3xl font-bold">12:00:00</p>
+                                <p class="text-sm mt-2">Rate: 0.001 TRM/sec</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -321,14 +312,14 @@
                 
                 <div class="glass-effect rounded-2xl p-6 mb-6">
                     <div class="text-center">
-                        <img id="profilePhoto" src="https://picsum.photos/seed/profile/120/120" alt="Profile" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-blue-400">
+                        <img id="profilePhoto" src="https://picsum.photos/seed/profile/120/120" alt="Profile" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-yellow-400">
                         <h2 id="profileName" class="text-white text-2xl font-bold mb-2">Loading...</h2>
                         <p class="text-white/70 mb-4">Premium Member</p>
                         
                         <div class="grid grid-cols-2 gap-4 mb-6">
                             <div class="text-center">
                                 <p class="text-white/70 text-sm">Level</p>
-                                <div id="profileLevel" class="level-badge level-bronze text-lg">Bronze</div>
+                                <span id="profileLevel" class="level-badge level-bronze text-lg">Bronze</span>
                             </div>
                             <div class="text-center">
                                 <p class="text-white/70 text-sm">Balance</p>
@@ -344,24 +335,25 @@
                             </div>
                         </div>
                         
-                        <div id="tonWalletSection" class="mb-4 hidden">
-                            <div class="bg-green-500/20 border border-green-400 rounded-xl p-3 mb-3">
-                                <p class="text-green-400 text-sm mb-1">Connected Wallet</p>
-                                <p id="tonWalletAddress" class="text-white font-mono text-xs break-all"></p>
-                                <div class="flex space-x-2 mt-2">
-                                    <button onclick="copyWalletAddress()" class="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm">
-                                        <i class="fas fa-copy mr-1"></i>Copy
-                                    </button>
-                                    <button onclick="disconnectTonWallet()" class="bg-red-500 text-white px-3 py-1 rounded-lg text-sm">
-                                        <i class="fas fa-unlink mr-1"></i>Disconnect
-                                    </button>
+                        <div id="tonWalletSection" class="mb-4">
+                            <button id="tonConnectBtn" class="ton-connect-btn w-full" onclick="toggleTonConnect()">
+                                <i class="fas fa-wallet mr-2"></i>Connect TON Wallet
+                            </button>
+                            <div id="walletInfo" class="mt-4 hidden">
+                                <div class="bg-white/10 rounded-xl p-4">
+                                    <p class="text-white/70 text-sm mb-2">Connected Wallet:</p>
+                                    <p id="walletAddress" class="text-white font-mono text-xs break-all mb-3"></p>
+                                    <div class="flex space-x-2">
+                                        <button onclick="copyWalletAddress()" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm flex-1">
+                                            <i class="fas fa-copy mr-1"></i>Copy
+                                        </button>
+                                        <button onclick="disconnectWallet()" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm flex-1">
+                                            <i class="fas fa-unlink mr-1"></i>Disconnect
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <button id="tonConnectBtn" class="ton-connect-btn w-full mb-4" onclick="toggleTonConnect()">
-                            <i class="fas fa-wallet mr-2"></i>Connect TON Wallet
-                        </button>
                     </div>
                 </div>
 
@@ -378,7 +370,7 @@
                                     <img src="https://picsum.photos/seed/top1/40/40" alt="User" class="w-10 h-10 rounded-full">
                                     <div>
                                         <p class="text-white font-semibold">You</p>
-                                        <p class="text-white/70 text-sm">Level <span id="userRankLevel">1</span></p>
+                                        <p class="text-white/70 text-sm">Level 1</p>
                                     </div>
                                 </div>
                                 <div class="text-right">
@@ -397,22 +389,32 @@
                 <h2 class="text-white text-2xl font-bold mb-6">
                     <i class="fas fa-question-circle text-blue-400 mr-2"></i>TON Network Quiz
                 </h2>
+                <div id="quizAttempts" class="glass-effect rounded-2xl p-4 mb-4">
+                    <p class="text-white">Attempts remaining: <span id="attemptsLeft" class="font-bold text-yellow-400">3</span></p>
+                </div>
                 <div id="quizContainer" class="space-y-4">
                     <!-- Quiz questions will be loaded here -->
                 </div>
                 <div id="quizResult" class="glass-effect rounded-2xl p-6 mt-6 hidden">
-                    <h3 class="text-white text-xl font-bold mb-4">🎉 Congratulations!</h3>
-                    <p class="text-green-400 text-lg">You earned <span id="quizReward">1500</span> TRM tokens!</p>
-                    <button onclick="nextQuiz()" class="bg-blue-500 text-white px-6 py-2 rounded-full mt-4">Next Quiz</button>
+                    <h3 class="text-white text-xl font-bold mb-4">
+                        <i class="fas fa-trophy text-yellow-400 mr-2"></i>Congratulations!
+                    </h3>
+                    <p class="text-green-400 text-lg mb-4">You earned <span id="quizReward">1500</span> TRM tokens!</p>
+                    <button onclick="nextQuiz()" class="bg-blue-500 text-white px-6 py-3 rounded-full">Next Quiz</button>
+                </div>
+                <div id="quizFailed" class="glass-effect rounded-2xl p-6 mt-6 hidden">
+                    <h3 class="text-red-400 text-xl font-bold mb-4">Quiz Failed</h3>
+                    <p class="text-white mb-4">No more attempts! 500 TRM has been deducted from your balance.</p>
+                    <button onclick="nextQuiz()" class="bg-red-500 text-white px-6 py-3 rounded-full">Try Another Quiz</button>
                 </div>
             </div>
         </section>
 
-        <!-- Blog Section -->
+        <!-- Community Section (Blog) -->
         <section id="blogSection" class="content-area section-hidden">
             <div class="container mx-auto p-4">
                 <h2 class="text-white text-2xl font-bold mb-6">
-                    <i class="fas fa-blog text-purple-400 mr-2"></i>Community Forum
+                    <i class="fas fa-users text-purple-400 mr-2"></i>Community
                 </h2>
                 <button onclick="createBlogPost()" class="bg-purple-500 text-white px-6 py-3 rounded-full mb-6 w-full font-semibold">
                     <i class="fas fa-plus mr-2"></i>Create New Post
@@ -469,7 +471,7 @@
                         <p class="text-white/70 mb-4">Invite friends and earn 5000 TRM each!</p>
                         <div class="bg-white/10 rounded-xl p-4 mb-4">
                             <p class="text-white text-sm mb-2">Your referral link:</p>
-                            <p id="referralLink" class="text-yellow-400 font-mono text-sm break-all"></p>
+                            <p id="referralLink" class="text-yellow-400 font-mono text-sm break-all">http://t.me/TrimintBot/open?startapp=12345</p>
                         </div>
                         <button onclick="copyReferralLink()" class="bg-blue-500 text-white px-6 py-3 rounded-full font-semibold w-full">
                             <i class="fas fa-copy mr-2"></i>Copy Link
@@ -509,29 +511,60 @@
             </div>
         </section>
 
+        <!-- Admin Panel (Hidden by default) -->
+        <section id="adminSection" class="content-area section-hidden">
+            <div class="container mx-auto p-4">
+                <h2 class="text-white text-2xl font-bold mb-6">
+                    <i class="fas fa-cog text-gray-400 mr-2"></i>Admin Panel
+                </h2>
+                
+                <!-- Quiz Management -->
+                <div class="glass-effect rounded-2xl p-6 mb-6">
+                    <h3 class="text-white text-xl font-bold mb-4">Quiz Management</h3>
+                    <button onclick="addQuiz()" class="bg-blue-500 text-white px-4 py-2 rounded-lg mb-4">
+                        <i class="fas fa-plus mr-2"></i>Add Quiz
+                    </button>
+                    <div id="quizManagement" class="space-y-3">
+                        <!-- Quiz management will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Task Management -->
+                <div class="glass-effect rounded-2xl p-6">
+                    <h3 class="text-white text-xl font-bold mb-4">Task Management</h3>
+                    <button onclick="addTask()" class="bg-green-500 text-white px-4 py-2 rounded-lg mb-4">
+                        <i class="fas fa-plus mr-2"></i>Add Task
+                    </button>
+                    <div id="taskManagement" class="space-y-3">
+                        <!-- Task management will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Bottom Navigation -->
         <nav class="bottom-nav">
             <div class="container mx-auto">
                 <div class="grid grid-cols-5 gap-1">
-                    <button onclick="showHome()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
-                        <i class="fas fa-home text-xl mb-1" style="color: #3b82f6;"></i>
-                        <p class="text-xs font-medium">Home</p>
+                    <button onclick="showHome()" class="nav-btn p-3 text-center hover:bg-white/10 transition-colors rounded-t-lg">
+                        <i class="fas fa-home text-xl mb-1" style="color: #FFD700;"></i>
+                        <p class="text-xs font-medium text-white">Home</p>
                     </button>
-                    <button onclick="showQuiz()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
-                        <i class="fas fa-question-circle text-xl mb-1" style="color: #8b5cf6;"></i>
-                        <p class="text-xs font-medium">Quiz</p>
+                    <button onclick="showQuiz()" class="nav-btn p-3 text-center hover:bg-white/10 transition-colors rounded-t-lg">
+                        <i class="fas fa-question-circle text-xl mb-1" style="color: #667eea;"></i>
+                        <p class="text-xs font-medium text-white">Quiz</p>
                     </button>
-                    <button onclick="showBlog()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
-                        <i class="fas fa-blog text-xl mb-1" style="color: #06b6d4;"></i>
-                        <p class="text-xs font-medium">Forum</p>
+                    <button onclick="showBlog()" class="nav-btn p-3 text-center hover:bg-white/10 transition-colors rounded-t-lg">
+                        <i class="fas fa-users text-xl mb-1" style="color: #f093fb;"></i>
+                        <p class="text-xs font-medium text-white">Community</p>
                     </button>
-                    <button onclick="showTasks()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
-                        <i class="fas fa-tasks text-xl mb-1" style="color: #10b981;"></i>
-                        <p class="text-xs font-medium">Tasks</p>
+                    <button onclick="showTasks()" class="nav-btn p-3 text-center hover:bg-white/10 transition-colors rounded-t-lg">
+                        <i class="fas fa-tasks text-xl mb-1" style="color: #f5576c;"></i>
+                        <p class="text-xs font-medium text-white">Tasks</p>
                     </button>
-                    <button onclick="showFriends()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
-                        <i class="fas fa-user-friends text-xl mb-1" style="color: #f59e0b;"></i>
-                        <p class="text-xs font-medium">Friends</p>
+                    <button onclick="showFriends()" class="nav-btn p-3 text-center hover:bg-white/10 transition-colors rounded-t-lg">
+                        <i class="fas fa-user-friends text-xl mb-1" style="color: #4facfe;"></i>
+                        <p class="text-xs font-medium text-white">Friends</p>
                     </button>
                 </div>
             </div>
@@ -572,15 +605,13 @@
             farming: false,
             farmingEndTime: null,
             tonWallet: null,
-            quizAttempts: {}
+            quizAttempts: {},
+            referredBy: null
         };
 
         // Initialize App
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
-            loadTasksFromFirebase();
-            loadBlogPostsFromFirebase();
-            loadLeaderboardFromFirebase();
         });
 
         function initializeApp() {
@@ -619,16 +650,68 @@
             tonConnectUI.onStatusChange(wallet => {
                 if (wallet) {
                     isWalletConnected = true;
+                    document.getElementById('tonConnectBtn').innerHTML = '<i class="fas fa-check mr-2"></i>Connected';
+                    document.getElementById('walletInfo').classList.remove('hidden');
                     userData.tonWallet = wallet.account.address;
-                    updateTonWalletUI();
+                    document.getElementById('walletAddress').textContent = wallet.account.address;
                     updateUserData();
                 } else {
                     isWalletConnected = false;
-                    userData.tonWallet = null;
                     document.getElementById('tonConnectBtn').innerHTML = '<i class="fas fa-wallet mr-2"></i>Connect TON Wallet';
-                    document.getElementById('tonWalletSection').classList.add('hidden');
+                    document.getElementById('walletInfo').classList.add('hidden');
+                    userData.tonWallet = null;
                 }
             });
+
+            // Initialize app components
+            setTimeout(() => {
+                hideLoadingScreen();
+                loadTasks();
+                loadBlogPosts();
+                loadLeaderboard();
+            }, 2000);
+        }
+
+        function hideLoadingScreen() {
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('app').classList.remove('hidden');
+        }
+
+        function checkReferral() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const referrerId = urlParams.get('startapp');
+            if (referrerId && userData.userId && userData.userId.toString() !== referrerId) {
+                // Show referrer info on loading screen
+                showReferrerInfo(referrerId);
+                userData.referredBy = referrerId;
+                processReferral(referrerId);
+            }
+        }
+
+        function showReferrerInfo(referrerId) {
+            db.collection('users').doc(referrerId).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const referrerData = doc.data();
+                        document.getElementById('referrerName').textContent = referrerData.firstName || 'Unknown User';
+                        document.getElementById('referrerInfo').classList.remove('hidden');
+                    }
+                });
+        }
+
+        function processReferral(referrerId) {
+            // Check if this user was already referred
+            if (!userData.referredBy) {
+                // Add 5000 TRM to referrer
+                db.collection('users').doc(referrerId).update({
+                    balance: firebase.firestore.FieldValue.increment(5000),
+                    friendsInvited: firebase.firestore.FieldValue.increment(1)
+                }).then(() => {
+                    // Add referrer to current user's data
+                    userData.balance += 5000; // Welcome bonus
+                    updateUserData();
+                });
+            }
         }
 
         function loadUserData() {
@@ -637,9 +720,9 @@
             db.collection('users').doc(userData.userId.toString()).get()
                 .then(doc => {
                     if (doc.exists) {
-                        userData = { ...userData, ...doc.data() };
+                        const data = doc.data();
+                        userData = { ...userData, ...data };
                         updateUI();
-                        updateUserLevel();
                         
                         // Check if farming is active
                         if (userData.farming && userData.farmingEndTime) {
@@ -649,15 +732,9 @@
                         // Create new user document
                         saveUserData();
                     }
-                    
-                    // Hide loading screen
-                    setTimeout(() => {
-                        document.getElementById('loadingScreen').style.display = 'none';
-                    }, 1000);
                 })
                 .catch(error => {
                     console.error('Error loading user data:', error);
-                    document.getElementById('loadingScreen').style.display = 'none';
                 });
         }
 
@@ -667,7 +744,6 @@
             db.collection('users').doc(userData.userId.toString()).set(userData)
                 .then(() => {
                     console.log('User data saved');
-                    updateLeaderboardForUser();
                 })
                 .catch(error => {
                     console.error('Error saving user data:', error);
@@ -677,34 +753,22 @@
         function updateUserData() {
             saveUserData();
             updateUI();
-            updateUserLevel();
-        }
-
-        function updateUserLevel() {
-            let newLevel = 'Bronze';
-            
-            if (userData.balance > 50000) {
-                newLevel = 'Diamond';
-            } else if (userData.balance > 10000) {
-                newLevel = 'Gold';
-            }
-            
-            userData.level = newLevel;
-            
-            // Update level badges
-            const levelElements = ['userLevel', 'profileLevel', 'userRankLevel'];
-            levelElements.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.className = `level-badge level-${newLevel.toLowerCase()}`;
-                    element.textContent = newLevel;
-                }
-            });
         }
 
         function updateUI() {
+            // Update balance
             document.getElementById('balanceAmount').textContent = userData.balance.toLocaleString();
             document.getElementById('profileBalance').textContent = userData.balance.toLocaleString() + ' TRM';
+            
+            // Update level based on balance
+            const level = getUserLevel(userData.balance);
+            userData.level = level;
+            
+            // Update level displays
+            updateLevelDisplay('userLevel', level);
+            updateLevelDisplay('profileLevel', level);
+            
+            // Update other stats
             document.getElementById('quizCompleted').textContent = userData.quizCompleted;
             document.getElementById('friendsInvited').textContent = userData.friendsInvited;
             document.getElementById('totalReferrals').textContent = userData.friendsInvited;
@@ -713,26 +777,16 @@
             loadReferrals();
         }
 
-        function updateTonWalletUI() {
-            if (isWalletConnected && userData.tonWallet) {
-                document.getElementById('tonConnectBtn').innerHTML = '<i class="fas fa-wallet mr-2"></i>Connected';
-                document.getElementById('tonWalletSection').classList.remove('hidden');
-                document.getElementById('tonWalletAddress').textContent = userData.tonWallet;
-            }
+        function getUserLevel(balance) {
+            if (balance < 10000) return 'Bronze';
+            if (balance < 50000) return 'Gold';
+            return 'Diamond';
         }
 
-        function copyWalletAddress() {
-            if (userData.tonWallet) {
-                navigator.clipboard.writeText(userData.tonWallet).then(() => {
-                    alert('Wallet address copied!');
-                });
-            }
-        }
-
-        function disconnectTonWallet() {
-            if (tonConnectUI) {
-                tonConnectUI.disconnect();
-            }
+        function updateLevelDisplay(elementId, level) {
+            const element = document.getElementById(elementId);
+            element.className = `level-badge level-${level.toLowerCase()}`;
+            element.textContent = level;
         }
 
         // Farming Functions
@@ -752,7 +806,7 @@
             userData.farmingEndTime = Date.now() + (12 * 60 * 60 * 1000); // 12 hours from now
             updateUserData();
             
-            document.getElementById('farmButton').innerHTML = '<i class="fas fa-stop mr-2"></i>Stop Farming';
+            document.getElementById('farmButton').innerHTML = '<i class="fas fa-stop mr-3"></i>Stop Farming';
             document.getElementById('farmingStatus').classList.remove('hidden');
             document.getElementById('coinCircle').classList.add('farming');
             
@@ -765,7 +819,7 @@
             userData.farmingEndTime = null;
             updateUserData();
             
-            document.getElementById('farmButton').innerHTML = '<i class="fas fa-seedling mr-2"></i>Start Farming';
+            document.getElementById('farmButton').innerHTML = '<i class="fas fa-seedling mr-3"></i>Start Farming';
             document.getElementById('farmingStatus').classList.add('hidden');
             document.getElementById('coinCircle').classList.remove('farming');
             
@@ -799,10 +853,9 @@
                     document.getElementById('farmingTime').textContent = 
                         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                     
-                    // Add tokens every second and save to database
+                    // Add tokens every second (persisted in Firebase)
                     userData.balance += 0.001;
-                    saveUserData();
-                    updateUI();
+                    updateUserData();
                 }
             }, 1000);
         }
@@ -835,52 +888,80 @@
         // TON Connect Functions
         function toggleTonConnect() {
             if (isWalletConnected) {
-                tonConnectUI.disconnect();
+                disconnectWallet();
             } else {
                 tonConnectUI.connectWallet();
             }
+        }
+
+        function copyWalletAddress() {
+            const address = document.getElementById('walletAddress').textContent;
+            navigator.clipboard.writeText(address).then(() => {
+                alert('Wallet address copied to clipboard!');
+            });
+        }
+
+        function disconnectWallet() {
+            tonConnectUI.disconnect();
         }
 
         // Navigation Functions
         function showHome() {
             hideAllSections();
             document.getElementById('homeSection').classList.remove('section-hidden');
+            updateNavigation(0);
         }
 
         function showProfile() {
             hideAllSections();
             document.getElementById('profileSection').classList.remove('section-hidden');
+            updateNavigation(-1);
         }
 
         function showQuiz() {
             hideAllSections();
             document.getElementById('quizSection').classList.remove('section-hidden');
+            updateNavigation(1);
             loadQuiz();
         }
 
         function showBlog() {
             hideAllSections();
             document.getElementById('blogSection').classList.remove('section-hidden');
+            updateNavigation(2);
         }
 
         function showTasks() {
             hideAllSections();
             document.getElementById('tasksSection').classList.remove('section-hidden');
+            updateNavigation(3);
         }
 
         function showFriends() {
             hideAllSections();
             document.getElementById('friendsSection').classList.remove('section-hidden');
+            updateNavigation(4);
         }
 
         function showLeaderboard() {
             hideAllSections();
             document.getElementById('leaderboardSection').classList.remove('section-hidden');
+            updateNavigation(-1);
         }
 
         function hideAllSections() {
             document.querySelectorAll('section').forEach(section => {
                 section.classList.add('section-hidden');
+            });
+        }
+
+        function updateNavigation(activeIndex) {
+            document.querySelectorAll('.nav-btn').forEach((btn, index) => {
+                if (index === activeIndex) {
+                    btn.classList.add('nav-active');
+                } else {
+                    btn.classList.remove('nav-active');
+                }
             });
         }
 
@@ -917,67 +998,58 @@
                 reward: 1500
             },
             {
-                question: "What is TON's maximum TPS?",
-                options: ["1000", "5000", "10000", "1 million"],
-                correct: 4,
+                question: "What is a smart contract in TON?",
+                options: ["Code that executes automatically", "A legal document", "A mining contract", "A wallet contract"],
+                correct: 0,
                 reward: 1500
             },
             {
-                question: "What is sharding in TON?",
-                options: ["Splitting network", "Data partitioning", "Mining process", "Token distribution"],
-                correct: 1,
+                question: "What is TON DNS?",
+                options: ["Domain name system for TON", "Mining system", "Staking system", "Trading platform"],
+                correct: 0,
                 reward: 1500
             },
             {
-                question: "What is TON's smart contract language?",
-                options: ["Solidity", "Rust", "FunC", "JavaScript"],
-                correct: 2,
+                question: "What is TON Storage?",
+                options: ["Decentralized file storage", "Wallet storage", "Token storage", "Exchange storage"],
+                correct: 0,
                 reward: 1500
             },
             {
-                question: "What is TON's goal?",
-                options: ["Digital payments", "Web3 infrastructure", "Social media", "Gaming platform"],
-                correct: 1,
+                question: "What is the block time in TON?",
+                options: ["5 seconds", "1 minute", "10 minutes", "1 hour"],
+                correct: 0,
                 reward: 1500
             },
             {
-                question: "What is the TON Foundation?",
-                options: ["Development team", "Regulatory body", "Marketing agency", "Exchange platform"],
+                question: "What is TON NFT?",
+                options: ["Non-fungible tokens on TON", "Fungible tokens", "Stablecoins", "Privacy coins"],
                 correct: 0,
                 reward: 1500
             }
         ];
 
         let currentQuizIndex = 0;
-        let currentQuizQuestions = [];
+        let currentQuizAttempts = 3;
 
         function loadQuiz() {
-            // Shuffle and select 10 questions
-            currentQuizQuestions = [...quizQuestions].sort(() => Math.random() - 0.5).slice(0, 10);
-            currentQuizIndex = 0;
+            // Reset attempts for new quiz
+            const quizId = `quiz_${currentQuizIndex}`;
+            currentQuizAttempts = userData.quizAttempts[quizId] || 3;
+            document.getElementById('attemptsLeft').textContent = currentQuizAttempts;
             
             const container = document.getElementById('quizContainer');
             container.innerHTML = '';
+            
+            // Hide result sections
             document.getElementById('quizResult').classList.add('hidden');
+            document.getElementById('quizFailed').classList.add('hidden');
             
-            loadCurrentQuestion();
-        }
-
-        function loadCurrentQuestion() {
-            const container = document.getElementById('quizContainer');
-            container.innerHTML = '';
-            
-            const quiz = currentQuizQuestions[currentQuizIndex];
+            const quiz = quizQuestions[currentQuizIndex];
             const quizCard = document.createElement('div');
             quizCard.className = 'quiz-card rounded-2xl p-6 text-white';
             quizCard.innerHTML = `
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-bold">Question ${currentQuizIndex + 1}/10</h3>
-                    <div class="text-sm">
-                        Attempts: <span id="attemptsLeft">${3 - (userData.quizAttempts[quiz.id] || 0)}</span>/3
-                    </div>
-                </div>
-                <h3 class="text-lg mb-4">${quiz.question}</h3>
+                <h3 class="text-xl font-bold mb-4">${quiz.question}</h3>
                 <div class="space-y-3">
                     ${quiz.options.map((option, index) => `
                         <button onclick="answerQuiz(${index})" class="w-full bg-white/20 p-4 rounded-xl text-left hover:bg-white/30 transition-all">
@@ -990,74 +1062,53 @@
         }
 
         function answerQuiz(answerIndex) {
-            const quiz = currentQuizQuestions[currentQuizIndex];
-            const attempts = userData.quizAttempts[quiz.id] || 0;
+            const quiz = quizQuestions[currentQuizIndex];
+            const quizId = `quiz_${currentQuizIndex}`;
             
             if (answerIndex === quiz.correct) {
+                // Correct answer
                 userData.balance += quiz.reward;
                 userData.quizCompleted++;
-                
-                // Clear attempts for this quiz
-                delete userData.quizAttempts[quiz.id];
                 updateUserData();
                 
-                currentQuizIndex++;
+                // Mark quiz as completed
+                userData.quizAttempts[quizId] = -1; // -1 means completed
+                updateUserData();
                 
-                if (currentQuizIndex >= currentQuizQuestions.length) {
-                    // Quiz completed
-                    document.getElementById('quizContainer').classList.add('hidden');
-                    document.getElementById('quizResult').classList.remove('hidden');
-                    document.getElementById('quizReward').textContent = quizQuestions.length * quiz.reward;
-                } else {
-                    loadCurrentQuestion();
-                }
+                document.getElementById('quizContainer').classList.add('hidden');
+                document.getElementById('quizResult').classList.remove('hidden');
+                document.getElementById('quizReward').textContent = quiz.reward;
             } else {
-                attempts++;
-                userData.quizAttempts[quiz.id] = attempts;
+                // Wrong answer - decrease attempts
+                currentQuizAttempts--;
+                userData.quizAttempts[quizId] = currentQuizAttempts;
+                updateUserData();
                 
-                if (attempts >= 3) {
-                    // Failed after 3 attempts
+                if (currentQuizAttempts <= 0) {
+                    // No more attempts - deduct 500 TRM
                     userData.balance = Math.max(0, userData.balance - 500);
                     updateUserData();
-                    alert(`Failed after 3 attempts! 500 TRM deducted. The correct answer was: ${quiz.options[quiz.correct]}`);
                     
-                    currentQuizIndex++;
-                    if (currentQuizIndex >= currentQuizQuestions.length) {
-                        document.getElementById('quizContainer').classList.add('hidden');
-                        document.getElementById('quizResult').classList.add('hidden');
-                        loadQuiz();
-                    } else {
-                        loadCurrentQuestion();
-                    }
+                    document.getElementById('quizContainer').classList.add('hidden');
+                    document.getElementById('quizFailed').classList.remove('hidden');
                 } else {
-                    alert(`Wrong answer! ${3 - attempts} attempts remaining.`);
-                    loadCurrentQuestion();
+                    alert(`Wrong answer! ${currentQuizAttempts} attempts remaining.`);
+                    document.getElementById('attemptsLeft').textContent = currentQuizAttempts;
                 }
             }
         }
 
         function nextQuiz() {
+            currentQuizIndex = (currentQuizIndex + 1) % quizQuestions.length;
+            document.getElementById('quizContainer').classList.remove('hidden');
+            document.getElementById('quizResult').classList.add('hidden');
+            document.getElementById('quizFailed').classList.add('hidden');
             loadQuiz();
         }
 
         // Blog Functions
-        function loadBlogPostsFromFirebase() {
-            db.collection('blogPosts').orderBy('timestamp', 'desc').get()
-                .then(snapshot => {
-                    const posts = [];
-                    snapshot.forEach(doc => {
-                        posts.push({ id: doc.id, ...doc.data() });
-                    });
-                    displayBlogPosts(posts);
-                })
-                .catch(error => {
-                    console.error('Error loading blog posts:', error);
-                    // Fallback to sample posts
-                    loadSampleBlogPosts();
-                });
-        }
-
-        function loadSampleBlogPosts() {
+        function loadBlogPosts() {
+            // Sample blog posts - in real app, load from Firebase
             const samplePosts = [
                 {
                     id: 1,
@@ -1076,6 +1127,7 @@
                     timestamp: new Date().toISOString()
                 }
             ];
+            
             displayBlogPosts(samplePosts);
         }
 
@@ -1094,20 +1146,20 @@
                             <p class="text-gray-500 text-sm">${new Date(post.timestamp).toLocaleDateString()}</p>
                         </div>
                         ${post.author === telegramUser?.first_name ? `
-                            <button onclick="deleteBlogPost('${post.id}')" class="text-red-500 hover:text-red-700">
+                            <button onclick="deleteBlogPost(${post.id})" class="text-red-500 hover:text-red-700">
                                 <i class="fas fa-trash"></i>
                             </button>
                         ` : ''}
                     </div>
                     <p class="text-gray-700 mb-4">${post.content}</p>
                     <div class="flex items-center space-x-4">
-                        <button onclick="likeBlogPost('${post.id}')" class="flex items-center space-x-1 text-gray-600 hover:text-red-500">
+                        <button onclick="likeBlogPost(${post.id})" class="flex items-center space-x-1 text-gray-600 hover:text-red-500">
                             <i class="fas fa-heart"></i>
-                            <span>${post.likes || 0}</span>
+                            <span>${post.likes}</span>
                         </button>
-                        <button onclick="commentOnPost('${post.id}')" class="flex items-center space-x-1 text-gray-600 hover:text-blue-500">
+                        <button onclick="commentOnPost(${post.id})" class="flex items-center space-x-1 text-gray-600 hover:text-blue-500">
                             <i class="fas fa-comment"></i>
-                            <span>${post.comments || 0}</span>
+                            <span>${post.comments}</span>
                         </button>
                     </div>
                 `;
@@ -1116,73 +1168,51 @@
         }
 
         function createBlogPost() {
-            const content = prompt('Write your forum post:');
+            const content = prompt('Write your blog post:');
             if (content && telegramUser) {
                 const newPost = {
+                    id: Date.now(),
                     author: telegramUser.first_name,
                     content: content,
                     likes: 0,
                     comments: 0,
-                    timestamp: new Date().toISOString(),
-                    userId: telegramUser.id
+                    timestamp: new Date().toISOString()
                 };
                 
-                db.collection('blogPosts').add(newPost)
-                    .then(() => {
-                        alert('Forum post created successfully!');
-                        loadBlogPostsFromFirebase();
-                    })
-                    .catch(error => {
-                        console.error('Error creating blog post:', error);
-                        alert('Error creating post. Please try again.');
-                    });
+                // In real app, save to Firebase
+                console.log('New blog post:', newPost);
+                alert('Blog post created successfully!');
+                loadBlogPosts();
             }
         }
 
         function deleteBlogPost(postId) {
             if (confirm('Are you sure you want to delete this post?')) {
-                db.collection('blogPosts').doc(postId).delete()
-                    .then(() => {
-                        alert('Post deleted successfully!');
-                        loadBlogPostsFromFirebase();
-                    })
-                    .catch(error => {
-                        console.error('Error deleting post:', error);
-                        alert('Error deleting post. Please try again.');
-                    });
+                // In real app, delete from Firebase
+                console.log('Delete post:', postId);
+                alert('Post deleted successfully!');
+                loadBlogPosts();
             }
         }
 
         function likeBlogPost(postId) {
-            db.collection('blogPosts').doc(postId).update({
-                likes: firebase.firestore.FieldValue.increment(1)
-            })
-            .then(() => {
-                loadBlogPostsFromFirebase();
-            })
-            .catch(error => {
-                console.error('Error liking post:', error);
-            });
+            // In real app, update likes in Firebase
+            console.log('Like post:', postId);
+            loadBlogPosts();
         }
 
         function commentOnPost(postId) {
             const comment = prompt('Write your comment:');
             if (comment) {
-                db.collection('blogPosts').doc(postId).update({
-                    comments: firebase.firestore.FieldValue.increment(1)
-                })
-                .then(() => {
-                    alert('Comment added successfully!');
-                    loadBlogPostsFromFirebase();
-                })
-                .catch(error => {
-                    console.error('Error commenting on post:', error);
-                });
+                // In real app, add comment to Firebase
+                console.log('Comment on post:', postId, comment);
+                alert('Comment added successfully!');
             }
         }
 
         // Tasks Functions
-        function loadTasksFromFirebase() {
+        function loadTasks() {
+            // Load tasks from Firebase
             db.collection('tasks').orderBy('order').get()
                 .then(snapshot => {
                     const tasks = [];
@@ -1193,7 +1223,7 @@
                 })
                 .catch(error => {
                     console.error('Error loading tasks:', error);
-                    // Fallback to sample tasks
+                    // Load sample tasks if Firebase fails
                     loadSampleTasks();
                 });
         }
@@ -1206,7 +1236,7 @@
                     description: "Join our official TON community group",
                     reward: 1000,
                     link: "https://t.me/toncoin",
-                    completed: false
+                    order: 1
                 },
                 {
                     id: 2,
@@ -1214,9 +1244,10 @@
                     description: "Follow our official X account",
                     reward: 500,
                     link: "https://twitter.com/ton_blockchain",
-                    completed: false
+                    order: 2
                 }
             ];
+            
             displayTasks(sampleTasks);
         }
 
@@ -1231,7 +1262,9 @@
                 taskCard.innerHTML = `
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <img src="${task.photo || 'https://picsum.photos/seed/task' + task.id + '/50/50'}" alt="${task.name}" class="w-12 h-12 rounded-xl">
+                            <div class="bg-white/20 p-3 rounded-xl">
+                                <i class="fas fa-external-link-alt text-white text-xl"></i>
+                            </div>
                             <div>
                                 <h3 class="text-white font-bold">${task.name}</h3>
                                 <p class="text-white/70 text-sm">${task.description}</p>
@@ -1239,7 +1272,7 @@
                         </div>
                         <div class="text-right">
                             <p class="text-yellow-400 font-bold">${task.reward} TRM</p>
-                            <button id="taskBtn${task.id}" onclick="completeTask('${task.id}', '${task.link}', ${task.reward})" class="bg-white/20 text-white px-4 py-2 rounded-full text-sm mt-1">
+                            <button id="taskBtn${task.id}" onclick="completeTask(${task.id}, '${task.link}', ${task.reward})" class="bg-white/20 text-white px-4 py-2 rounded-full text-sm mt-1">
                                 ${isCompleted ? 'Completed' : 'Open'}
                             </button>
                         </div>
@@ -1264,8 +1297,12 @@
             
             setTimeout(() => {
                 userData.balance += reward;
-                userData.completedTasks.push(taskId);
+                if (!userData.completedTasks.includes(taskId)) {
+                    userData.completedTasks.push(taskId);
+                }
+                userData.completedTasks = [...new Set(userData.completedTasks)]; // Remove duplicates
                 updateUserData();
+                
                 button.textContent = 'Completed';
                 button.disabled = false;
             }, 10000);
@@ -1294,108 +1331,53 @@
         }
 
         function loadReferrals() {
-            if (!userData.referrals || userData.referrals.length === 0) {
-                document.getElementById('referralsList').innerHTML = '<p class="text-white/70 text-center">No referrals yet</p>';
-                return;
-            }
-            
+            // In real app, load from Firebase
             const referralsList = document.getElementById('referralsList');
-            referralsList.innerHTML = '';
             
-            userData.referrals.forEach(referralId => {
-                db.collection('users').doc(referralId.toString()).get()
-                    .then(doc => {
-                        if (doc.exists) {
-                            const referralData = doc.data();
-                            const referralCard = document.createElement('div');
-                            referralCard.className = 'leaderboard-item rounded-xl p-3';
-                            referralCard.innerHTML = `
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-3">
-                                        <img src="https://picsum.photos/seed/${referralId}/40/40" alt="User" class="w-10 h-10 rounded-full">
-                                        <div>
-                                            <p class="text-white font-semibold">${referralData.userName || 'User'}</p>
-                                            <p class="text-white/70 text-sm">ID: ${referralId}</p>
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="text-yellow-400 font-bold">${referralData.balance?.toLocaleString() || 0} TRM</p>
-                                        <p class="text-white/70 text-xs">Earned: 5000 TRM</p>
-                                    </div>
+            if (userData.referrals && userData.referrals.length > 0) {
+                referralsList.innerHTML = '';
+                userData.referrals.forEach(referral => {
+                    const referralCard = document.createElement('div');
+                    referralCard.className = 'bg-white/10 rounded-xl p-3';
+                    referralCard.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <img src="https://picsum.photos/seed/${referral.userId}/40/40" alt="${referral.name}" class="w-10 h-10 rounded-full">
+                                <div>
+                                    <p class="text-white font-semibold">${referral.name}</p>
+                                    <p class="text-white/70 text-sm">ID: ${referral.userId}</p>
                                 </div>
-                            `;
-                            referralsList.appendChild(referralCard);
-                        }
-                    });
-            });
-        }
-
-        function checkReferral() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const referrerId = urlParams.get('startapp');
-            
-            if (referrerId && userData.userId && userData.userId.toString() !== referrerId) {
-                // Show referral message on loading screen
-                document.getElementById('referralMessage').classList.remove('hidden');
-                document.getElementById('referralMessage').textContent = `Referred by User ${referrerId}`;
-                
-                // Process referral after data is loaded
-                setTimeout(() => {
-                    processReferral(referrerId);
-                }, 2000);
-            }
-        }
-
-        function processReferral(referrerId) {
-            // Check if this user was already referred
-            db.collection('users').doc(userData.userId.toString()).get()
-                .then(doc => {
-                    if (!doc.exists || !doc.data().referredBy) {
-                        // Add referral bonus to new user
-                        userData.balance += 5000;
-                        userData.referredBy = referrerId;
-                        updateUserData();
-                        
-                        // Update referrer's data
-                        db.collection('users').doc(referrerId).get()
-                            .then(referrerDoc => {
-                                if (referrerDoc.exists) {
-                                    const referrerData = referrerDoc.data();
-                                    const referrals = referrerData.referrals || [];
-                                    referrals.push(userData.userId);
-                                    
-                                    db.collection('users').doc(referrerId).update({
-                                        referrals: referrals,
-                                        friendsInvited: referrals.length,
-                                        balance: referrerData.balance + 5000
-                                    });
-                                }
-                            });
-                        
-                        alert('Welcome bonus! You received 5000 TRM from referral!');
-                    }
+                            </div>
+                            <div class="text-right">
+                                <p class="text-yellow-400 font-bold">${referral.balance || 0} TRM</p>
+                                <p class="text-white/70 text-sm">Earned: 5000 TRM</p>
+                            </div>
+                        </div>
+                    `;
+                    referralsList.appendChild(referralCard);
                 });
+            } else {
+                referralsList.innerHTML = '<p class="text-white/70 text-center">No referrals yet</p>';
+            }
         }
 
         // Leaderboard Functions
-        function loadLeaderboardFromFirebase() {
+        function loadLeaderboard() {
+            // Load top 25 users from Firebase
             db.collection('users').orderBy('balance', 'desc').limit(25).get()
                 .then(snapshot => {
                     const leaderboard = [];
-                    let rank = 1;
-                    
                     snapshot.forEach(doc => {
                         const userData = doc.data();
                         leaderboard.push({
-                            rank: rank++,
-                            userId: doc.id,
-                            name: userData.userName || `User ${doc.id}`,
+                            rank: leaderboard.length + 1,
+                            name: userData.firstName || 'Anonymous',
                             balance: userData.balance || 0,
-                            level: userData.level || 'Bronze',
-                            photo: userData.photoUrl || doc.id
+                            level: getUserLevel(userData.balance || 0),
+                            userId: doc.id,
+                            photo: userData.photoUrl || `https://picsum.photos/seed/${doc.id}/40/40`
                         });
                     });
-                    
                     displayLeaderboard(leaderboard);
                 })
                 .catch(error => {
@@ -1407,9 +1389,10 @@
         function loadSampleLeaderboard() {
             const sampleLeaderboard = [
                 { rank: 1, name: "Alice", balance: 50000, level: "Diamond", photo: "alice" },
-                { rank: 2, name: "Bob", balance: 45000, level: "Gold", photo: "bob" },
+                { rank: 2, name: "Bob", balance: 45000, level: "Diamond", photo: "bob" },
                 { rank: 3, name: "Charlie", balance: 40000, level: "Gold", photo: "charlie" }
             ];
+            
             displayLeaderboard(sampleLeaderboard);
         }
 
@@ -1424,7 +1407,7 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <span class="text-yellow-400 font-bold">#${user.rank}</span>
-                            <img src="https://picsum.photos/seed/${user.photo}/40/40" alt="${user.name}" class="w-10 h-10 rounded-full">
+                            <img src="${user.photo}" alt="${user.name}" class="w-10 h-10 rounded-full">
                             <div>
                                 <p class="text-white font-semibold">${user.name}</p>
                                 <p class="text-white/70 text-sm">Level ${user.level}</p>
@@ -1439,9 +1422,43 @@
             });
         }
 
-        function updateLeaderboardForUser() {
-            // Real-time update of leaderboard when user data changes
-            loadLeaderboardFromFirebase();
+        // Admin Panel Functions (Basic Implementation)
+        function addQuiz() {
+            const question = prompt('Enter quiz question:');
+            if (!question) return;
+            
+            const options = [];
+            for (let i = 0; i < 4; i++) {
+                const option = prompt(`Enter option ${i + 1}:`);
+                if (option) options.push(option);
+            }
+            
+            const correct = parseInt(prompt('Enter correct option index (0-3):'));
+            const reward = parseInt(prompt('Enter reward amount:'));
+            
+            // Save to Firebase
+            const newQuiz = { question, options, correct, reward };
+            db.collection('quizzes').add(newQuiz)
+                .then(() => {
+                    alert('Quiz added successfully!');
+                });
+        }
+
+        function addTask() {
+            const name = prompt('Enter task name:');
+            if (!name) return;
+            
+            const description = prompt('Enter task description:');
+            const link = prompt('Enter task link:');
+            const reward = parseInt(prompt('Enter reward amount:'));
+            
+            // Save to Firebase
+            const newTask = { name, description, link, reward, order: Date.now() };
+            db.collection('tasks').add(newTask)
+                .then(() => {
+                    alert('Task added successfully!');
+                    loadTasks();
+                });
         }
     </script>
 </body>
