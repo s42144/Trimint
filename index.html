@@ -3,1002 +3,472 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trimint - Telegram Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Trimint - TON Network Mining App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src='//libtl.com/sdk.js' data-zone='10290264' data-sdk='show_10290264'></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
         }
-
-        :root {
-            --primary: #6366f1;
-            --secondary: #8b5cf6;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1f2937;
-            --light: #f3f4f6;
-            --white: #ffffff;
-            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-        }
-
+        
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            color: var(--dark);
             overflow-x: hidden;
         }
-
-        .container {
-            max-width: 480px;
-            margin: 0 auto;
-            min-height: 100vh;
-            background: var(--white);
-            position: relative;
-            box-shadow: 0 0 40px rgba(0,0,0,0.1);
-        }
-
-        /* Header */
-        .header {
-            background: var(--gradient);
-            padding: 20px;
-            color: var(--white);
-            position: relative;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            padding: 15px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-
-        .user-info:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
+        
+        .gradient-text {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-
-        .user-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 3px solid var(--white);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .user-details h2 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-
-        .user-details p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        /* Coin Section */
-        .coin-section {
-            text-align: center;
-            padding: 30px 20px;
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            position: relative;
-        }
-
+        
         .coin-container {
             position: relative;
-            display: inline-block;
-            margin-bottom: 20px;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
         }
-
-        .coin {
-            width: 120px;
-            height: 120px;
+        
+        .coin-circle {
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FF8C00);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
-            position: relative;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.4);
             animation: float 3s ease-in-out infinite;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
-        .coin:hover {
-            transform: scale(1.1);
-            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.6);
+        
+        .coin-circle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 25px 70px rgba(255, 215, 0, 0.6);
         }
-
-        .coin.farming {
-            animation: rotate 2s linear infinite, glow 1s ease-in-out infinite alternate;
+        
+        .coin-circle.farming {
+            animation: rotate 2s linear infinite, float 3s ease-in-out infinite;
         }
-
+        
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
         }
-
+        
         @keyframes rotate {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
-
-        @keyframes glow {
-            from { box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4); }
-            to { box-shadow: 0 15px 50px rgba(255, 215, 0, 0.8); }
-        }
-
-        .coin-icon {
-            font-size: 50px;
-            color: var(--white);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .balance {
-            font-size: 32px;
+        
+        .token-animation {
+            position: absolute;
+            color: #FFD700;
             font-weight: bold;
-            color: var(--dark);
-            margin-bottom: 5px;
+            font-size: 18px;
+            pointer-events: none;
+            animation: rise 2s ease-out forwards;
         }
-
-        .balance-label {
-            font-size: 14px;
-            color: var(--dark);
-            opacity: 0.8;
+        
+        @keyframes rise {
+            0% { 
+                opacity: 1; 
+                transform: translateY(0px);
+            }
+            100% { 
+                opacity: 0; 
+                transform: translateY(-100px);
+            }
         }
-
-        /* Farming Section */
-        .farming-section {
-            padding: 20px;
-            background: var(--light);
-        }
-
-        .farming-button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
-            color: var(--white);
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .farming-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
-        }
-
-        .farming-button:disabled {
-            background: var(--dark);
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .countdown {
-            text-align: center;
-            margin-top: 10px;
-            font-size: 14px;
-            color: var(--dark);
-        }
-
-        /* Navigation */
-        .navigation {
-            display: flex;
-            justify-content: space-around;
-            padding: 15px;
-            background: var(--white);
-            border-top: 1px solid var(--light);
+        
+        .bottom-nav {
             position: fixed;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 480px;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
             z-index: 1000;
         }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 10px;
-            border-radius: 10px;
-        }
-
-        .nav-item:hover {
-            background: var(--light);
-            transform: translateY(-2px);
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-        }
-
-        .nav-item i {
-            font-size: 20px;
-        }
-
-        .nav-item span {
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        /* Content Sections */
-        .content-section {
-            display: none;
-            padding: 20px;
-            min-height: calc(100vh - 200px);
+        
+        .content-area {
             padding-bottom: 80px;
+            min-height: 100vh;
         }
-
-        .content-section.active {
-            display: block;
-        }
-
-        /* Section Headers */
-        .section-header {
-            background: var(--gradient);
-            padding: 20px;
-            color: var(--white);
-            margin: -20px -20px 20px -20px;
-            border-radius: 0 0 20px 20px;
-        }
-
-        .section-header h2 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .section-header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        /* Cards */
-        .card {
-            background: var(--white);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-        }
-
-        /* Quiz Cards */
+        
         .quiz-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: var(--white);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s ease;
         }
-
-        .quiz-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: rotate(45deg);
-            transition: all 0.5s;
-            opacity: 0;
+        
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
         }
-
-        .quiz-card:hover::before {
-            animation: shine 0.5s ease-in-out;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
-        }
-
-        /* Task Cards */
+        
         .task-card {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: var(--white);
-            border: 2px solid var(--light);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             transition: all 0.3s ease;
         }
-
+        
         .task-card:hover {
-            border-color: var(--primary);
-            transform: translateX(5px);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(245, 87, 108, 0.4);
         }
-
-        .task-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            background: var(--gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-        }
-
-        .task-details {
-            flex: 1;
-        }
-
-        .task-button {
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .task-button.open {
-            background: var(--success);
-            color: var(--white);
-        }
-
-        .task-button.processing {
-            background: var(--warning);
-            color: var(--white);
-        }
-
-        .task-button.completed {
-            background: var(--dark);
-            color: var(--white);
-        }
-
-        /* Blog Posts */
+        
         .blog-post {
-            background: var(--white);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .blog-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .blog-author {
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .blog-content {
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-
-        .blog-actions {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .blog-action {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
-            padding: 5px 10px;
-            border-radius: 5px;
         }
-
-        .blog-action:hover {
-            background: var(--light);
+        
+        .blog-post:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
-
-        .blog-action.liked {
-            color: var(--danger);
-        }
-
-        /* Leaderboard */
+        
         .leaderboard-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: var(--white);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
         }
-
+        
         .leaderboard-item:hover {
+            background: rgba(255, 255, 255, 0.15);
             transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
-
-        .rank {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--gradient);
-            color: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .rank.gold {
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            color: var(--dark);
-        }
-
-        .rank.silver {
-            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
-            color: var(--dark);
-        }
-
-        .rank.bronze {
-            background: linear-gradient(135deg, #cd7f32 0%, #e4a853 100%);
-            color: var(--white);
-        }
-
-        /* Profile Section */
-        .profile-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: var(--gradient);
-            color: var(--white);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-
-        /* Wallet Button */
-        .wallet-button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #0088cc 0%, #0066cc 100%);
-            color: var(--white);
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .wallet-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 136, 204, 0.3);
-        }
-
-        /* Referral Section */
-        .referral-link {
-            background: var(--light);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            word-break: break-all;
-            font-family: monospace;
-            font-size: 12px;
-        }
-
-        .copy-button {
-            width: 100%;
-            padding: 10px;
-            background: var(--primary);
-            color: var(--white);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .copy-button:hover {
-            background: var(--secondary);
-        }
-
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .slide-in {
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-primary {
-            background: var(--gradient);
-            color: var(--white);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: var(--white);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.3);
-        }
-
-        /* Modal */
-        .modal {
+        
+        .section-hidden {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
         }
-
-        .modal.active {
-            display: flex;
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
         }
-
-        .modal-content {
-            background: var(--white);
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 400px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: relative;
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
-
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: var(--danger);
-            color: var(--white);
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            border: 3px solid var(--light);
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--dark);
-            color: var(--white);
-            padding: 15px 25px;
-            border-radius: 50px;
-            z-index: 3000;
-            opacity: 0;
+        
+        .ton-connect-btn {
+            background: linear-gradient(45deg, #0088CC, #0066AA);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
             transition: all 0.3s ease;
         }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(-10px);
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .container {
-                max-width: 100%;
-            }
-            
-            .navigation {
-                max-width: 100%;
-            }
-        }
-
-        /* Token Animation */
-        .token-float {
-            position: absolute;
-            color: var(--success);
-            font-weight: bold;
-            font-size: 14px;
-            pointer-events: none;
-            animation: floatUp 2s ease-out forwards;
-        }
-
-        @keyframes floatUp {
-            0% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-        }
-
-        /* Ads Container */
-        .ads-container {
-            margin: 20px 0;
-            text-align: center;
-            padding: 15px;
-            background: var(--light);
-            border-radius: 10px;
-        }
-
-        .ads-label {
-            font-size: 12px;
-            color: var(--dark);
-            opacity: 0.7;
-            margin-bottom: 10px;
-        }
-
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: var(--dark);
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid var(--light);
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--dark);
-            opacity: 0.6;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-
-        .empty-state p {
-            font-size: 16px;
-            margin-bottom: 20px;
+        
+        .ton-connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 136, 204, 0.3);
         }
     </style>
 <script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
 </head>
 <body>
-    <div class="container">
+    <div id="app" class="min-h-screen">
         <!-- Header -->
-        <header class="header">
-            <div class="user-info" onclick="showProfile()">
-                <img id="userAvatar" src="https://via.placeholder.com/60" alt="User Avatar" class="user-avatar">
-                <div class="user-details">
-                    <h2 id="userName">Loading...</h2>
-                    <p id="userLevel">Level 1</p>
+        <header class="glass-effect p-4 sticky top-0 z-50">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold gradient-text">Trimint</h1>
+                <div id="userBalance" class="text-white font-semibold">
+                    <i class="fas fa-coins text-yellow-400"></i>
+                    <span id="balanceAmount">0</span> TRM
                 </div>
-                <i class="fas fa-chevron-right"></i>
             </div>
         </header>
 
         <!-- Home Section -->
-        <div id="homeSection" class="content-section active">
-            <div class="coin-section">
-                <div class="coin-container">
-                    <div id="coin" class="coin">
-                        <span class="coin-icon">₮</span>
+        <section id="homeSection" class="content-area">
+            <!-- User Info -->
+            <div class="container mx-auto p-4">
+                <div class="glass-effect rounded-2xl p-4 mb-6 cursor-pointer" onclick="showProfile()">
+                    <div class="flex items-center space-x-4">
+                        <img id="userPhoto" src="https://picsum.photos/seed/user/60/60" alt="User" class="w-16 h-16 rounded-full border-2 border-yellow-400">
+                        <div class="flex-1">
+                            <h3 id="userName" class="text-white font-semibold text-lg">Loading...</h3>
+                            <p class="text-white/70 text-sm">Click to view profile →</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-white/70 text-sm">Level</p>
+                            <p id="userLevel" class="text-white font-bold">1</p>
+                        </div>
                     </div>
                 </div>
-                <div class="balance" id="balance">0.000000 TRM</div>
-                <div class="balance-label">Your Balance</div>
-            </div>
 
-            <div class="farming-section">
-                <button id="farmingButton" class="farming-button" onclick="toggleFarming()">
-                    <i class="fas fa-seedling"></i> Start Farming
-                </button>
-                <div class="countdown" id="countdown"></div>
-            </div>
+                <!-- Farming Section -->
+                <div class="glass-effect rounded-2xl p-6 mb-6">
+                    <div class="coin-container mb-4">
+                        <div id="coinCircle" class="coin-circle" onclick="toggleFarming()">
+                            <img src="https://raw.githubusercontent.com/s42144/Trimint/main.png" alt="TRM Coin" class="w-32 h-32 rounded-full">
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button id="farmButton" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 pulse-animation" onclick="toggleFarming()">
+                            <i class="fas fa-seedling mr-2"></i>Start Farming
+                        </button>
+                        <div id="farmingStatus" class="mt-4 text-white hidden">
+                            <p class="text-sm">Farming Progress</p>
+                            <p id="farmingTime" class="text-2xl font-bold">12:00:00</p>
+                            <p class="text-sm mt-2">Rate: 0.001 TRM/sec</p>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="ads-container">
-                <div class="ads-label">Sponsored Content</div>
-                <div id="adsContainer">
-                    <!-- Ads will be loaded here -->
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="glass-effect rounded-xl p-4 text-center">
+                        <i class="fas fa-trophy text-yellow-400 text-2xl mb-2"></i>
+                        <p class="text-white/70 text-sm">Rank</p>
+                        <p id="userRank" class="text-white font-bold">#1</p>
+                    </div>
+                    <div class="glass-effect rounded-xl p-4 text-center">
+                        <i class="fas fa-users text-blue-400 text-2xl mb-2"></i>
+                        <p class="text-white/70 text-sm">Friends</p>
+                        <p id="referralCount" class="text-white font-bold">0</p>
+                    </div>
+                    <div class="glass-effect rounded-xl p-4 text-center">
+                        <i class="fas fa-check-circle text-green-400 text-2xl mb-2"></i>
+                        <p class="text-white/70 text-sm">Completed</p>
+                        <p id="completedTasks" class="text-white font-bold">0</p>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Quiz Section -->
-        <div id="quizSection" class="content-section">
-            <div class="section-header">
-                <h2><i class="fas fa-question-circle"></i> Quiz</h2>
-                <p>Test your knowledge and earn TRM tokens!</p>
-            </div>
-            <div id="quizContainer">
-                <!-- Quiz cards will be loaded here -->
-            </div>
-        </div>
-
-        <!-- Blog Section -->
-        <div id="blogSection" class="content-section">
-            <div class="section-header">
-                <h2><i class="fas fa-blog"></i> Blog</h2>
-                <p>Share your experience with the community</p>
-            </div>
-            <button class="btn btn-primary" onclick="showCreateBlog()" style="margin: 0 0 20px 0; width: 100%;">
-                <i class="fas fa-plus"></i> Create Post
-            </button>
-            <div id="blogContainer">
-                <!-- Blog posts will be loaded here -->
-            </div>
-        </div>
-
-        <!-- Tasks Section -->
-        <div id="tasksSection" class="content-section">
-            <div class="section-header">
-                <h2><i class="fas fa-tasks"></i> Tasks</h2>
-                <p>Complete tasks to earn more TRM tokens</p>
-            </div>
-            <div id="tasksContainer">
-                <!-- Tasks will be loaded here -->
-            </div>
-        </div>
-
-        <!-- Friends Section -->
-        <div id="friendsSection" class="content-section">
-            <div class="section-header">
-                <h2><i class="fas fa-users"></i> Friends</h2>
-                <p>Invite friends and earn 5000 TRM per referral!</p>
-            </div>
-            
-            <div class="card">
-                <h3>Invite Friends</h3>
-                <div class="referral-link" id="referralLink">
-                    https://t.me/TrimintBot/open?start=referral_user_id
-                </div>
-                <button class="copy-button" onclick="copyReferralLink()">
-                    <i class="fas fa-copy"></i> Copy Link
-                </button>
-            </div>
-
-            <div class="card">
-                <h3>Referral Stats</h3>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                    <span>Total Referrals:</span>
-                    <strong id="totalReferrals">0</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <span>Earned from Referrals:</span>
-                    <strong id="referralEarnings">0 TRM</strong>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>Your Referrals</h3>
-                <div id="referralsList">
-                    <!-- Referrals list will be loaded here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Leaderboard Section -->
-        <div id="leaderboardSection" class="content-section">
-            <div class="section-header">
-                <h2><i class="fas fa-trophy"></i> Leaderboard</h2>
-                <p>Top 25 TRM holders</p>
-            </div>
-            
-            <div class="card" style="margin-bottom: 20px;">
-                <h3>Your Ranking</h3>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>Current Rank:</span>
-                    <strong id="userRank">#--</strong>
-                </div>
-            </div>
-
-            <div id="leaderboardList">
-                <!-- Leaderboard will be loaded here -->
-            </div>
-        </div>
+        </section>
 
         <!-- Profile Section -->
-        <div id="profileSection" class="content-section">
-            <div class="section-header">
-                <h2><i class="fas fa-user"></i> Profile</h2>
-                <p>Your account details and settings</p>
-            </div>
+        <section id="profileSection" class="content-area section-hidden">
+            <div class="container mx-auto p-4">
+                <button onclick="showHome()" class="mb-4 text-white/70 hover:text-white">
+                    <i class="fas fa-arrow-left mr-2"></i>Back
+                </button>
+                
+                <div class="glass-effect rounded-2xl p-6 mb-6">
+                    <div class="text-center">
+                        <img id="profilePhoto" src="https://picsum.photos/seed/profile/120/120" alt="Profile" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-yellow-400">
+                        <h2 id="profileName" class="text-white text-2xl font-bold mb-2">Loading...</h2>
+                        <p class="text-white/70 mb-4">Premium Member</p>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="text-center">
+                                <p class="text-white/70 text-sm">Level</p>
+                                <p id="profileLevel" class="text-white text-2xl font-bold">1</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-white/70 text-sm">Balance</p>
+                                <p id="profileBalance" class="text-yellow-400 text-2xl font-bold">0 TRM</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-white/70 text-sm">Quiz Completed</p>
+                                <p id="quizCompleted" class="text-white text-2xl font-bold">0</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-white/70 text-sm">Friends Invited</p>
+                                <p id="friendsInvited" class="text-white text-2xl font-bold">0</p>
+                            </div>
+                        </div>
+                        
+                        <button id="tonConnectBtn" class="ton-connect-btn w-full mb-4" onclick="toggleTonConnect()">
+                            <i class="fas fa-wallet mr-2"></i>Connect TON Wallet
+                        </button>
+                    </div>
+                </div>
 
-            <div class="profile-stats">
-                <div class="stat-card">
-                    <div class="stat-value" id="profileLevel">1</div>
-                    <div class="stat-label">Level</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="completedQuizzes">0</div>
-                    <div class="stat-label">Completed Quizzes</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="totalReferrals">0</div>
-                    <div class="stat-label">Total Referrals</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="totalEarnings">0</div>
-                    <div class="stat-label">Total Earnings (TRM)</div>
+                <!-- Leaderboard Preview -->
+                <div class="glass-effect rounded-2xl p-4">
+                    <h3 class="text-white font-bold text-lg mb-4">
+                        <i class="fas fa-trophy text-yellow-400 mr-2"></i>Your Ranking
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="leaderboard-item rounded-xl p-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-yellow-400 font-bold">#1</span>
+                                    <img src="https://picsum.photos/seed/top1/40/40" alt="User" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <p class="text-white font-semibold">You</p>
+                                        <p class="text-white/70 text-sm">Level 1</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-yellow-400 font-bold">0 TRM</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <button class="wallet-button" onclick="connectTonWallet()">
-                <i class="fas fa-wallet"></i> Connect TON Wallet
-            </button>
+        <!-- Quiz Section -->
+        <section id="quizSection" class="content-area section-hidden">
+            <div class="container mx-auto p-4">
+                <h2 class="text-white text-2xl font-bold mb-6">
+                    <i class="fas fa-question-circle text-blue-400 mr-2"></i>TON Network Quiz
+                </h2>
+                <div id="quizContainer" class="space-y-4">
+                    <!-- Quiz questions will be loaded here -->
+                </div>
+                <div id="quizResult" class="glass-effect rounded-2xl p-6 mt-6 hidden">
+                    <h3 class="text-white text-xl font-bold mb-4">Quiz Completed!</h3>
+                    <p class="text-green-400 text-lg">You earned <span id="quizReward">1500</span> TRM tokens!</p>
+                    <button onclick="nextQuiz()" class="bg-blue-500 text-white px-6 py-2 rounded-full mt-4">Next Quiz</button>
+                </div>
+            </div>
+        </section>
 
-            <div class="card">
-                <h3>Account Settings</h3>
-                <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input type="text" class="form-input" id="profileUsername" readonly>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">User ID</label>
-                    <input type="text" class="form-input" id="profileUserId" readonly>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Wallet Address</label>
-                    <input type="text" class="form-input" id="walletAddress" placeholder="Not connected" readonly>
+        <!-- Blog Section -->
+        <section id="blogSection" class="content-area section-hidden">
+            <div class="container mx-auto p-4">
+                <h2 class="text-white text-2xl font-bold mb-6">
+                    <i class="fas fa-blog text-purple-400 mr-2"></i>Community Blog
+                </h2>
+                <button onclick="createBlogPost()" class="bg-purple-500 text-white px-6 py-3 rounded-full mb-6 w-full font-semibold">
+                    <i class="fas fa-plus mr-2"></i>Create New Post
+                </button>
+                <div id="blogContainer" class="space-y-4">
+                    <!-- Blog posts will be loaded here -->
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Navigation -->
-        <nav class="navigation">
-            <div class="nav-item active" onclick="switchSection('home')">
-                <i class="fas fa-home"></i>
-                <span>Home</span>
+        <!-- Tasks Section -->
+        <section id="tasksSection" class="content-area section-hidden">
+            <div class="container mx-auto p-4">
+                <h2 class="text-white text-2xl font-bold mb-6">
+                    <i class="fas fa-tasks text-green-400 mr-2"></i>Earn Tasks
+                </h2>
+                
+                <!-- Watch Ads Task (Always on top) -->
+                <div class="task-card rounded-2xl p-4 mb-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-white/20 p-3 rounded-xl">
+                                <i class="fas fa-ad text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-bold">Watch Ads</h3>
+                                <p class="text-white/70 text-sm">Earn 1 TRM per ad</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-yellow-400 font-bold">1 TRM</p>
+                            <button onclick="watchAd()" class="bg-white/20 text-white px-4 py-2 rounded-full text-sm mt-1">
+                                Watch
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="tasksContainer" class="space-y-4">
+                    <!-- Tasks will be loaded here -->
+                </div>
             </div>
-            <div class="nav-item" onclick="switchSection('quiz')">
-                <i class="fas fa-question-circle"></i>
-                <span>Quiz</span>
+        </section>
+
+        <!-- Friends Section -->
+        <section id="friendsSection" class="content-area section-hidden">
+            <div class="container mx-auto p-4">
+                <h2 class="text-white text-2xl font-bold mb-6">
+                    <i class="fas fa-user-friends text-blue-400 mr-2"></i>Invite Friends
+                </h2>
+                
+                <div class="glass-effect rounded-2xl p-6 mb-6">
+                    <div class="text-center">
+                        <p class="text-white/70 mb-4">Invite friends and earn 5000 TRM each!</p>
+                        <div class="bg-white/10 rounded-xl p-4 mb-4">
+                            <p class="text-white text-sm mb-2">Your referral link:</p>
+                            <p id="referralLink" class="text-yellow-400 font-mono text-sm break-all">http://t.me/TrimintBot/open?ref=12345</p>
+                        </div>
+                        <button onclick="copyReferralLink()" class="bg-blue-500 text-white px-6 py-3 rounded-full font-semibold w-full">
+                            <i class="fas fa-copy mr-2"></i>Copy Link
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mt-6">
+                        <div class="text-center">
+                            <p class="text-white/70 text-sm">Total Referrals</p>
+                            <p id="totalReferrals" class="text-white text-2xl font-bold">0</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-white/70 text-sm">Earned from Referrals</p>
+                            <p id="referralEarnings" class="text-yellow-400 text-2xl font-bold">0 TRM</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass-effect rounded-2xl p-4">
+                    <h3 class="text-white font-bold mb-4">Your Referrals</h3>
+                    <div id="referralsList" class="space-y-3">
+                        <!-- Referrals will be listed here -->
+                    </div>
+                </div>
             </div>
-            <div class="nav-item" onclick="switchSection('blog')">
-                <i class="fas fa-blog"></i>
-                <span>Blog</span>
+        </section>
+
+        <!-- Leaderboard Section -->
+        <section id="leaderboardSection" class="content-area section-hidden">
+            <div class="container mx-auto p-4">
+                <h2 class="text-white text-2xl font-bold mb-6">
+                    <i class="fas fa-trophy text-yellow-400 mr-2"></i>Top 25 Leaders
+                </h2>
+                <div id="leaderboardList" class="space-y-3">
+                    <!-- Leaderboard will be loaded here -->
+                </div>
             </div>
-            <div class="nav-item" onclick="switchSection('tasks')">
-                <i class="fas fa-tasks"></i>
-                <span>Tasks</span>
-            </div>
-            <div class="nav-item" onclick="switchSection('friends')">
-                <i class="fas fa-users"></i>
-                <span>Friends</span>
+        </section>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="container mx-auto">
+                <div class="grid grid-cols-5 gap-1">
+                    <button onclick="showHome()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
+                        <i class="fas fa-home text-xl mb-1" style="color: #667eea;"></i>
+                        <p class="text-xs font-medium">Home</p>
+                    </button>
+                    <button onclick="showQuiz()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
+                        <i class="fas fa-question-circle text-xl mb-1" style="color: #764ba2;"></i>
+                        <p class="text-xs font-medium">Quiz</p>
+                    </button>
+                    <button onclick="showBlog()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
+                        <i class="fas fa-blog text-xl mb-1" style="color: #f093fb;"></i>
+                        <p class="text-xs font-medium">Blog</p>
+                    </button>
+                    <button onclick="showTasks()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
+                        <i class="fas fa-tasks text-xl mb-1" style="color: #f5576c;"></i>
+                        <p class="text-xs font-medium">Tasks</p>
+                    </button>
+                    <button onclick="showFriends()" class="nav-btn p-3 text-center hover:bg-gray-100 transition-colors rounded-t-lg">
+                        <i class="fas fa-user-friends text-xl mb-1" style="color: #4facfe;"></i>
+                        <p class="text-xs font-medium">Friends</p>
+                    </button>
+                </div>
             </div>
         </nav>
-
-        <!-- Toast Notification -->
-        <div id="toast" class="toast"></div>
-
-        <!-- Modal -->
-        <div id="modal" class="modal">
-            <div class="modal-content">
-                <button class="modal-close" onclick="closeModal()">×</button>
-                <div id="modalContent">
-                    <!-- Modal content will be loaded here -->
-                </div>
-            </div>
-        </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
-    
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -1014,961 +484,625 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const analytics = firebase.analytics();
+        const auth = firebase.auth();
 
-        // Telegram Web App
-        let telegram = null;
-        let userData = null;
-
-        // App State
-        let currentBalance = 0;
-        let isFarming = false;
-        let farmingStartTime = null;
-        let farmingEndTime = null;
-        let farmingInterval = null;
+        // Initialize TON Connect
+        let tonConnectUI;
+        let isWalletConnected = false;
 
         // Initialize Telegram Web App
-        function initTelegram() {
+        let telegramUser = null;
+        let userData = {
+            userId: null,
+            balance: 0,
+            level: 1,
+            quizCompleted: 0,
+            friendsInvited: 0,
+            completedTasks: 0,
+            referrals: [],
+            farming: false,
+            farmingEndTime: null,
+            tonWallet: null
+        };
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            loadTasks();
+            loadBlogPosts();
+            loadLeaderboard();
+        });
+
+        function initializeApp() {
+            // Initialize Telegram Web App
             if (window.Telegram && window.Telegram.WebApp) {
-                telegram = window.Telegram.WebApp;
-                telegram.ready();
-                telegram.expand();
+                const tg = window.Telegram.WebApp;
+                telegramUser = tg.initDataUnsafe?.user;
                 
-                userData = telegram.initDataUnsafe?.user;
-                if (userData) {
-                    document.getElementById('userName').textContent = userData.first_name + (userData.last_name ? ' ' + userData.last_name : '');
-                    document.getElementById('userAvatar').src = userData.photo_url || 'https://via.placeholder.com/60';
-                    document.getElementById('profileUsername').value = userData.username || userData.first_name;
-                    document.getElementById('profileUserId').value = userData.id;
+                if (telegramUser) {
+                    userData.userId = telegramUser.id;
+                    document.getElementById('userName').textContent = telegramUser.first_name + ' ' + (telegramUser.last_name || '');
+                    document.getElementById('profileName').textContent = telegramUser.first_name + ' ' + (telegramUser.last_name || '');
+                    document.getElementById('userPhoto').src = telegramUser.photo_url || `https://picsum.photos/seed/${telegramUser.id}/60/60`;
+                    document.getElementById('profilePhoto').src = telegramUser.photo_url || `https://picsum.photos/seed/${telegramUser.id}/120/120`;
                     
-                    // Update referral link with user ID
-                    document.getElementById('referralLink').textContent = `https://t.me/TrimintBot/open?start=${userData.id}`;
+                    // Generate referral link
+                    document.getElementById('referralLink').textContent = `http://t.me/TrimintBot/open?ref=${telegramUser.id}`;
                     
                     // Load user data from Firebase
                     loadUserData();
                 }
-            } else {
-                // Fallback for testing
-                document.getElementById('userName').textContent = 'Test User';
-                document.getElementById('userAvatar').src = 'https://via.placeholder.com/60';
-                document.getElementById('profileUsername').value = 'testuser';
-                document.getElementById('profileUserId').value = '123456789';
-                document.getElementById('referralLink').textContent = 'https://t.me/TrimintBot/open?start=123456789';
                 
-                loadUserData();
+                tg.ready();
+                tg.expand();
             }
-        }
 
-        // Load user data from Firebase
-        async function loadUserData() {
-            if (!userData) return;
-            
-            try {
-                const userDoc = await db.collection('users').doc(userData.id.toString()).get();
-                
-                if (userDoc.exists) {
-                    const data = userDoc.data();
-                    currentBalance = data.balance || 0;
-                    updateBalance();
-                    
-                    // Update profile stats
-                    document.getElementById('profileLevel').textContent = data.level || 1;
-                    document.getElementById('userLevel').textContent = `Level ${data.level || 1}`;
-                    document.getElementById('completedQuizzes').textContent = data.completedQuizzes || 0;
-                    document.getElementById('totalReferrals').textContent = data.totalReferrals || 0;
-                    document.getElementById('totalEarnings').textContent = (data.totalEarnings || 0).toFixed(6);
-                    document.getElementById('referralEarnings').textContent = `${((data.totalReferrals || 0) * 5000).toFixed(0)} TRM`;
-                    document.getElementById('walletAddress').value = data.walletAddress || '';
-                    
-                    // Load farming state
-                    if (data.isFarming && data.farmingEndTime) {
-                        const now = Date.now();
-                        if (data.farmingEndTime > now) {
-                            isFarming = true;
-                            farmingStartTime = data.farmingStartTime;
-                            farmingEndTime = data.farmingEndTime;
-                            startFarmingAnimation();
-                        } else {
-                            // Farming completed, reset
-                            await resetFarming();
-                        }
-                    }
+            // Initialize TON Connect
+            tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                manifestUrl: 'https://trimint.vercel.app/tonconnect-manifest.json',
+                buttonRootId: null
+            });
+
+            tonConnectUI.onStatusChange(wallet => {
+                if (wallet) {
+                    isWalletConnected = true;
+                    document.getElementById('tonConnectBtn').innerHTML = '<i class="fas fa-wallet mr-2"></i>Disconnect Wallet';
+                    userData.tonWallet = wallet.account.address;
+                    updateUserData();
                 } else {
-                    // Create new user
-                    await db.collection('users').doc(userData.id.toString()).set({
-                        telegramId: userData.id,
-                        username: userData.username || userData.first_name,
-                        firstName: userData.first_name,
-                        lastName: userData.last_name || '',
-                        balance: 0,
-                        level: 1,
-                        completedQuizzes: 0,
-                        totalReferrals: 0,
-                        totalEarnings: 0,
-                        isFarming: false,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
+                    isWalletConnected = false;
+                    document.getElementById('tonConnectBtn').innerHTML = '<i class="fas fa-wallet mr-2"></i>Connect TON Wallet';
+                    userData.tonWallet = null;
                 }
-                
-                // Load other data
-                loadQuizzes();
-                loadTasks();
-                loadBlogPosts();
-                loadLeaderboard();
-                loadReferrals();
-                
-            } catch (error) {
-                console.error('Error loading user data:', error);
-                showToast('Error loading user data');
-            }
+            });
         }
 
-        // Update balance display
-        function updateBalance() {
-            document.getElementById('balance').textContent = `${currentBalance.toFixed(6)} TRM`;
-        }
-
-        // Farming functions
-        async function toggleFarming() {
-            if (isFarming) {
-                // Stop farming
-                await stopFarming();
-            } else {
-                // Start farming
-                await startFarming();
-            }
-        }
-
-        async function startFarming() {
-            if (!userData) return;
+        function loadUserData() {
+            if (!userData.userId) return;
             
-            isFarming = true;
-            farmingStartTime = Date.now();
-            farmingEndTime = farmingStartTime + (12 * 60 * 60 * 1000); // 12 hours
-            
-            try {
-                await db.collection('users').doc(userData.id.toString()).update({
-                    isFarming: true,
-                    farmingStartTime: farmingStartTime,
-                    farmingEndTime: farmingEndTime
+            db.collection('users').doc(userData.userId.toString()).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        userData = { ...userData, ...doc.data() };
+                        updateUI();
+                        
+                        // Check if farming is active
+                        if (userData.farming && userData.farmingEndTime) {
+                            startFarmingCountdown();
+                        }
+                    } else {
+                        // Create new user document
+                        saveUserData();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading user data:', error);
                 });
-                
-                startFarmingAnimation();
-                showToast('Farming started! Earn 0.001 TRM per second for 12 hours');
-                
-            } catch (error) {
-                console.error('Error starting farming:', error);
-                showToast('Error starting farming');
+        }
+
+        function saveUserData() {
+            if (!userData.userId) return;
+            
+            db.collection('users').doc(userData.userId.toString()).set(userData)
+                .then(() => {
+                    console.log('User data saved');
+                })
+                .catch(error => {
+                    console.error('Error saving user data:', error);
+                });
+        }
+
+        function updateUserData() {
+            saveUserData();
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('balanceAmount').textContent = userData.balance.toLocaleString();
+            document.getElementById('userLevel').textContent = userData.level;
+            document.getElementById('profileLevel').textContent = userData.level;
+            document.getElementById('profileBalance').textContent = userData.balance.toLocaleString() + ' TRM';
+            document.getElementById('quizCompleted').textContent = userData.quizCompleted;
+            document.getElementById('friendsInvited').textContent = userData.friendsInvited;
+            document.getElementById('completedTasks').textContent = userData.completedTasks;
+            document.getElementById('referralCount').textContent = userData.friendsInvited;
+            document.getElementById('totalReferrals').textContent = userData.friendsInvited;
+            document.getElementById('referralEarnings').textContent = (userData.friendsInvited * 5000).toLocaleString() + ' TRM';
+            
+            loadReferrals();
+        }
+
+        // Farming Functions
+        let farmingInterval = null;
+        let tokenAnimationInterval = null;
+
+        function toggleFarming() {
+            if (userData.farming) {
+                stopFarming();
+            } else {
+                startFarming();
             }
         }
 
-        function startFarmingAnimation() {
-            const coin = document.getElementById('coin');
-            const button = document.getElementById('farmingButton');
-            const countdown = document.getElementById('countdown');
+        function startFarming() {
+            userData.farming = true;
+            userData.farmingEndTime = Date.now() + (12 * 60 * 60 * 1000); // 12 hours from now
+            updateUserData();
             
-            coin.classList.add('farming');
-            button.innerHTML = '<i class="fas fa-stop"></i> Stop Farming';
-            button.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+            document.getElementById('farmButton').innerHTML = '<i class="fas fa-stop mr-2"></i>Stop Farming';
+            document.getElementById('farmingStatus').classList.remove('hidden');
+            document.getElementById('coinCircle').classList.add('farming');
+            
+            startFarmingCountdown();
+            startTokenAnimation();
+        }
+
+        function stopFarming() {
+            userData.farming = false;
+            userData.farmingEndTime = null;
+            updateUserData();
+            
+            document.getElementById('farmButton').innerHTML = '<i class="fas fa-seedling mr-2"></i>Start Farming';
+            document.getElementById('farmingStatus').classList.add('hidden');
+            document.getElementById('coinCircle').classList.remove('farming');
+            
+            if (farmingInterval) {
+                clearInterval(farmingInterval);
+            }
+            if (tokenAnimationInterval) {
+                clearInterval(tokenAnimationInterval);
+            }
+        }
+
+        function startFarmingCountdown() {
+            if (farmingInterval) {
+                clearInterval(farmingInterval);
+            }
             
             farmingInterval = setInterval(() => {
-                if (!isFarming) return;
-                
-                const now = Date.now();
-                const remaining = farmingEndTime - now;
-                
-                if (remaining <= 0) {
-                    completeFarming();
-                    return;
-                }
-                
-                // Add 0.001 TRM per second
-                currentBalance += 0.001;
-                updateBalance();
-                
-                // Show token animation
-                showTokenAnimation();
-                
-                // Update countdown
-                const hours = Math.floor(remaining / (1000 * 60 * 60));
-                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
-                
-                countdown.innerHTML = `⏰ Time remaining: ${hours}h ${minutes}m ${seconds}s`;
-                
-                // Save balance periodically
-                if (Date.now() % 10000 < 1000) { // Every 10 seconds
-                    saveUserData();
+                if (userData.farming && userData.farmingEndTime) {
+                    const now = Date.now();
+                    const remaining = userData.farmingEndTime - now;
+                    
+                    if (remaining <= 0) {
+                        stopFarming();
+                        return;
+                    }
+                    
+                    const hours = Math.floor(remaining / (1000 * 60 * 60));
+                    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+                    
+                    document.getElementById('farmingTime').textContent = 
+                        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    // Add tokens every second
+                    userData.balance += 0.001;
+                    updateUI();
                 }
             }, 1000);
         }
 
-        async function stopFarming() {
-            isFarming = false;
-            
-            if (farmingInterval) {
-                clearInterval(farmingInterval);
-                farmingInterval = null;
+        function startTokenAnimation() {
+            if (tokenAnimationInterval) {
+                clearInterval(tokenAnimationInterval);
             }
             
-            await resetFarming();
-            await saveUserData();
-            showToast('Farming stopped');
+            tokenAnimationInterval = setInterval(() => {
+                createTokenAnimation();
+            }, 1000);
         }
 
-        async function completeFarming() {
-            isFarming = false;
+        function createTokenAnimation() {
+            const coinContainer = document.querySelector('.coin-container');
+            const animation = document.createElement('div');
+            animation.className = 'token-animation';
+            animation.textContent = '+0.001 TRM';
+            animation.style.left = Math.random() * 100 + 'px';
+            animation.style.top = '50%';
             
-            if (farmingInterval) {
-                clearInterval(farmingInterval);
-                farmingInterval = null;
-            }
-            
-            showToast('Farming completed! You earned 43.2 TRM');
-            await resetFarming();
-            await saveUserData();
-        }
-
-        async function resetFarming() {
-            const coin = document.getElementById('coin');
-            const button = document.getElementById('farmingButton');
-            const countdown = document.getElementById('countdown');
-            
-            coin.classList.remove('farming');
-            button.innerHTML = '<i class="fas fa-seedling"></i> Start Farming';
-            button.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-            countdown.innerHTML = '';
-            
-            try {
-                await db.collection('users').doc(userData.id.toString()).update({
-                    isFarming: false,
-                    farmingStartTime: null,
-                    farmingEndTime: null
-                });
-            } catch (error) {
-                console.error('Error resetting farming:', error);
-            }
-        }
-
-        function showTokenAnimation() {
-            const coin = document.getElementById('coin');
-            const token = document.createElement('div');
-            token.className = 'token-float';
-            token.textContent = '+0.001 TRM';
-            token.style.left = '50%';
-            token.style.top = '50%';
-            
-            coin.parentElement.appendChild(token);
+            coinContainer.appendChild(animation);
             
             setTimeout(() => {
-                token.remove();
+                animation.remove();
             }, 2000);
         }
 
-        // Save user data
-        async function saveUserData() {
-            if (!userData) return;
-            
-            try {
-                await db.collection('users').doc(userData.id.toString()).update({
-                    balance: currentBalance,
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            } catch (error) {
-                console.error('Error saving user data:', error);
+        // TON Connect Functions
+        function toggleTonConnect() {
+            if (isWalletConnected) {
+                tonConnectUI.disconnect();
+            } else {
+                tonConnectUI.connectWallet();
             }
         }
 
-        // Section switching
-        function switchSection(section) {
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(sec => {
-                sec.classList.remove('active');
-            });
-            
-            // Remove active class from all nav items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Show selected section
-            document.getElementById(section + 'Section').classList.add('active');
-            
-            // Add active class to corresponding nav item
-            const navItems = document.querySelectorAll('.nav-item');
-            const sectionMap = {
-                'home': 0,
-                'quiz': 1,
-                'blog': 2,
-                'tasks': 3,
-                'friends': 4
-            };
-            
-            if (sectionMap[section] !== undefined) {
-                navItems[sectionMap[section]].classList.add('active');
-            }
-            
-            // Special handling for specific sections
-            if (section === 'leaderboard') {
-                loadLeaderboard();
-            } else if (section === 'profile') {
-                showProfile();
-            }
+        // Navigation Functions
+        function showHome() {
+            hideAllSections();
+            document.getElementById('homeSection').classList.remove('section-hidden');
         }
 
-        // Profile functions
         function showProfile() {
-            switchSection('profile');
+            hideAllSections();
+            document.getElementById('profileSection').classList.remove('section-hidden');
         }
 
-        // TON Wallet connection
-        function connectTonWallet() {
-            // Open TON connection in new window
-            const url = 'https://trimint.vercel.app/';
-            window.open(url, '_blank');
-            showToast('Opening TON wallet connection...');
+        function showQuiz() {
+            hideAllSections();
+            document.getElementById('quizSection').classList.remove('section-hidden');
+            loadQuiz();
         }
 
-        // Quiz functions
-        async function loadQuizzes() {
-            try {
-                const quizzesSnapshot = await db.collection('quizzes').limit(10).get();
-                const container = document.getElementById('quizContainer');
-                container.innerHTML = '';
-                
-                if (quizzesSnapshot.empty) {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-question-circle"></i><p>No quizzes available yet</p></div>';
-                    return;
-                }
-                
-                quizzesSnapshot.forEach(doc => {
-                    const quiz = doc.data();
-                    const quizCard = createQuizCard(doc.id, quiz);
-                    container.appendChild(quizCard);
-                });
-                
-            } catch (error) {
-                console.error('Error loading quizzes:', error);
-                showToast('Error loading quizzes');
+        function showBlog() {
+            hideAllSections();
+            document.getElementById('blogSection').classList.remove('section-hidden');
+        }
+
+        function showTasks() {
+            hideAllSections();
+            document.getElementById('tasksSection').classList.remove('section-hidden');
+        }
+
+        function showFriends() {
+            hideAllSections();
+            document.getElementById('friendsSection').classList.remove('section-hidden');
+        }
+
+        function showLeaderboard() {
+            hideAllSections();
+            document.getElementById('leaderboardSection').classList.remove('section-hidden');
+        }
+
+        function hideAllSections() {
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.add('section-hidden');
+            });
+        }
+
+        // Quiz Functions
+        const quizQuestions = [
+            {
+                question: "What is TON?",
+                options: ["The Open Network", "Telegram Only Network", "Token Operating Network", "Trust On Network"],
+                correct: 0,
+                reward: 1500
+            },
+            {
+                question: "Who created TON?",
+                options: ["Vitalik Buterin", "Pavel Durov", "Satoshi Nakamoto", "Charles Hoskinson"],
+                correct: 1,
+                reward: 1500
+            },
+            {
+                question: "What is the native token of TON?",
+                options: ["ETH", "TON", "BTC", "TRM"],
+                correct: 1,
+                reward: 1500
+            },
+            {
+                question: "What is TON's consensus mechanism?",
+                options: ["Proof of Work", "Proof of Stake", "Delegated Proof of Stake", "Proof of Authority"],
+                correct: 2,
+                reward: 1500
+            },
+            {
+                question: "What is Telegram's role in TON?",
+                options: ["Full control", "No involvement", "Initial creator, now independent", "Mining operator"],
+                correct: 2,
+                reward: 1500
             }
-        }
+        ];
 
-        function createQuizCard(quizId, quiz) {
-            const card = document.createElement('div');
-            card.className = 'card quiz-card fade-in';
-            card.innerHTML = `
-                <h3>${quiz.title}</h3>
-                <p>${quiz.description}</p>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
-                    <span><i class="fas fa-coins"></i> ${(quiz.reward || 1500)} TRM</span>
-                    <span><i class="fas fa-clock"></i> ${quiz.duration || 5} min</span>
+        let currentQuizIndex = 0;
+
+        function loadQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+            
+            const quiz = quizQuestions[currentQuizIndex];
+            const quizCard = document.createElement('div');
+            quizCard.className = 'quiz-card rounded-2xl p-6 text-white';
+            quizCard.innerHTML = `
+                <h3 class="text-xl font-bold mb-4">${quiz.question}</h3>
+                <div class="space-y-3">
+                    ${quiz.options.map((option, index) => `
+                        <button onclick="answerQuiz(${index})" class="w-full bg-white/20 p-4 rounded-xl text-left hover:bg-white/30 transition-all">
+                            ${option}
+                        </button>
+                    `).join('')}
                 </div>
             `;
-            card.onclick = () => startQuiz(quizId, quiz);
-            return card;
+            container.appendChild(quizCard);
         }
 
-        function startQuiz(quizId, quiz) {
-            const modal = document.getElementById('modal');
-            const modalContent = document.getElementById('modalContent');
+        function answerQuiz(answerIndex) {
+            const quiz = quizQuestions[currentQuizIndex];
+            if (answerIndex === quiz.correct) {
+                userData.balance += quiz.reward;
+                userData.quizCompleted++;
+                updateUserData();
+                
+                document.getElementById('quizContainer').classList.add('hidden');
+                document.getElementById('quizResult').classList.remove('hidden');
+                document.getElementById('quizReward').textContent = quiz.reward;
+            } else {
+                alert('Wrong answer! Try again.');
+                loadQuiz();
+            }
+        }
+
+        function nextQuiz() {
+            currentQuizIndex = (currentQuizIndex + 1) % quizQuestions.length;
+            document.getElementById('quizContainer').classList.remove('hidden');
+            document.getElementById('quizResult').classList.add('hidden');
+            loadQuiz();
+        }
+
+        // Blog Functions
+        function loadBlogPosts() {
+            // Sample blog posts - in real app, load from Firebase
+            const samplePosts = [
+                {
+                    id: 1,
+                    author: "John Doe",
+                    content: "TON is the future of blockchain! Amazing technology and great community.",
+                    likes: 15,
+                    comments: 3,
+                    timestamp: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    author: "Jane Smith",
+                    content: "Just completed my first quiz and earned 1500 TRM! This app is awesome!",
+                    likes: 23,
+                    comments: 7,
+                    timestamp: new Date().toISOString()
+                }
+            ];
             
-            modalContent.innerHTML = `
-                <h2>${quiz.title}</h2>
-                <p>${quiz.description}</p>
-                <div id="quizQuestions">
-                    ${quiz.questions ? quiz.questions.map((q, index) => `
-                        <div class="card" style="margin-top: 15px;">
-                            <h4>Question ${index + 1}</h4>
-                            <p>${q.question}</p>
-                            <div style="margin-top: 10px;">
-                                ${q.options.map((option, optIndex) => `
-                                    <label style="display: block; margin: 5px 0; cursor: pointer;">
-                                        <input type="radio" name="question_${index}" value="${optIndex}">
-                                        ${option}
-                                    </label>
-                                `).join('')}
+            displayBlogPosts(samplePosts);
+        }
+
+        function displayBlogPosts(posts) {
+            const container = document.getElementById('blogContainer');
+            container.innerHTML = '';
+            
+            posts.forEach(post => {
+                const postCard = document.createElement('div');
+                postCard.className = 'blog-post rounded-2xl p-6';
+                postCard.innerHTML = `
+                    <div class="flex items-start space-x-3 mb-4">
+                        <img src="https://picsum.photos/seed/${post.author}/40/40" alt="${post.author}" class="w-10 h-10 rounded-full">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-800">${post.author}</h4>
+                            <p class="text-gray-500 text-sm">${new Date(post.timestamp).toLocaleDateString()}</p>
+                        </div>
+                        ${post.author === telegramUser?.first_name ? `
+                            <button onclick="deleteBlogPost(${post.id})" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                    <p class="text-gray-700 mb-4">${post.content}</p>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="likeBlogPost(${post.id})" class="flex items-center space-x-1 text-gray-600 hover:text-red-500">
+                            <i class="fas fa-heart"></i>
+                            <span>${post.likes}</span>
+                        </button>
+                        <button onclick="commentOnPost(${post.id})" class="flex items-center space-x-1 text-gray-600 hover:text-blue-500">
+                            <i class="fas fa-comment"></i>
+                            <span>${post.comments}</span>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(postCard);
+            });
+        }
+
+        function createBlogPost() {
+            const content = prompt('Write your blog post:');
+            if (content && telegramUser) {
+                const newPost = {
+                    id: Date.now(),
+                    author: telegramUser.first_name,
+                    content: content,
+                    likes: 0,
+                    comments: 0,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // In real app, save to Firebase
+                console.log('New blog post:', newPost);
+                alert('Blog post created successfully!');
+                loadBlogPosts();
+            }
+        }
+
+        function deleteBlogPost(postId) {
+            if (confirm('Are you sure you want to delete this post?')) {
+                // In real app, delete from Firebase
+                console.log('Delete post:', postId);
+                alert('Post deleted successfully!');
+                loadBlogPosts();
+            }
+        }
+
+        function likeBlogPost(postId) {
+            // In real app, update likes in Firebase
+            console.log('Like post:', postId);
+            loadBlogPosts();
+        }
+
+        function commentOnPost(postId) {
+            const comment = prompt('Write your comment:');
+            if (comment) {
+                // In real app, add comment to Firebase
+                console.log('Comment on post:', postId, comment);
+                alert('Comment added successfully!');
+            }
+        }
+
+        // Tasks Functions
+        function loadTasks() {
+            // Sample tasks - in real app, load from Firebase
+            const sampleTasks = [
+                {
+                    id: 1,
+                    name: "Join TON Community",
+                    description: "Join our official TON community group",
+                    reward: 1000,
+                    link: "https://t.me/toncoin",
+                    completed: false
+                },
+                {
+                    id: 2,
+                    name: "Follow us on X",
+                    description: "Follow our official X account",
+                    reward: 500,
+                    link: "https://twitter.com/ton_blockchain",
+                    completed: false
+                }
+            ];
+            
+            displayTasks(sampleTasks);
+        }
+
+        function displayTasks(tasks) {
+            const container = document.getElementById('tasksContainer');
+            container.innerHTML = '';
+            
+            tasks.forEach(task => {
+                const taskCard = document.createElement('div');
+                taskCard.className = 'task-card rounded-2xl p-4';
+                taskCard.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-white/20 p-3 rounded-xl">
+                                <i class="fas fa-external-link-alt text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-bold">${task.name}</h3>
+                                <p class="text-white/70 text-sm">${task.description}</p>
                             </div>
                         </div>
-                    `).join('') : '<p>Loading questions...</p>'}
-                </div>
-                <button class="btn btn-primary" style="margin-top: 20px; width: 100%;" onclick="submitQuiz('${quizId}')">
-                    Submit Quiz
-                </button>
-            `;
-            
-            modal.classList.add('active');
-        }
-
-        async function submitQuiz(quizId) {
-            try {
-                // Check if user has already completed this quiz
-                const completionDoc = await db.collection('quizCompletions')
-                    .where('userId', '==', userData.id.toString())
-                    .where('quizId', '==', quizId)
-                    .get();
-                
-                if (!completionDoc.empty) {
-                    showToast('You have already completed this quiz');
-                    closeModal();
-                    return;
-                }
-                
-                // Mark quiz as completed
-                await db.collection('quizCompletions').add({
-                    userId: userData.id.toString(),
-                    quizId: quizId,
-                    completedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                // Add reward to balance
-                currentBalance += 1500;
-                updateBalance();
-                await saveUserData();
-                
-                // Update user stats
-                await db.collection('users').doc(userData.id.toString()).update({
-                    completedQuizzes: firebase.firestore.FieldValue.increment(1),
-                    totalEarnings: firebase.firestore.FieldValue.increment(1500)
-                });
-                
-                showToast('Quiz completed! You earned 1500 TRM');
-                closeModal();
-                loadQuizzes();
-                
-            } catch (error) {
-                console.error('Error submitting quiz:', error);
-                showToast('Error submitting quiz');
-            }
-        }
-
-        // Task functions
-        async function loadTasks() {
-            try {
-                const tasksSnapshot = await db.collection('tasks').orderBy('createdAt', 'desc').get();
-                const container = document.getElementById('tasksContainer');
-                container.innerHTML = '';
-                
-                // Add Watch Ads task at the top
-                const watchAdsTask = createWatchAdsTask();
-                container.appendChild(watchAdsTask);
-                
-                if (tasksSnapshot.empty) {
-                    container.innerHTML += '<div class="empty-state"><i class="fas fa-tasks"></i><p>No tasks available yet</p></div>';
-                    return;
-                }
-                
-                const userTasksSnapshot = await db.collection('taskCompletions')
-                    .where('userId', '==', userData.id.toString())
-                    .get();
-                
-                const completedTasks = new Set();
-                userTasksSnapshot.forEach(doc => {
-                    completedTasks.add(doc.data().taskId);
-                });
-                
-                tasksSnapshot.forEach(doc => {
-                    const task = doc.data();
-                    const taskCard = createTaskCard(doc.id, task, completedTasks.has(doc.id));
-                    container.appendChild(taskCard);
-                });
-                
-            } catch (error) {
-                console.error('Error loading tasks:', error);
-                showToast('Error loading tasks');
-            }
-        }
-
-        function createWatchAdsTask() {
-            const taskCard = document.createElement('div');
-            taskCard.className = 'task-card';
-            taskCard.innerHTML = `
-                <div class="task-icon">
-                    <i class="fas fa-ad"></i>
-                </div>
-                <div class="task-details">
-                    <h3>Watch Ads</h3>
-                    <p>Watch advertisements to earn 1 TRM token</p>
-                </div>
-                <button class="task-button open" onclick="watchAds()">
-                    OPEN
-                </button>
-            `;
-            return taskCard;
-        }
-
-        function watchAds() {
-            // Show ads and give reward
-            if (typeof show_10290264 === 'function') {
-                show_10290264();
-                setTimeout(() => {
-                    currentBalance += 1;
-                    updateBalance();
-                    saveUserData();
-                    showToast('You earned 1 TRM from watching ads!');
-                }, 3000);
-            } else {
-                showToast('Ads loading...');
-            }
-        }
-
-        function createTaskCard(taskId, task, isCompleted) {
-            const taskCard = document.createElement('div');
-            taskCard.className = 'task-card';
-            
-            let buttonClass = 'open';
-            let buttonText = 'OPEN';
-            let buttonAction = `openTask('${taskId}', '${task.link}', ${task.reward || 0})`;
-            
-            if (isCompleted) {
-                buttonClass = 'completed';
-                buttonText = 'COMPLETED';
-                buttonAction = `openTask('${taskId}', '${task.link}', 0)`;
-            }
-            
-            taskCard.innerHTML = `
-                <div class="task-icon">
-                    <i class="fas fa-${task.icon || 'external-link-alt'}"></i>
-                </div>
-                <div class="task-details">
-                    <h3>${task.name}</h3>
-                    <p>${task.description}</p>
-                    <small><i class="fas fa-coins"></i> ${task.reward || 0} TRM</small>
-                </div>
-                <button class="task-button ${buttonClass}" onclick="${buttonAction}">
-                    ${buttonText}
-                </button>
-            `;
-            
-            return taskCard;
-        }
-
-        async function openTask(taskId, link, reward) {
-            if (reward > 0) {
-                // Check if already completed
-                const completionDoc = await db.collection('taskCompletions')
-                    .where('userId', '==', userData.id.toString())
-                    .where('taskId', '==', taskId)
-                    .get();
-                
-                if (!completionDoc.empty) {
-                    window.open(link, '_blank');
-                    return;
-                }
-                
-                // Mark as processing
-                const button = event.target;
-                button.className = 'task-button processing';
-                button.textContent = 'PROCESSING...';
-                button.disabled = true;
-                
-                setTimeout(async () => {
-                    // Add reward
-                    currentBalance += reward;
-                    updateBalance();
-                    await saveUserData();
-                    
-                    // Mark as completed
-                    await db.collection('taskCompletions').add({
-                        userId: userData.id.toString(),
-                        taskId: taskId,
-                        completedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    // Update user stats
-                    await db.collection('users').doc(userData.id.toString()).update({
-                        totalEarnings: firebase.firestore.FieldValue.increment(reward)
-                    });
-                    
-                    button.className = 'task-button completed';
-                    button.textContent = 'COMPLETED';
-                    button.disabled = false;
-                    
-                    showToast(`Task completed! You earned ${reward} TRM`);
-                }, 10000);
-            }
-            
-            window.open(link, '_blank');
-        }
-
-        // Blog functions
-        async function loadBlogPosts() {
-            try {
-                const postsSnapshot = await db.collection('blogPosts')
-                    .orderBy('createdAt', 'desc')
-                    .get();
-                
-                const container = document.getElementById('blogContainer');
-                container.innerHTML = '';
-                
-                if (postsSnapshot.empty) {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-blog"></i><p>No blog posts yet. Be the first to share!</p></div>';
-                    return;
-                }
-                
-                postsSnapshot.forEach(doc => {
-                    const post = doc.data();
-                    const postElement = createBlogPostElement(doc.id, post);
-                    container.appendChild(postElement);
-                });
-                
-            } catch (error) {
-                console.error('Error loading blog posts:', error);
-                showToast('Error loading blog posts');
-            }
-        }
-
-        function createBlogPostElement(postId, post) {
-            const postDiv = document.createElement('div');
-            postDiv.className = 'blog-post fade-in';
-            
-            const timeAgo = getTimeAgo(post.createdAt?.toDate());
-            const isAuthor = userData && post.authorId === userData.id.toString();
-            
-            postDiv.innerHTML = `
-                <div class="blog-header">
-                    <img src="${post.authorAvatar || 'https://via.placeholder.com/40'}" style="width: 40px; height: 40px; border-radius: 50%;">
-                    <div>
-                        <div class="blog-author">${post.authorName}</div>
-                        <small style="color: #6b7280;">${timeAgo}</small>
+                        <div class="text-right">
+                            <p class="text-yellow-400 font-bold">${task.reward} TRM</p>
+                            <button id="taskBtn${task.id}" onclick="completeTask(${task.id}, '${task.link}', ${task.reward})" class="bg-white/20 text-white px-4 py-2 rounded-full text-sm mt-1">
+                                ${task.completed ? 'Completed' : 'Open'}
+                            </button>
+                        </div>
                     </div>
-                    ${isAuthor ? `<button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="deleteBlogPost('${postId}')"><i class="fas fa-trash"></i></button>` : ''}
-                </div>
-                <div class="blog-content">${post.content}</div>
-                <div class="blog-actions">
-                    <div class="blog-action ${post.likedBy?.includes(userData?.id.toString()) ? 'liked' : ''}" onclick="toggleLike('${postId}')">
-                        <i class="fas fa-heart"></i>
-                        <span>${post.likes || 0}</span>
-                    </div>
-                    <div class="blog-action" onclick="showComments('${postId}')">
-                        <i class="fas fa-comment"></i>
-                        <span>${post.comments || 0}</span>
-                    </div>
-                </div>
-            `;
-            
-            return postDiv;
+                `;
+                container.appendChild(taskCard);
+            });
         }
 
-        function showCreateBlog() {
-            const modal = document.getElementById('modal');
-            const modalContent = document.getElementById('modalContent');
-            
-            modalContent.innerHTML = `
-                <h2>Create Blog Post</h2>
-                <div class="form-group">
-                    <label class="form-label">Content</label>
-                    <textarea class="form-input form-textarea" id="blogContent" placeholder="Share your experience..."></textarea>
-                </div>
-                <button class="btn btn-primary" style="width: 100%;" onclick="createBlogPost()">
-                    <i class="fas fa-paper-plane"></i> Publish Post
-                </button>
-            `;
-            
-            modal.classList.add('active');
-        }
-
-        async function createBlogPost() {
-            const content = document.getElementById('blogContent').value.trim();
-            
-            if (!content) {
-                showToast('Please write some content');
+        function completeTask(taskId, link, reward) {
+            const button = document.getElementById(`taskBtn${taskId}`);
+            if (button.textContent === 'Completed') {
+                window.open(link, '_blank');
                 return;
             }
             
-            try {
-                await db.collection('blogPosts').add({
-                    authorId: userData.id.toString(),
-                    authorName: userData.first_name + (userData.last_name ? ' ' + userData.last_name : ''),
-                    authorAvatar: userData.photo_url,
-                    content: content,
-                    likes: 0,
-                    likedBy: [],
-                    comments: 0,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                showToast('Blog post published successfully!');
-                closeModal();
-                loadBlogPosts();
-                
-            } catch (error) {
-                console.error('Error creating blog post:', error);
-                showToast('Error creating blog post');
-            }
-        }
-
-        async function toggleLike(postId) {
-            try {
-                const postDoc = await db.collection('blogPosts').doc(postId).get();
-                const post = postDoc.data();
-                
-                let likedBy = post.likedBy || [];
-                const userId = userData.id.toString();
-                const isLiked = likedBy.includes(userId);
-                
-                if (isLiked) {
-                    likedBy = likedBy.filter(id => id !== userId);
-                } else {
-                    likedBy.push(userId);
-                }
-                
-                await db.collection('blogPosts').doc(postId).update({
-                    likedBy: likedBy,
-                    likes: likedBy.length
-                });
-                
-                loadBlogPosts();
-                
-            } catch (error) {
-                console.error('Error toggling like:', error);
-                showToast('Error toggling like');
-            }
-        }
-
-        async function deleteBlogPost(postId) {
-            if (confirm('Are you sure you want to delete this post?')) {
-                try {
-                    await db.collection('blogPosts').doc(postId).delete();
-                    showToast('Post deleted successfully');
-                    loadBlogPosts();
-                } catch (error) {
-                    console.error('Error deleting post:', error);
-                    showToast('Error deleting post');
-                }
-            }
-        }
-
-        function showComments(postId) {
-            showToast('Comments feature coming soon!');
-        }
-
-        // Leaderboard functions
-        async function loadLeaderboard() {
-            try {
-                const usersSnapshot = await db.collection('users')
-                    .orderBy('balance', 'desc')
-                    .limit(25)
-                    .get();
-                
-                const container = document.getElementById('leaderboardList');
-                container.innerHTML = '';
-                
-                if (usersSnapshot.empty) {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-trophy"></i><p>No users on leaderboard yet</p></div>';
-                    return;
-                }
-                
-                let userRank = '--';
-                usersSnapshot.forEach((doc, index) => {
-                    const user = doc.data();
-                    const rank = index + 1;
-                    
-                    if (user.telegramId === userData?.id) {
-                        userRank = rank;
-                        document.getElementById('userRank').textContent = `#${rank}`;
-                    }
-                    
-                    const leaderboardItem = createLeaderboardItem(rank, user);
-                    container.appendChild(leaderboardItem);
-                });
-                
-                if (userRank === '--') {
-                    document.getElementById('userRank').textContent = 'Not ranked';
-                }
-                
-            } catch (error) {
-                console.error('Error loading leaderboard:', error);
-                showToast('Error loading leaderboard');
-            }
-        }
-
-        function createLeaderboardItem(rank, user) {
-            const item = document.createElement('div');
-            item.className = 'leaderboard-item fade-in';
+            window.open(link, '_blank');
+            button.textContent = 'Processing...';
             
-            let rankClass = '';
-            if (rank === 1) rankClass = 'gold';
-            else if (rank === 2) rankClass = 'silver';
-            else if (rank === 3) rankClass = 'bronze';
-            
-            const isCurrentUser = user.telegramId === userData?.id;
-            
-            item.innerHTML = `
-                <div class="rank ${rankClass}">${rank}</div>
-                <img src="${user.photo_url || 'https://via.placeholder.com/50'}" style="width: 50px; height: 50px; border-radius: 50%;">
-                <div style="flex: 1;">
-                    <div style="font-weight: bold; ${isCurrentUser ? 'color: var(--primary);' : ''}">
-                        ${user.firstName}${user.lastName ? ' ' + user.lastName : ''} ${isCurrentUser ? '(You)' : ''}
-                    </div>
-                    <small style="color: #6b7280;">Level ${user.level || 1}</small>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-weight: bold;">${(user.balance || 0).toFixed(6)} TRM</div>
-                    <small style="color: #6b7280;">${user.totalReferrals || 0} refs</small>
-                </div>
-            `;
-            
-            return item;
+            setTimeout(() => {
+                userData.balance += reward;
+                userData.completedTasks++;
+                updateUserData();
+                button.textContent = 'Completed';
+            }, 10000);
         }
 
-        // Referral functions
+        function watchAd() {
+            // Show ads using Monetag
+            if (window.libtl) {
+                window.libtl.showAd();
+            }
+            
+            // Add 1 TRM after watching ad
+            setTimeout(() => {
+                userData.balance += 1;
+                updateUserData();
+                alert('You earned 1 TRM!');
+            }, 5000);
+        }
+
+        // Friends Functions
         function copyReferralLink() {
-            const referralLink = document.getElementById('referralLink').textContent;
-            navigator.clipboard.writeText(referralLink).then(() => {
-                showToast('Referral link copied to clipboard!');
-            }).catch(() => {
-                showToast('Failed to copy link');
+            const link = document.getElementById('referralLink').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Referral link copied to clipboard!');
             });
         }
 
-        async function loadReferrals() {
-            if (!userData) return;
-            
-            try {
-                const referralsSnapshot = await db.collection('users')
-                    .where('referredBy', '==', userData.id.toString())
-                    .get();
-                
-                const container = document.getElementById('referralsList');
-                const totalReferralsElement = document.getElementById('totalReferrals');
-                
-                if (referralsSnapshot.empty) {
-                    container.innerHTML = '<p style="text-align: center; color: #6b7280;">No referrals yet</p>';
-                    totalReferralsElement.textContent = '0';
-                    return;
-                }
-                
-                container.innerHTML = '';
-                let totalReferrals = 0;
-                
-                referralsSnapshot.forEach(doc => {
-                    const referral = doc.data();
-                    totalReferrals++;
-                    
-                    const referralDiv = document.createElement('div');
-                    referralDiv.className = 'leaderboard-item';
-                    referralDiv.innerHTML = `
-                        <img src="${referral.photo_url || 'https://via.placeholder.com/40'}" style="width: 40px; height: 40px; border-radius: 50%;">
-                        <div style="flex: 1;">
-                            <div style="font-weight: bold;">${referral.firstName}${referral.lastName ? ' ' + referral.lastName : ''}</div>
-                            <small style="color: #6b7280;">Joined ${getTimeAgo(referral.createdAt?.toDate())}</small>
-                        </div>
-                        <div style="color: var(--success);">
-                            <i class="fas fa-coins"></i> 5000 TRM
-                        </div>
-                    `;
-                    container.appendChild(referralDiv);
-                });
-                
-                totalReferralsElement.textContent = totalReferrals;
-                
-            } catch (error) {
-                console.error('Error loading referrals:', error);
-                showToast('Error loading referrals');
+        function loadReferrals() {
+            // In real app, load from Firebase
+            const referralsList = document.getElementById('referralsList');
+            referralsList.innerHTML = '<p class="text-white/70 text-center">No referrals yet</p>';
+        }
+
+        function processReferral(referrerId) {
+            if (userData.userId && referrerId && userData.userId.toString() !== referrerId) {
+                // Check if this user was already referred
+                // In real app, check Firebase
+                userData.balance += 5000;
+                updateUserData();
+                alert('Welcome bonus! You received 5000 TRM from referral!');
             }
         }
 
-        // Utility functions
-        function getTimeAgo(date) {
-            if (!date) return 'Unknown time';
+        // Leaderboard Functions
+        function loadLeaderboard() {
+            // Sample leaderboard data - in real app, load from Firebase
+            const sampleLeaderboard = [
+                { rank: 1, name: "Alice", balance: 50000, level: 10, photo: "alice" },
+                { rank: 2, name: "Bob", balance: 45000, level: 9, photo: "bob" },
+                { rank: 3, name: "Charlie", balance: 40000, level: 8, photo: "charlie" }
+            ];
             
-            const seconds = Math.floor((new Date() - date) / 1000);
-            
-            let interval = seconds / 31536000;
-            if (interval > 1) return Math.floor(interval) + ' years ago';
-            
-            interval = seconds / 2592000;
-            if (interval > 1) return Math.floor(interval) + ' months ago';
-            
-            interval = seconds / 86400;
-            if (interval > 1) return Math.floor(interval) + ' days ago';
-            
-            interval = seconds / 3600;
-            if (interval > 1) return Math.floor(interval) + ' hours ago';
-            
-            interval = seconds / 60;
-            if (interval > 1) return Math.floor(interval) + ' minutes ago';
-            
-            return 'Just now';
+            displayLeaderboard(sampleLeaderboard);
         }
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
+        function displayLeaderboard(leaderboard) {
+            const container = document.getElementById('leaderboardList');
+            container.innerHTML = '';
             
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            leaderboard.forEach(user => {
+                const userCard = document.createElement('div');
+                userCard.className = 'leaderboard-item rounded-xl p-3';
+                userCard.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-yellow-400 font-bold">#${user.rank}</span>
+                            <img src="https://picsum.photos/seed/${user.photo}/40/40" alt="${user.name}" class="w-10 h-10 rounded-full">
+                            <div>
+                                <p class="text-white font-semibold">${user.name}</p>
+                                <p class="text-white/70 text-sm">Level ${user.level}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-yellow-400 font-bold">${user.balance.toLocaleString()} TRM</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(userCard);
+            });
         }
 
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-        }
-
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            initTelegram();
-            
-            // Check for referral in URL parameters
+        // Check for referral in URL
+        function checkReferral() {
             const urlParams = new URLSearchParams(window.location.search);
-            const referralCode = urlParams.get('start');
-            
-            if (referralCode && userData && userData.id.toString() !== referralCode) {
-                // Process referral
-                processReferral(referralCode);
-            }
-            
-            // Load ads
-            setTimeout(() => {
-                const adsContainer = document.getElementById('adsContainer');
-                if (adsContainer && typeof show_10290264 === 'function') {
-                    adsContainer.innerHTML = '<div style="padding: 10px;">Ads will appear here</div>';
-                }
-            }, 2000);
-        });
-
-        // Process referral
-        async function processReferral(referrerId) {
-            if (!userData) return;
-            
-            try {
-                // Check if user was already referred
-                const userDoc = await db.collection('users').doc(userData.id.toString()).get();
-                if (userDoc.exists && userDoc.data().referredBy) {
-                    return; // Already referred
-                }
-                
-                // Update user with referrer
-                await db.collection('users').doc(userData.id.toString()).update({
-                    referredBy: referrerId
-                });
-                
-                // Add referral reward to user
-                currentBalance += 5000;
-                updateBalance();
-                await saveUserData();
-                
-                // Update referrer stats
-                await db.collection('users').doc(referrerId).update({
-                    totalReferrals: firebase.firestore.FieldValue.increment(1),
-                    totalEarnings: firebase.firestore.FieldValue.increment(5000)
-                });
-                
-                // Record referral
-                await db.collection('referrals').add({
-                    referrerId: referrerId,
-                    referredId: userData.id.toString(),
-                    reward: 5000,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                showToast('Welcome! You received 5000 TRM from referral!');
-                
-            } catch (error) {
-                console.error('Error processing referral:', error);
+            const referrerId = urlParams.get('ref');
+            if (referrerId) {
+                processReferral(referrerId);
             }
         }
+
+        // Initialize referral check
+        checkReferral();
     </script>
 </body>
 </html>
