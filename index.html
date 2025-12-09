@@ -1151,6 +1151,47 @@
         const referralEarnings = document.getElementById('referralEarnings');
         const referralsList = document.getElementById('referralsList');
         
+        // Function to send data to Telegram Bot API
+        async function sendToTelegramBot(method, data) {
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/${method}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Telegram API error: ${response.statusText}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('Error sending data to Telegram Bot:', error);
+                return null;
+            }
+        }
+        
+        // Function to log user activity to Telegram Bot
+        async function logUserActivity(action, details = {}) {
+            if (!currentUser) return;
+            
+            const message = `User Activity:\n` +
+                          `User: ${currentUser.first_name} ${currentUser.last_name || ''} (@${currentUser.username || 'N/A'})\n` +
+                          `ID: ${currentUser.id}\n` +
+                          `Action: ${action}\n` +
+                          `Details: ${JSON.stringify(details)}\n` +
+                          `Timestamp: ${new Date().toISOString()}`;
+            
+            // Send to admin channel (replace with your admin chat ID)
+            await sendToTelegramBot('sendMessage', {
+                chat_id: 'YOUR_ADMIN_CHAT_ID', // Replace with your admin chat ID
+                text: message,
+                parse_mode: 'HTML'
+            });
+        }
+        
         // Initialize Telegram Web App
         function initTelegramWebApp() {
             if (window.Telegram && window.Telegram.WebApp) {
@@ -1168,6 +1209,12 @@
                     
                     // Generate referral link
                     referralLink.textContent = `https://t.me/TrimintBot/mine?startapp=${currentUser.id}`;
+                    
+                    // Log user login
+                    logUserActivity('Login', {
+                        platform: 'Telegram Web App',
+                        referrer: document.referrer
+                    });
                     
                     // Check if user came from a referral
                     const urlParams = new URLSearchParams(window.location.search);
@@ -1254,6 +1301,13 @@
                     updateLevel();
                     updateSettings();
                     
+                    // Log user data loaded
+                    logUserActivity('Data Loaded', {
+                        balance: balance,
+                        isFarming: isFarming,
+                        level: userData.level || 'Bronze'
+                    });
+                    
                     // Check if farming was in progress
                     if (isFarming && farmingEndTime) {
                         const now = new Date().getTime();
@@ -1290,9 +1344,21 @@
                         referrals: [],
                         walletAddress: null,
                         settings: settings,
-                        createdAt: new Date()
+                        createdAt: new Date(),
+                        lastActive: new Date()
+                    });
+                    
+                    // Log new user registration
+                    logUserActivity('New User Registration', {
+                        username: currentUser.username,
+                        name: `${currentUser.first_name} ${currentUser.last_name || ''}`
                     });
                 }
+                
+                // Update last active time
+                userRef.update({
+                    lastActive: new Date()
+                });
                 
                 // Load tasks
                 loadTasks();
@@ -1302,9 +1368,6 @@
                 
                 // Load referrals
                 loadReferrals();
-            }).catch((error) => {
-                console.error("Error loading user data:", error);
-                showNotification("Error", "Failed to load user data. Please try again.");
             });
         }
         
@@ -1312,15 +1375,6 @@
         function updateBalance() {
             userBalance.textContent = `${balance.toFixed(3)} TRM`;
             totalBalance.textContent = balance.toFixed(3);
-            
-            // Store balance in Firebase
-            if (currentUser) {
-                db.collection('users').doc(currentUser.id.toString()).update({
-                    balance: balance
-                }).catch((error) => {
-                    console.error("Error updating balance:", error);
-                });
-            }
         }
         
         // Update user level based on balance
@@ -1343,8 +1397,6 @@
             if (currentUser) {
                 db.collection('users').doc(currentUser.id.toString()).update({
                     level: level
-                }).catch((error) => {
-                    console.error("Error updating level:", error);
                 });
             }
         }
@@ -1375,15 +1427,16 @@
                 db.collection('users').doc(currentUser.id.toString()).update({
                     isFarming: true,
                     farmingEndTime: farmingEndTime
-                }).catch((error) => {
-                    console.error("Error starting farming:", error);
                 });
                 
                 // Update total farming count
                 db.collection('users').doc(currentUser.id.toString()).update({
                     totalFarming: firebase.firestore.FieldValue.increment(1)
-                }).catch((error) => {
-                    console.error("Error updating farming count:", error);
+                });
+                
+                // Log farming start
+                logUserActivity('Farming Started', {
+                    endTime: farmingEndTime.toISOString()
                 });
             }
             
@@ -1401,6 +1454,13 @@
                     // Show token animation
                     showTokenAnimation();
                     
+                    // Update in Firebase every 10 seconds
+                    if (Math.floor(balance * 1000) % 10 === 0) {
+                        db.collection('users').doc(currentUser.id.toString()).update({
+                            balance: balance
+                        });
+                    }
+                    
                     // Check if farming is complete
                     const now = new Date().getTime();
                     const endTime = new Date(farmingEndTime).getTime();
@@ -1408,6 +1468,11 @@
                     if (now >= endTime) {
                         stopFarming();
                         showNotification('Farming Complete', 'You have successfully farmed for 12 hours!');
+                        
+                        // Log farming completion
+                        logUserActivity('Farming Completed', {
+                            finalBalance: balance
+                        });
                     }
                 }
             }, 1000);
@@ -1433,8 +1498,6 @@
                     isFarming: false,
                     farmingEndTime: null,
                     balance: balance
-                }).catch((error) => {
-                    console.error("Error stopping farming:", error);
                 });
             }
         }
@@ -1493,16 +1556,19 @@
                         referralEarnings: referralEarnings,
                         referrals: referrals,
                         totalFriends: firebase.firestore.FieldValue.increment(1)
-                    }).catch((error) => {
-                        console.error("Error processing referral:", error);
+                    });
+                    
+                    // Log referral
+                    logUserActivity('Referral Processed', {
+                        referrerId: referrerId,
+                        newUserId: newUser.id,
+                        reward: 5000
                     });
                     
                     // Show referral info on loading screen
                     document.getElementById('referralName').textContent = referrerData.name;
                     document.getElementById('referralInfo').style.display = 'block';
                 }
-            }).catch((error) => {
-                console.error("Error processing referral:", error);
             });
         }
         
@@ -1522,48 +1588,31 @@
                     taskElement.className = 'task-item';
                     
                     // Check if user has completed this task
-                    if (currentUser) {
+                    const isCompleted = currentUser && 
                         db.collection('users').doc(currentUser.id.toString()).collection('completedTasks').doc(task.id).get().then((taskDoc) => {
-                            const isCompleted = taskDoc.exists;
-                            
-                            taskElement.innerHTML = `
-                                <img src="${task.icon || 'https://picsum.photos/seed/task/50/50.jpg'}" alt="${task.name}" class="task-icon">
-                                <div class="task-info">
-                                    <div class="task-name">${task.name}</div>
-                                    <div class="task-reward">
-                                        <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" style="width: 16px; height: 16px;">
-                                        ${task.reward} TRM
-                                    </div>
-                                </div>
-                                <button class="task-button ${isCompleted ? 'completed' : ''}" data-task-id="${task.id}" data-task-link="${task.link}" data-task-reward="${task.reward}">${isCompleted ? 'COMPLETED' : 'OPEN'}</button>
-                            `;
-                            
-                            tasksList.appendChild(taskElement);
+                            return taskDoc.exists;
                         });
-                    } else {
-                        taskElement.innerHTML = `
-                            <img src="${task.icon || 'https://picsum.photos/seed/task/50/50.jpg'}" alt="${task.name}" class="task-icon">
-                            <div class="task-info">
-                                <div class="task-name">${task.name}</div>
-                                <div class="task-reward">
-                                    <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" style="width: 16px; height: 16px;">
-                                    ${task.reward} TRM
-                                </div>
+                    
+                    // We'll handle the button state in a separate function
+                    taskElement.innerHTML = `
+                        <img src="${task.icon || 'https://picsum.photos/seed/task/50/50.jpg'}" alt="${task.name}" class="task-icon">
+                        <div class="task-info">
+                            <div class="task-name">${task.name}</div>
+                            <div class="task-reward">
+                                <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" style="width: 16px; height: 16px;">
+                                ${task.reward} TRM
                             </div>
-                            <button class="task-button" data-task-id="${task.id}" data-task-link="${task.link}" data-task-reward="${task.reward}">OPEN</button>
-                        `;
-                        
-                        tasksList.appendChild(taskElement);
-                    }
+                        </div>
+                        <button class="task-button" data-task-id="${task.id}" data-task-link="${task.link}" data-task-reward="${task.reward}">OPEN</button>
+                    `;
+                    
+                    tasksList.appendChild(taskElement);
                 });
                 
                 // Add event listeners to task buttons
                 document.querySelectorAll('.task-button').forEach(button => {
                     button.addEventListener('click', handleTaskClick);
                 });
-            }).catch((error) => {
-                console.error("Error loading tasks:", error);
-                showNotification("Error", "Failed to load tasks. Please try again.");
             });
         }
         
@@ -1589,6 +1638,13 @@
             button.classList.add('processing');
             button.textContent = 'PROCESSING';
             
+            // Log task start
+            logUserActivity('Task Started', {
+                taskId: taskId,
+                taskLink: taskLink,
+                reward: taskReward
+            });
+            
             // Open the task link
             window.open(taskLink, '_blank');
             
@@ -1608,15 +1664,18 @@
                     db.collection('users').doc(currentUser.id.toString()).update({
                         balance: balance,
                         totalTasks: firebase.firestore.FieldValue.increment(1)
-                    }).catch((error) => {
-                        console.error("Error updating task completion:", error);
                     });
                     
                     // Mark task as completed
                     db.collection('users').doc(currentUser.id.toString()).collection('completedTasks').doc(taskId).set({
                         completedAt: new Date()
-                    }).catch((error) => {
-                        console.error("Error marking task as completed:", error);
+                    });
+                    
+                    // Log task completion
+                    logUserActivity('Task Completed', {
+                        taskId: taskId,
+                        reward: taskReward,
+                        newBalance: balance
                     });
                     
                     // Show notification
@@ -1660,9 +1719,6 @@
                     
                     leaderboardList.appendChild(leaderboardItem);
                 });
-            }).catch((error) => {
-                console.error("Error loading leaderboard:", error);
-                showNotification("Error", "Failed to load leaderboard. Please try again.");
             });
         }
         
@@ -1680,7 +1736,7 @@
                     
                     // Update referral stats
                     totalReferrals.textContent = referrals.length;
-                    document.getElementById('referralEarnings').textContent = `${referralEarnings} TRM`;
+                    referralEarnings.textContent = `${referralEarnings} TRM`;
                     
                     // Update referrals list
                     referralsList.innerHTML = '';
@@ -1703,9 +1759,6 @@
                         referralsList.appendChild(referralItem);
                     });
                 }
-            }).catch((error) => {
-                console.error("Error loading referrals:", error);
-                showNotification("Error", "Failed to load referrals. Please try again.");
             });
         }
         
@@ -1730,8 +1783,11 @@
                     if (currentUser) {
                         db.collection('users').doc(currentUser.id.toString()).update({
                             walletAddress: address
-                        }).catch((error) => {
-                            console.error("Error updating wallet address:", error);
+                        });
+                        
+                        // Log wallet connection
+                        logUserActivity('Wallet Connected', {
+                            address: address
                         });
                     }
                 } else {
@@ -1744,9 +1800,10 @@
                     if (currentUser) {
                         db.collection('users').doc(currentUser.id.toString()).update({
                             walletAddress: null
-                        }).catch((error) => {
-                            console.error("Error disconnecting wallet:", error);
                         });
+                        
+                        // Log wallet disconnection
+                        logUserActivity('Wallet Disconnected');
                     }
                 }
             });
@@ -1774,6 +1831,11 @@
                 icon.classList.remove('fa-sun');
                 icon.classList.add('fa-moon');
             }
+            
+            // Log theme change
+            logUserActivity('Theme Changed', {
+                darkMode: document.body.classList.contains('dark-mode')
+            });
         });
         
         farmingButton.addEventListener('click', () => {
@@ -1785,22 +1847,28 @@
         // Navigation
         homeNav.addEventListener('click', () => {
             showPage('home');
+            logUserActivity('Page Navigation', { page: 'home' });
         });
         
         profileNav.addEventListener('click', () => {
             showPage('profile');
+            logUserActivity('Page Navigation', { page: 'profile' });
         });
         
         tasksNav.addEventListener('click', () => {
             showPage('tasks');
+            logUserActivity('Page Navigation', { page: 'tasks' });
         });
         
         leaderboardNav.addEventListener('click', () => {
             showPage('leaderboard');
+            loadLeaderboard(); // Refresh leaderboard when page is shown
+            logUserActivity('Page Navigation', { page: 'leaderboard' });
         });
         
         friendsNav.addEventListener('click', () => {
             showPage('friends');
+            logUserActivity('Page Navigation', { page: 'friends' });
         });
         
         // Show page function
@@ -1836,7 +1904,6 @@
                 case 'leaderboard':
                     leaderboardPage.classList.add('active');
                     leaderboardNav.classList.add('active');
-                    loadLeaderboard(); // Refresh leaderboard when page is shown
                     break;
                 case 'friends':
                     friendsPage.classList.add('active');
@@ -1857,9 +1924,7 @@
             const address = walletAddress.textContent;
             navigator.clipboard.writeText(address).then(() => {
                 showNotification('Copied', 'Wallet address copied to clipboard');
-            }).catch((error) => {
-                console.error("Error copying address:", error);
-                showNotification("Error", "Failed to copy address");
+                logUserActivity('Wallet Address Copied');
             });
         });
         
@@ -1875,9 +1940,7 @@
             const link = referralLink.textContent;
             navigator.clipboard.writeText(link).then(() => {
                 showNotification('Copied', 'Referral link copied to clipboard');
-            }).catch((error) => {
-                console.error("Error copying referral link:", error);
-                showNotification("Error", "Failed to copy referral link");
+                logUserActivity('Referral Link Copied');
             });
         });
         
@@ -1890,8 +1953,12 @@
             if (currentUser) {
                 db.collection('users').doc(currentUser.id.toString()).update({
                     settings: settings
-                }).catch((error) => {
-                    console.error("Error updating notification settings:", error);
+                });
+                
+                // Log setting change
+                logUserActivity('Setting Changed', {
+                    setting: 'notifications',
+                    value: settings.notifications
                 });
             }
         });
@@ -1904,8 +1971,12 @@
             if (currentUser) {
                 db.collection('users').doc(currentUser.id.toString()).update({
                     settings: settings
-                }).catch((error) => {
-                    console.error("Error updating sound settings:", error);
+                });
+                
+                // Log setting change
+                logUserActivity('Setting Changed', {
+                    setting: 'soundEffects',
+                    value: settings.soundEffects
                 });
             }
         });
@@ -1918,8 +1989,12 @@
             if (currentUser) {
                 db.collection('users').doc(currentUser.id.toString()).update({
                     settings: settings
-                }).catch((error) => {
-                    console.error("Error updating auto farming settings:", error);
+                });
+                
+                // Log setting change
+                logUserActivity('Setting Changed', {
+                    setting: 'autoFarming',
+                    value: settings.autoFarming
                 });
             }
         });
@@ -1934,6 +2009,19 @@
                     updateBalance();
                     updateLevel();
                     
+                    // Update in Firebase
+                    if (currentUser) {
+                        db.collection('users').doc(currentUser.id.toString()).update({
+                            balance: balance
+                        });
+                        
+                        // Log ad watched
+                        logUserActivity('Ad Watched', {
+                            reward: 1,
+                            newBalance: balance
+                        });
+                    }
+                    
                     // Show notification
                     showNotification('Ad Watched', 'You earned 1 TRM!');
                 });
@@ -1942,6 +2030,19 @@
                 balance += 1;
                 updateBalance();
                 updateLevel();
+                
+                // Update in Firebase
+                if (currentUser) {
+                    db.collection('users').doc(currentUser.id.toString()).update({
+                        balance: balance
+                    });
+                    
+                    // Log ad watched
+                    logUserActivity('Ad Watched', {
+                        reward: 1,
+                        newBalance: balance
+                    });
+                }
                 
                 // Show notification
                 showNotification('Ad Watched', 'You earned 1 TRM!');
@@ -1952,6 +2053,16 @@
         window.addEventListener('DOMContentLoaded', () => {
             initTelegramWebApp();
             initTonConnect();
+        });
+        
+        // Log page unload
+        window.addEventListener('beforeunload', () => {
+            if (currentUser) {
+                logUserActivity('Page Unload', {
+                    balance: balance,
+                    isFarming: isFarming
+                });
+            }
         });
     </script>
 </body>
