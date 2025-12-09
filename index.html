@@ -3,70 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trimint - TRM Mining</title>
+    <title>Trimint - Telegram Mining App</title>
     
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     
     <!-- TON Connect SDK -->
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     
-    <!-- Monetag Ads -->
-    <script src='//libtl.com/sdk.js' data-zone='10290264' data-sdk='show_10290264'></script>
-    
-    <!-- Telegram WebApp API -->
+    <!-- Telegram Web App API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #ec4899;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #1f2937;
+            --dark-card: #374151;
+            --dark-text: #f3f4f6;
+            --light-bg: #f9fafb;
+            --light-card: #ffffff;
+            --light-text: #111827;
+            --border-radius: 16px;
+            --transition: all 0.3s ease;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #0088cc;
-            --secondary-color: #005580;
-            --accent-color: #ff6b35;
-            --success-color: #4caf50;
-            --warning-color: #ff9800;
-            --danger-color: #f44336;
-            --background: #0a0e27;
-            --surface: #151932;
-            --surface-light: #1e2139;
-            --text-primary: #ffffff;
-            --text-secondary: #8892b0;
-            --border-color: #2a2f4a;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        [data-theme="light"] {
-            --primary-color: #2196f3;
-            --secondary-color: #1976d2;
-            --accent-color: #ff6b35;
-            --success-color: #4caf50;
-            --warning-color: #ff9800;
-            --danger-color: #f44336;
-            --background: #f5f5f5;
-            --surface: #ffffff;
-            --surface-light: #f8f9fa;
-            --text-primary: #212121;
-            --text-secondary: #757575;
-            --border-color: #e0e0e0;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            font-family: 'Inter', sans-serif;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: var(--background);
-            color: var(--text-primary);
-            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-text);
+            height: 100vh;
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        }
+
+        .container {
+            max-width: 100%;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            transition: all 0.3s ease;
-            overflow-x: hidden;
+            padding: 0;
+            position: relative;
         }
 
         /* Loading Screen */
@@ -90,101 +89,123 @@
             pointer-events: none;
         }
 
-        .coin-loader {
-            width: 100px;
-            height: 100px;
-            background: url('https://i.postimg.cc/fTQktNmX/maincoin.png') center/contain no-repeat;
-            animation: pulse 1.5s infinite;
+        .loading-logo {
+            width: 120px;
+            height: 120px;
             margin-bottom: 20px;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            animation: pulse 2s infinite;
         }
 
         .loading-text {
-            color: white;
-            font-size: 18px;
+            font-size: 24px;
+            font-weight: 700;
             margin-bottom: 10px;
         }
 
-        .referral-text {
-            color: #ffd700;
-            font-size: 16px;
+        .referral-message {
+            font-size: 18px;
             text-align: center;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            max-width: 80%;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         /* Header */
         .header {
-            background: var(--surface);
-            padding: 15px;
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .balance-section {
+        .dark-mode .header {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .coin-icon {
-            width: 30px;
-            height: 30px;
-            background: url('https://i.postimg.cc/fTQktNmX/maincoin.png') center/contain no-repeat;
+        .logo img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .balance-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 50px;
+        }
+
+        .dark-mode .balance-container {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .balance-icon {
+            width: 24px;
+            height: 24px;
         }
 
         .balance-amount {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 700;
         }
-
-        .level-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .level-bronze { background: linear-gradient(135deg, #cd7f32, #b87333); }
-        .level-gold { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #333; }
-        .level-diamond { background: linear-gradient(135deg, #b9f2ff, #00d4ff); color: #333; }
 
         .theme-toggle {
-            background: var(--surface-light);
-            border: none;
-            padding: 8px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .dark-mode .theme-toggle {
+            background-color: rgba(0, 0, 0, 0.3);
         }
 
         .theme-toggle:hover {
-            transform: rotate(180deg);
+            transform: scale(1.1);
         }
 
         /* Main Content */
         .main-content {
             flex: 1;
+            overflow-y: auto;
             padding: 20px;
             padding-bottom: 100px;
-            overflow-y: auto;
         }
 
         .section {
             display: none;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.5s ease;
         }
 
         .section.active {
@@ -198,105 +219,390 @@
 
         /* Home Section */
         .home-section {
-            text-align: center;
-            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .coin-container {
+            position: relative;
+            margin-bottom: 30px;
         }
 
         .main-coin {
-            width: 200px;
-            height: 200px;
-            background: url('https://i.postimg.cc/fTQktNmX/maincoin.png') center/contain no-repeat;
-            margin: 0 auto 30px;
-            transition: transform 0.3s ease;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
         }
 
-        .main-coin.farming {
+        .main-coin:hover {
+            transform: scale(1.05);
+        }
+
+        .farming-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.7);
             animation: farmingPulse 2s infinite;
+            display: none;
+        }
+
+        .farming-animation.active {
+            display: block;
         }
 
         @keyframes farmingPulse {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.05) rotate(5deg); }
-            50% { transform: scale(1.1) rotate(0deg); }
-            75% { transform: scale(1.05) rotate(-5deg); }
-        }
-
-        .farming-button {
-            background: linear-gradient(135deg, var(--success-color), #45a049);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-        }
-
-        .farming-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
-        }
-
-        .farming-button:disabled {
-            background: var(--surface-light);
-            color: var(--text-secondary);
-            cursor: not-allowed;
-        }
-
-        .farming-timer {
-            margin-top: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--accent-color);
-        }
-
-        .mining-rate {
-            margin-top: 10px;
-            font-size: 16px;
-            color: var(--text-secondary);
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .token-animation {
-            position: fixed;
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--success-color);
-            pointer-events: none;
-            animation: floatUp 2s ease-out forwards;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            animation: floatUp 2s infinite;
+            display: none;
+        }
+
+        .token-animation.active {
+            display: block;
         }
 
         @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-100px); }
+            0% { transform: translate(-50%, -50%); opacity: 1; }
+            100% { transform: translate(-50%, -150%); opacity: 0; }
         }
 
-        /* Tasks Section */
-        .task-card {
-            background: var(--surface);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
+        .farming-timer {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
         }
 
-        .task-card:hover {
-            transform: translateY(-2px);
+        .farming-timer.active {
+            display: block;
         }
 
-        .task-header {
+        .start-farming-btn {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .start-farming-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        }
+
+        .start-farming-btn:disabled {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Profile Section */
+        .profile-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .dark-mode .profile-card {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-header {
             display: flex;
             align-items: center;
             gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .profile-info h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .profile-level {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .level-bronze {
+            background-color: #cd7f32;
+        }
+
+        .level-gold {
+            background-color: #ffd700;
+            color: #333;
+        }
+
+        .level-diamond {
+            background-color: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        .dark-mode .stat-item {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .wallet-section {
+            margin-top: 20px;
+        }
+
+        .wallet-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #0088cc, #005580);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .wallet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 136, 204, 0.4);
+        }
+
+        .wallet-btn.connected {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+        }
+
+        .wallet-address {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            word-break: break-all;
+        }
+
+        .dark-mode .wallet-address {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .wallet-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .wallet-action-btn {
+            flex: 1;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dark-mode .wallet-action-btn {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .wallet-action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .dark-mode .wallet-action-btn:hover {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-section {
+            margin-top: 20px;
+        }
+
+        .settings-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dark-mode .setting-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .setting-label {
+            font-size: 16px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active {
+            background-color: var(--success-color);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active::after {
+            left: 27px;
+        }
+
+        /* Tasks Section */
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tasks-title {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .watch-ads-btn {
+            background: linear-gradient(135deg, var(--accent-color), #be185d);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .watch-ads-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+        }
+
+        .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .task-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            transition: var(--transition);
+        }
+
+        .dark-mode .task-card {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .task-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         }
 
         .task-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
+            width: 60px;
+            height: 60px;
+            border-radius: var(--border-radius);
             object-fit: cover;
         }
 
@@ -306,53 +612,89 @@
 
         .task-name {
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 700;
             margin-bottom: 5px;
         }
 
-        .task-reward {
-            color: var(--success-color);
-            font-size: 14px;
-            font-weight: bold;
-        }
-
         .task-description {
-            color: var(--text-secondary);
             font-size: 14px;
-            margin-bottom: 10px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .task-button {
-            background: var(--primary-color);
+        .task-reward {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .task-reward-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .task-btn {
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 50px;
             cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            width: 100%;
+            transition: var(--transition);
+            align-self: center;
         }
 
-        .task-button:hover:not(:disabled) {
-            background: var(--secondary-color);
+        .task-btn:hover {
+            background-color: #5558dd;
         }
 
-        .task-button:disabled {
-            background: var(--surface-light);
-            color: var(--text-secondary);
-            cursor: not-allowed;
+        .task-btn.processing {
+            background-color: var(--warning-color);
+            pointer-events: none;
         }
 
-        .task-button.processing {
-            background: var(--warning-color);
-        }
-
-        .task-button.completed {
-            background: var(--success-color);
+        .task-btn.completed {
+            background-color: var(--success-color);
+            pointer-events: none;
         }
 
         /* Leaderboard Section */
+        .leaderboard-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .leaderboard-tab {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .dark-mode .leaderboard-tab {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .leaderboard-tab.active {
+            background-color: var(--primary-color);
+        }
+
         .leaderboard-list {
             display: flex;
             flex-direction: column;
@@ -360,129 +702,161 @@
         }
 
         .leaderboard-item {
-            background: var(--surface);
-            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
             padding: 15px;
             display: flex;
             align-items: center;
             gap: 15px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
+            transition: var(--transition);
+        }
+
+        .dark-mode .leaderboard-item {
+            background-color: rgba(0, 0, 0, 0.2);
         }
 
         .leaderboard-item:hover {
-            transform: translateX(5px);
+            transform: translateY(-2px);
         }
 
-        .rank-number {
+        .leaderboard-rank {
             width: 30px;
             height: 30px;
-            background: var(--primary-color);
-            color: white;
-            border-radius: 50%;
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-weight: bold;
+            align-items: center;
+            font-weight: 700;
+            font-size: 16px;
         }
 
-        .rank-1 { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #333; }
-        .rank-2 { background: linear-gradient(135deg, #c0c0c0, #e8e8e8); color: #333; }
-        .rank-3 { background: linear-gradient(135deg, #cd7f32, #e8a860); }
+        .rank-1, .rank-2, .rank-3 {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            border-radius: 50%;
+        }
 
-        .user-avatar {
+        .leaderboard-avatar {
             width: 50px;
             height: 50px;
             border-radius: 50%;
             object-fit: cover;
         }
 
-        .user-info {
+        .leaderboard-info {
             flex: 1;
         }
 
-        .user-name {
-            font-weight: bold;
-            margin-bottom: 5px;
+        .leaderboard-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 3px;
         }
 
-        .user-balance {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .user-level {
-            padding: 3px 8px;
+        .leaderboard-level {
+            display: inline-block;
+            padding: 2px 8px;
             border-radius: 10px;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .leaderboard-balance {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .leaderboard-balance-icon {
+            width: 18px;
+            height: 18px;
         }
 
         /* Friends Section */
-        .referral-section {
-            background: var(--surface);
-            border-radius: 15px;
+        .referral-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .dark-mode .referral-card {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .referral-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
         }
 
         .referral-link-container {
-            display: flex;
-            gap: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: var(--border-radius);
             margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dark-mode .referral-link-container {
+            background-color: rgba(0, 0, 0, 0.2);
         }
 
         .referral-link {
             flex: 1;
-            background: var(--surface-light);
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 12px;
+            font-size: 14px;
             word-break: break-all;
         }
 
-        .copy-button {
-            background: var(--primary-color);
+        .copy-btn {
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s ease;
+            transition: var(--transition);
         }
 
-        .copy-button:hover {
-            background: var(--secondary-color);
+        .copy-btn:hover {
+            background-color: #5558dd;
         }
 
         .referral-stats {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin-bottom: 20px;
         }
 
-        .stat-card {
-            background: var(--surface-light);
+        .referral-stat {
+            background-color: rgba(255, 255, 255, 0.1);
             padding: 15px;
-            border-radius: 10px;
+            border-radius: var(--border-radius);
             text-align: center;
         }
 
-        .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary-color);
+        .dark-mode .referral-stat {
+            background-color: rgba(0, 0, 0, 0.2);
         }
 
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 5px;
+        .referral-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .referral-stat-label {
+            font-size: 14px;
+            opacity: 0.8;
         }
 
         .referrals-list {
@@ -492,158 +866,58 @@
         }
 
         .referral-item {
-            background: var(--surface-light);
-            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
             padding: 15px;
             display: flex;
             align-items: center;
             gap: 15px;
+            transition: var(--transition);
         }
 
-        /* Profile Section */
-        .profile-header {
-            background: var(--surface);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            text-align: center;
+        .dark-mode .referral-item {
+            background-color: rgba(0, 0, 0, 0.2);
         }
 
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
+        .referral-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .referral-avatar {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            margin: 0 auto 15px;
             object-fit: cover;
         }
 
-        .profile-name {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 5px;
+        .referral-info {
+            flex: 1;
         }
 
-        .profile-id {
-            color: var(--text-secondary);
-            font-size: 14px;
+        .referral-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 3px;
         }
 
-        .wallet-section {
-            background: var(--surface);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .wallet-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .wallet-address {
-            font-size: 14px;
-            color: var(--text-secondary);
-            word-break: break-all;
-        }
-
-        .wallet-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .wallet-button {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
+        .referral-id {
             font-size: 12px;
-            font-weight: bold;
-            transition: background 0.3s ease;
+            opacity: 0.7;
+            margin-bottom: 3px;
         }
 
-        .wallet-button:hover {
-            background: var(--secondary-color);
-        }
-
-        .wallet-button.disconnect {
-            background: var(--danger-color);
-        }
-
-        .profile-stats {
-            background: var(--surface);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-icon {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .settings-section {
-            background: var(--surface);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .setting-item {
+        .referral-earned {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border-color);
+            gap: 5px;
+            font-size: 14px;
+            font-weight: 600;
         }
 
-        .setting-item:last-child {
-            border-bottom: none;
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 26px;
-            background: var(--surface-light);
-            border-radius: 34px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .toggle-switch.active {
-            background: var(--primary-color);
-        }
-
-        .toggle-slider {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.3s ease;
-        }
-
-        .toggle-switch.active .toggle-slider {
-            transform: translateX(24px);
+        .referral-earned-icon {
+            width: 14px;
+            height: 14px;
         }
 
         /* Bottom Navigation */
@@ -651,101 +925,81 @@
             position: fixed;
             bottom: 0;
             left: 0;
-            right: 0;
-            background: var(--surface);
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
             z-index: 100;
         }
 
-        .nav-item {
+        .dark-mode .bottom-nav {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-btn {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
-            padding: 5px 15px;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            color: var(--text-secondary);
-        }
-
-        .nav-item:hover {
-            transform: translateY(-2px);
-        }
-
-        .nav-item.active {
-            color: var(--primary-color);
-        }
-
-        .nav-item.home {
-            transform: scale(1.2);
-        }
-
-        .nav-item.home.active {
-            transform: scale(1.2);
-        }
-
-        .nav-icon {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 20px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 5px;
+            position: relative;
         }
 
-        .nav-label {
-            font-size: 11px;
-            font-weight: bold;
+        .nav-btn.active {
+            color: var(--accent-color);
         }
 
-        /* Responsive Design */
-        @media (max-width: 480px) {
-            .main-content {
-                padding: 15px;
-            }
-
-            .main-coin {
-                width: 150px;
-                height: 150px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .referral-stats {
-                grid-template-columns: 1fr;
-            }
+        .nav-btn i {
+            font-size: 24px;
+            margin-bottom: 5px;
         }
 
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.5s ease;
+        .nav-btn.home-btn i {
+            font-size: 32px;
         }
 
-        .slide-up {
-            animation: slideUp 0.3s ease;
+        .nav-btn span {
+            font-size: 12px;
+            font-weight: 600;
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
+        .nav-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background-color: var(--accent-color);
+            transition: var(--transition);
+        }
+
+        .nav-btn.active::after {
+            width: 100%;
         }
 
         /* Toast Notification */
         .toast {
             position: fixed;
-            top: 20px;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--surface);
-            color: var(--text-primary);
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -755,211 +1009,207 @@
             opacity: 1;
         }
 
-        .toast.success {
-            border-left: 4px solid var(--success-color);
-        }
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .main-coin {
+                width: 150px;
+                height: 150px;
+            }
 
-        .toast.error {
-            border-left: 4px solid var(--danger-color);
-        }
+            .profile-stats {
+                grid-template-columns: 1fr;
+            }
 
-        .toast.warning {
-            border-left: 4px solid var(--warning-color);
+            .referral-stats {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
-<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="coin-loader"></div>
-        <div class="loading-text">Initializing Trimint...</div>
-        <div class="referral-text" id="referralText" style="display: none;"></div>
-    </div>
-
-    <!-- Header -->
-    <header class="header">
-        <div class="balance-section">
-            <div class="coin-icon"></div>
-            <div class="balance-amount" id="balanceAmount">0 TRM</div>
+    <div class="container">
+        <!-- Loading Screen -->
+        <div class="loading-screen" id="loadingScreen">
+            <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="Trimint Logo" class="loading-logo">
+            <div class="loading-text">Trimint</div>
+            <div class="referral-message" id="referralMessage"></div>
         </div>
-        <div class="level-badge" id="levelBadge">BRONZE</div>
-        <button class="theme-toggle" id="themeToggle">🌙</button>
-    </header>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Home Section -->
-        <section class="section active" id="homeSection">
-            <div class="home-section">
-                <div class="main-coin" id="mainCoin"></div>
-                <button class="farming-button" id="farmingButton">Start Farming</button>
-                <div class="farming-timer" id="farmingTimer" style="display: none;"></div>
-                <div class="mining-rate">Mining Rate: 0.001 TRM/second</div>
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="Trimint Logo">
+                <h1>Trimint</h1>
             </div>
-        </section>
+            <div class="balance-container">
+                <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" class="balance-icon">
+                <span class="balance-amount" id="balanceAmount">0</span>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+        </header>
 
-        <!-- Tasks Section -->
-        <section class="section" id="tasksSection">
-            <div class="section-header">
-                <h2>Tasks</h2>
-            </div>
-            <div class="tasks-list" id="tasksList">
-                <!-- Watch Ads Task (Fixed) -->
-                <div class="task-card">
-                    <div class="task-header">
-                        <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="Watch Ads" class="task-icon">
-                        <div class="task-info">
-                            <div class="task-name">Watch Ads</div>
-                            <div class="task-reward">Reward: 1 TRM</div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Home Section -->
+            <section class="section home-section active" id="homeSection">
+                <div class="coin-container">
+                    <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM Coin" class="main-coin" id="mainCoin">
+                    <div class="farming-animation" id="farmingAnimation"></div>
+                    <div class="token-animation" id="tokenAnimation">+0.001 TRM</div>
+                </div>
+                <div class="farming-timer" id="farmingTimer">12:00:00</div>
+                <button class="start-farming-btn" id="startFarmingBtn">Start Farming</button>
+            </section>
+
+            <!-- Profile Section -->
+            <section class="section profile-section" id="profileSection">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <img src="https://picsum.photos/seed/user123/200/200.jpg" alt="Profile" class="profile-avatar" id="profileAvatar">
+                        <div class="profile-info">
+                            <h2 id="profileName">Loading...</h2>
+                            <div class="profile-level level-bronze" id="profileLevel">Bronze</div>
                         </div>
                     </div>
-                    <div class="task-description">Watch advertisements to earn TRM tokens</div>
-                    <button class="task-button" onclick="watchAd()">OPEN</button>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalBalance">0</div>
+                            <div class="stat-label">Total Balance</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalFriends">0</div>
+                            <div class="stat-label">Total Friends</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalEarned">0</div>
+                            <div class="stat-label">Total Earned</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="farmingHours">0</div>
+                            <div class="stat-label">Farming Hours</div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Leaderboard Section -->
-        <section class="section" id="leaderboardSection">
-            <div class="section-header">
-                <h2>Leaderboard</h2>
-            </div>
-            <div class="leaderboard-list" id="leaderboardList">
-                <!-- Leaderboard items will be populated here -->
-            </div>
-        </section>
+                <div class="wallet-section">
+                    <button class="wallet-btn" id="connectWalletBtn">
+                        <i class="fas fa-wallet"></i>
+                        Connect TON Wallet
+                    </button>
+                    <div class="wallet-address" id="walletAddress" style="display: none;">
+                        <span id="walletAddressText"></span>
+                    </div>
+                    <div class="wallet-actions" id="walletActions" style="display: none;">
+                        <button class="wallet-action-btn" id="copyAddressBtn">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <button class="wallet-action-btn" id="disconnectWalletBtn">
+                            <i class="fas fa-unlink"></i> Disconnect
+                        </button>
+                    </div>
+                </div>
 
-        <!-- Friends Section -->
-        <section class="section" id="friendsSection">
-            <div class="referral-section">
-                <h3>Invite Friends</h3>
-                <div class="referral-link-container">
-                    <input type="text" class="referral-link" id="referralLink" readonly>
-                    <button class="copy-button" onclick="copyReferralLink()">Copy</button>
-                </div>
-                <div class="referral-stats">
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalReferrals">0</div>
-                        <div class="stat-label">Total Referrals</div>
+                <div class="settings-section">
+                    <h3 class="settings-title">Settings</h3>
+                    <div class="setting-item">
+                        <span class="setting-label">Notifications</span>
+                        <div class="toggle-switch active" id="notificationsToggle"></div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="referralEarnings">0 TRM</div>
-                        <div class="stat-label">Referral Earnings</div>
+                    <div class="setting-item">
+                        <span class="setting-label">Sound Effects</span>
+                        <div class="toggle-switch active" id="soundToggle"></div>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Auto Farming</span>
+                        <div class="toggle-switch" id="autoFarmingToggle"></div>
                     </div>
                 </div>
-            </div>
-            <h3>Your Referrals</h3>
-            <div class="referrals-list" id="referralsList">
-                <!-- Referrals will be populated here -->
-            </div>
-        </section>
+            </section>
 
-        <!-- Profile Section -->
-        <section class="section" id="profileSection">
-            <div class="profile-header">
-                <img src="" alt="Profile" class="profile-avatar" id="profileAvatar">
-                <div class="profile-name" id="profileName">Loading...</div>
-                <div class="profile-id" id="profileId">ID: </div>
-            </div>
+            <!-- Tasks Section -->
+            <section class="section tasks-section" id="tasksSection">
+                <div class="tasks-header">
+                    <h2 class="tasks-title">Tasks</h2>
+                    <button class="watch-ads-btn" id="watchAdsBtn">
+                        <i class="fas fa-play"></i> Watch Ads
+                    </button>
+                </div>
+                <div class="tasks-list" id="tasksList">
+                    <!-- Tasks will be loaded here from Firebase -->
+                </div>
+            </section>
 
-            <div class="wallet-section">
-                <h3>TON Wallet</h3>
-                <div class="wallet-info">
-                    <div class="wallet-address" id="walletAddress">Not Connected</div>
+            <!-- Leaderboard Section -->
+            <section class="section leaderboard-section" id="leaderboardSection">
+                <div class="leaderboard-tabs">
+                    <button class="leaderboard-tab active" data-period="daily">Daily</button>
+                    <button class="leaderboard-tab" data-period="weekly">Weekly</button>
+                    <button class="leaderboard-tab" data-period="monthly">Monthly</button>
+                    <button class="leaderboard-tab" data-period="all-time">All Time</button>
                 </div>
-                <div class="wallet-buttons">
-                    <button class="wallet-button" id="connectWalletButton" onclick="connectWallet()">Connect TON Wallet</button>
-                    <button class="wallet-button" id="copyWalletButton" onclick="copyWalletAddress()" style="display: none;">Copy</button>
-                    <button class="wallet-button disconnect" id="disconnectWalletButton" onclick="disconnectWallet()" style="display: none;">Disconnect</button>
+                <div class="leaderboard-list" id="leaderboardList">
+                    <!-- Leaderboard items will be loaded here from Firebase -->
                 </div>
-            </div>
+            </section>
 
-            <div class="profile-stats">
-                <h3>Statistics</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-icon">🏆</div>
-                        <div class="stat-value" id="profileLevel">Bronze</div>
-                        <div class="stat-label">Level</div>
+            <!-- Friends Section -->
+            <section class="section friends-section" id="friendsSection">
+                <div class="referral-card">
+                    <h2 class="referral-title">Invite Friends</h2>
+                    <div class="referral-link-container">
+                        <span class="referral-link" id="referralLink">https://t.me/TrimintBot/mine?startapp=</span>
+                        <button class="copy-btn" id="copyReferralBtn">Copy</button>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-icon">👥</div>
-                        <div class="stat-value" id="profileFriends">0</div>
-                        <div class="stat-label">Friends</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon">⏰</div>
-                        <div class="stat-value" id="profileFarmingTime">0h</div>
-                        <div class="stat-label">Farm Time</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon">💰</div>
-                        <div class="stat-value" id="profileTotalEarned">0 TRM</div>
-                        <div class="stat-label">Total Earned</div>
+                    <div class="referral-stats">
+                        <div class="referral-stat">
+                            <div class="referral-stat-value" id="totalReferrals">0</div>
+                            <div class="referral-stat-label">Total Referrals</div>
+                        </div>
+                        <div class="referral-stat">
+                            <div class="referral-stat-value" id="referralEarned">0</div>
+                            <div class="referral-stat-label">Earned from Referrals</div>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <h3 class="settings-title">Your Referrals</h3>
+                <div class="referrals-list" id="referralsList">
+                    <!-- Referrals will be loaded here from Firebase -->
+                </div>
+            </section>
+        </main>
 
-            <div class="settings-section">
-                <h3>Settings</h3>
-                <div class="setting-item">
-                    <div>
-                        <div>Notifications</div>
-                        <div style="font-size: 12px; color: var(--text-secondary);">Receive farming notifications</div>
-                    </div>
-                    <div class="toggle-switch" id="notificationToggle" onclick="toggleSetting('notifications')">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <div>
-                        <div>Sound Effects</div>
-                        <div style="font-size: 12px; color: var(--text-secondary);">Play sounds on actions</div>
-                    </div>
-                    <div class="toggle-switch" id="soundToggle" onclick="toggleSetting('sound')">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <div>
-                        <div>Auto Farming</div>
-                        <div style="font-size: 12px; color: var(--text-secondary);">Auto-restart farming when completed</div>
-                    </div>
-                    <div class="toggle-switch" id="autoFarmingToggle" onclick="toggleSetting('autoFarming')">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-btn home-btn active" data-section="homeSection">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-btn" data-section="profileSection">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </button>
+            <button class="nav-btn" data-section="tasksSection">
+                <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
+            </button>
+            <button class="nav-btn" data-section="leaderboardSection">
+                <i class="fas fa-trophy"></i>
+                <span>Leaderboard</span>
+            </button>
+            <button class="nav-btn" data-section="friendsSection">
+                <i class="fas fa-user-friends"></i>
+                <span>Friends</span>
+            </button>
+        </nav>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <div class="nav-item home active" onclick="switchSection('home')">
-            <div class="nav-icon">🏠</div>
-            <div class="nav-label">Home</div>
-        </div>
-        <div class="nav-item" onclick="switchSection('tasks')">
-            <div class="nav-icon">📋</div>
-            <div class="nav-label">Tasks</div>
-        </div>
-        <div class="nav-item" onclick="switchSection('leaderboard')">
-            <div class="nav-icon">🏆</div>
-            <div class="nav-label">Leaderboard</div>
-        </div>
-        <div class="nav-item" onclick="switchSection('friends')">
-            <div class="nav-icon">👥</div>
-            <div class="nav-label">Friends</div>
-        </div>
-        <div class="nav-item" onclick="switchSection('profile')">
-            <div class="nav-icon">👤</div>
-            <div class="nav-label">Profile</div>
-        </div>
-    </nav>
+        <!-- Toast Notification -->
+        <div class="toast" id="toast"></div>
+    </div>
 
-    <!-- Toast Notification -->
-    <div class="toast" id="toast"></div>
+    <!-- Monetag Ads Script -->
+    <script src='//libtl.com/sdk.js' data-zone='10290264' data-sdk='show_10290264'></script>
 
     <script>
         // Firebase Configuration
@@ -978,739 +1228,711 @@
         const database = firebase.database();
 
         // Telegram Bot API
-        const telegramBotToken = '8099896534:AAFmOTkOjLC8RSSJy-dXtjPQotF3hJlyXTQ';
-        
-        // Global Variables
-        let currentUser = null;
-        let userData = null;
-        let farmingInterval = null;
-        let farmingEndTime = null;
-        let tonConnect = null;
+        const telegramBotToken = "8099896534:AAFmOTkOjLC8RSSJy-dXtjPQotF3hJlyXTQ";
+        let telegramUser = null;
+        let userId = null;
 
-        // Initialize Telegram WebApp
+        // TON Connect
+        let tonConnectUI = null;
+
+        // App State
+        let balance = 0;
+        let isFarming = false;
+        let farmingStartTime = null;
+        let farmingEndTime = null;
+        let farmingInterval = null;
+        let isDarkMode = false;
+
+        // DOM Elements
+        const loadingScreen = document.getElementById('loadingScreen');
+        const referralMessage = document.getElementById('referralMessage');
+        const balanceAmount = document.getElementById('balanceAmount');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const mainCoin = document.getElementById('mainCoin');
+        const farmingAnimation = document.getElementById('farmingAnimation');
+        const tokenAnimation = document.getElementById('tokenAnimation');
+        const farmingTimer = document.getElementById('farmingTimer');
+        const startFarmingBtn = document.getElementById('startFarmingBtn');
+        const profileAvatar = document.getElementById('profileAvatar');
+        const profileName = document.getElementById('profileName');
+        const profileLevel = document.getElementById('profileLevel');
+        const totalBalance = document.getElementById('totalBalance');
+        const totalFriends = document.getElementById('totalFriends');
+        const totalEarned = document.getElementById('totalEarned');
+        const farmingHours = document.getElementById('farmingHours');
+        const connectWalletBtn = document.getElementById('connectWalletBtn');
+        const walletAddress = document.getElementById('walletAddress');
+        const walletAddressText = document.getElementById('walletAddressText');
+        const walletActions = document.getElementById('walletActions');
+        const copyAddressBtn = document.getElementById('copyAddressBtn');
+        const disconnectWalletBtn = document.getElementById('disconnectWalletBtn');
+        const notificationsToggle = document.getElementById('notificationsToggle');
+        const soundToggle = document.getElementById('soundToggle');
+        const autoFarmingToggle = document.getElementById('autoFarmingToggle');
+        const watchAdsBtn = document.getElementById('watchAdsBtn');
+        const tasksList = document.getElementById('tasksList');
+        const leaderboardList = document.getElementById('leaderboardList');
+        const referralLink = document.getElementById('referralLink');
+        const copyReferralBtn = document.getElementById('copyReferralBtn');
+        const totalReferrals = document.getElementById('totalReferrals');
+        const referralEarned = document.getElementById('referralEarned');
+        const referralsList = document.getElementById('referralsList');
+        const toast = document.getElementById('toast');
+
+        // Initialize Telegram Web App
         function initTelegramWebApp() {
             if (window.Telegram && window.Telegram.WebApp) {
                 const tg = window.Telegram.WebApp;
                 tg.ready();
                 tg.expand();
                 
-                // Get user data
-                currentUser = tg.initDataUnsafe?.user;
+                // Get user data from Telegram
+                telegramUser = tg.initDataUnsafe?.user;
                 
-                if (currentUser) {
-                    // Initialize user data
-                    initializeUserData();
-                }
-            }
-        }
-
-        // Initialize User Data
-        async function initializeUserData() {
-            if (!currentUser) return;
-
-            const userId = currentUser.id.toString();
-            const userRef = database.ref('users/' + userId);
-
-            // Check if user exists
-            userRef.once('value', async (snapshot) => {
-                const data = snapshot.val();
-                
-                if (!data) {
-                    // New user - check for referral
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const referralCode = urlParams.get('startapp');
+                if (telegramUser) {
+                    userId = telegramUser.id;
+                    profileName.textContent = telegramUser.first_name + (telegramUser.last_name ? ' ' + telegramUser.last_name : '');
                     
-                    let referrerName = '';
-                    if (referralCode) {
-                        // Process referral
-                        await processReferral(referralCode, userId);
-                        
-                        // Get referrer info for display
-                        const referrerRef = database.ref('users/' + referralCode);
-                        const referrerSnapshot = await referrerRef.once('value');
-                        const referrerData = referrerSnapshot.val();
-                        if (referrerData) {
-                            referrerName = referrerData.firstName || 'Friend';
-                        }
+                    if (telegramUser.photo_url) {
+                        profileAvatar.src = telegramUser.photo_url;
                     }
-
-                    // Show referral message if exists
-                    if (referrerName) {
-                        document.getElementById('referralText').textContent = `Welcome! You were invited by ${referrerName}`;
-                        document.getElementById('referralText').style.display = 'block';
-                        setTimeout(() => {
-                            hideLoadingScreen();
-                        }, 3000);
-                    } else {
-                        setTimeout(() => {
-                            hideLoadingScreen();
-                        }, 1500);
+                    
+                    // Set referral link
+                    referralLink.textContent = `https://t.me/TrimintBot/mine?startapp=${userId}`;
+                    
+                    // Check for referral
+                    const startParam = tg.initDataUnsafe?.start_param;
+                    if (startParam) {
+                        handleReferral(startParam);
                     }
-
-                    // Create new user
-                    userData = {
-                        id: userId,
-                        firstName: currentUser.first_name,
-                        lastName: currentUser.last_name || '',
-                        username: currentUser.username || '',
-                        photoUrl: currentUser.photo_url || '',
-                        balance: 0,
-                        totalEarned: 0,
-                        level: 'Bronze',
-                        referrals: 0,
-                        referralEarnings: 0,
-                        farmingEndTime: null,
-                        isFarming: false,
-                        walletAddress: null,
-                        tasksCompleted: [],
-                        settings: {
-                            notifications: false,
-                            sound: false,
-                            autoFarming: false
-                        },
-                        createdAt: firebase.database.ServerValue.TIMESTAMP,
-                        lastActive: firebase.database.ServerValue.TIMESTAMP
-                    };
-
-                    await userRef.set(userData);
+                    
+                    // Load user data from Firebase
+                    loadUserData();
                 } else {
-                    userData = data;
-                    
-                    // Update last active
-                    await userRef.update({
-                        lastActive: firebase.database.ServerValue.TIMESTAMP
-                    });
-
-                    // Check if farming was active
-                    if (userData.farmingEndTime && userData.isFarming) {
-                        const now = Date.now();
-                        if (now < userData.farmingEndTime) {
-                            startFarming(userData.farmingEndTime - now);
-                        } else {
-                            // Farming completed
-                            userData.isFarming = false;
-                            userData.farmingEndTime = null;
-                            await userRef.update({
-                                isFarming: false,
-                                farmingEndTime: null
-                            });
-                        }
-                    }
-
-                    hideLoadingScreen();
+                    // Fallback for testing outside Telegram
+                    userId = "test_user_" + Math.floor(Math.random() * 10000);
+                    profileName.textContent = "Test User";
+                    profileAvatar.src = "https://picsum.photos/seed/user123/200/200.jpg";
+                    referralLink.textContent = `https://t.me/TrimintBot/mine?startapp=${userId}`;
+                    loadUserData();
                 }
-
-                // Update UI
-                updateUI();
-                loadTasks();
-                loadLeaderboard();
-                loadReferrals();
-            });
-        }
-
-        // Process Referral
-        async function processReferral(referrerId, newUserId) {
-            const referrerRef = database.ref('users/' + referrerId);
-            const referrerSnapshot = await referrerRef.once('value');
-            const referrerData = referrerSnapshot.val();
-
-            if (referrerData) {
-                // Give referrer 5000 TRM
-                const newBalance = referrerData.balance + 5000;
-                const newReferralEarnings = referrerData.referralEarnings + 5000;
-                const newReferrals = (referrerData.referrals || 0) + 1;
-
-                await referrerRef.update({
-                    balance: newBalance,
-                    totalEarned: referrerData.totalEarned + 5000,
-                    referralEarnings: newReferralEarnings,
-                    referrals: newReferrals
-                });
-
-                // Add to referral list
-                await referrerRef.child('referralList').push({
-                    referredUserId: newUserId,
-                    referredAt: firebase.database.ServerValue.TIMESTAMP,
-                    reward: 5000
-                });
-            }
-        }
-
-        // Hide Loading Screen
-        function hideLoadingScreen() {
-            const loadingScreen = document.getElementById('loadingScreen');
-            loadingScreen.classList.add('hidden');
-        }
-
-        // Update UI
-        function updateUI() {
-            if (!userData) return;
-
-            // Update balance
-            document.getElementById('balanceAmount').textContent = `${userData.balance.toFixed(3)} TRM`;
-            
-            // Update level
-            updateLevel();
-            
-            // Update profile
-            updateProfile();
-            
-            // Update referral link
-            updateReferralLink();
-        }
-
-        // Update Level
-        function updateLevel() {
-            let level = 'Bronze';
-            let levelClass = 'level-bronze';
-
-            if (userData.balance >= 50000) {
-                level = 'Diamond';
-                levelClass = 'level-diamond';
-            } else if (userData.balance >= 10000) {
-                level = 'Gold';
-                levelClass = 'level-gold';
-            }
-
-            userData.level = level;
-            
-            document.getElementById('levelBadge').textContent = level.toUpperCase();
-            document.getElementById('levelBadge').className = `level-badge ${levelClass}`;
-            document.getElementById('profileLevel').textContent = level;
-        }
-
-        // Update Profile
-        function updateProfile() {
-            document.getElementById('profileName').textContent = userData.firstName + ' ' + userData.lastName;
-            document.getElementById('profileId').textContent = `ID: ${userData.id}`;
-            document.getElementById('profileFriends').textContent = userData.referrals || 0;
-            document.getElementById('profileTotalEarned').textContent = `${userData.totalEarned.toFixed(3)} TRM`;
-            
-            if (userData.photoUrl) {
-                document.getElementById('profileAvatar').src = userData.photoUrl;
-            }
-
-            // Update farming time
-            const farmingHours = Math.floor((userData.totalEarned / userData.balance) * 12) || 0;
-            document.getElementById('profileFarmingTime').textContent = `${farmingHours}h`;
-
-            // Update wallet info
-            if (userData.walletAddress) {
-                document.getElementById('walletAddress').textContent = userData.walletAddress;
-                document.getElementById('connectWalletButton').style.display = 'none';
-                document.getElementById('copyWalletButton').style.display = 'block';
-                document.getElementById('disconnectWalletButton').style.display = 'block';
-            }
-
-            // Update settings
-            if (userData.settings) {
-                Object.keys(userData.settings).forEach(key => {
-                    const toggle = document.getElementById(key + 'Toggle');
-                    if (toggle && userData.settings[key]) {
-                        toggle.classList.add('active');
-                    }
-                });
-            }
-        }
-
-        // Update Referral Link
-        function updateReferralLink() {
-            const referralLink = `https://t.me/TrimintBot/mine?startapp=${userData.id}`;
-            document.getElementById('referralLink').value = referralLink;
-            document.getElementById('totalReferrals').textContent = userData.referrals || 0;
-            document.getElementById('referralEarnings').textContent = `${userData.referralEarnings || 0} TRM`;
-        }
-
-        // Switch Section
-        function switchSection(sectionName) {
-            // Update navigation
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
-
-            // Update sections
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById(sectionName + 'Section').classList.add('active');
-        }
-
-        // Farming Functions
-        async function startFarming(duration = 43200000) { // 12 hours in milliseconds
-            if (!userData) return;
-
-            userData.isFarming = true;
-            userData.farmingEndTime = Date.now() + duration;
-
-            const userRef = database.ref('users/' + userData.id);
-            await userRef.update({
-                isFarming: true,
-                farmingEndTime: userData.farmingEndTime
-            });
-
-            const farmingButton = document.getElementById('farmingButton');
-            const mainCoin = document.getElementById('mainCoin');
-            const farmingTimer = document.getElementById('farmingTimer');
-
-            farmingButton.textContent = 'Farming...';
-            farmingButton.disabled = true;
-            mainCoin.classList.add('farming');
-            farmingTimer.style.display = 'block';
-
-            // Start mining animation
-            farmingInterval = setInterval(() => {
-                mineToken();
-                updateFarmingTimer();
-            }, 1000);
-        }
-
-        function mineToken() {
-            userData.balance += 0.001;
-            userData.totalEarned += 0.001;
-            
-            updateUI();
-            showTokenAnimation();
-        }
-
-        function showTokenAnimation() {
-            const animation = document.createElement('div');
-            animation.className = 'token-animation';
-            animation.textContent = '+0.001 TRM';
-            animation.style.left = Math.random() * window.innerWidth + 'px';
-            animation.style.top = (window.innerHeight / 2) + 'px';
-            document.body.appendChild(animation);
-
-            setTimeout(() => {
-                animation.remove();
-            }, 2000);
-        }
-
-        function updateFarmingTimer() {
-            if (!userData || !userData.farmingEndTime) return;
-
-            const now = Date.now();
-            const remaining = userData.farmingEndTime - now;
-
-            if (remaining <= 0) {
-                stopFarming();
-            } else {
-                const hours = Math.floor(remaining / 3600000);
-                const minutes = Math.floor((remaining % 3600000) / 60000);
-                const seconds = Math.floor((remaining % 60000) / 1000);
-
-                document.getElementById('farmingTimer').textContent = 
-                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }
-        }
-
-        async function stopFarming() {
-            if (!userData) return;
-
-            clearInterval(farmingInterval);
-            farmingInterval = null;
-
-            userData.isFarming = false;
-            userData.farmingEndTime = null;
-
-            const userRef = database.ref('users/' + userData.id);
-            await userRef.update({
-                isFarming: false,
-                farmingEndTime: null,
-                balance: userData.balance,
-                totalEarned: userData.totalEarned
-            });
-
-            const farmingButton = document.getElementById('farmingButton');
-            const mainCoin = document.getElementById('mainCoin');
-            const farmingTimer = document.getElementById('farmingTimer');
-
-            farmingButton.textContent = 'Start Farming';
-            farmingButton.disabled = false;
-            mainCoin.classList.remove('farming');
-            farmingTimer.style.display = 'none';
-
-            showToast('Farming completed! 🎉', 'success');
-
-            // Auto farming if enabled
-            if (userData.settings && userData.settings.autoFarming) {
+                
+                // Hide loading screen
                 setTimeout(() => {
-                    startFarming();
+                    loadingScreen.classList.add('hidden');
+                }, 2000);
+            } else {
+                // Fallback for testing outside Telegram
+                userId = "test_user_" + Math.floor(Math.random() * 10000);
+                profileName.textContent = "Test User";
+                profileAvatar.src = "https://picsum.photos/seed/user123/200/200.jpg";
+                referralLink.textContent = `https://t.me/TrimintBot/mine?startapp=${userId}`;
+                loadUserData();
+                
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
                 }, 2000);
             }
         }
 
-        // Farming button click handler
-        document.getElementById('farmingButton').addEventListener('click', async function() {
-            if (!userData.isFarming) {
-                await startFarming();
-            }
-        });
+        // Initialize TON Connect
+        function initTonConnect() {
+            tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                manifestUrl: 'https://trimint.vercel.app/tonconnect-manifest.json',
+                buttonRootId: null
+            });
+            
+            tonConnectUI.onStatusChange(wallet => {
+                if (wallet) {
+                    // Wallet connected
+                    connectWalletBtn.textContent = 'Connected';
+                    connectWalletBtn.classList.add('connected');
+                    walletAddress.style.display = 'flex';
+                    walletAddressText.textContent = wallet.account.address;
+                    walletActions.style.display = 'flex';
+                    
+                    // Save wallet address to Firebase
+                    saveWalletAddress(wallet.account.address);
+                    
+                    showToast('TON Wallet connected successfully!');
+                } else {
+                    // Wallet disconnected
+                    connectWalletBtn.textContent = 'Connect TON Wallet';
+                    connectWalletBtn.classList.remove('connected');
+                    walletAddress.style.display = 'none';
+                    walletActions.style.display = 'none';
+                    
+                    showToast('TON Wallet disconnected');
+                }
+            });
+        }
 
-        // Tasks Functions
-        async function loadTasks() {
-            const tasksRef = database.ref('tasks');
-            tasksRef.on('value', (snapshot) => {
-                const tasks = snapshot.val();
-                const tasksList = document.getElementById('tasksList');
+        // Load user data from Firebase
+        function loadUserData() {
+            database.ref('users/' + userId).once('value').then((snapshot) => {
+                const userData = snapshot.val();
                 
-                // Clear existing tasks (except the Watch Ads task)
-                const existingTasks = tasksList.querySelectorAll('.task-card');
-                existingTasks.forEach((card, index) => {
-                    if (index > 0) card.remove();
-                });
+                if (userData) {
+                    balance = userData.balance || 0;
+                    isFarming = userData.isFarming || false;
+                    farmingStartTime = userData.farmingStartTime || null;
+                    farmingEndTime = userData.farmingEndTime || null;
+                    
+                    updateBalance();
+                    updateProfileStats();
+                    
+                    if (isFarming && farmingEndTime) {
+                        const now = new Date().getTime();
+                        if (now < farmingEndTime) {
+                            startFarmingFromSavedState();
+                        } else {
+                            // Farming period ended
+                            isFarming = false;
+                            saveUserData();
+                        }
+                    }
+                } else {
+                    // New user
+                    saveUserData();
+                }
+                
+                // Load tasks
+                loadTasks();
+                
+                // Load leaderboard
+                loadLeaderboard('daily');
+                
+                // Load referrals
+                loadReferrals();
+            });
+        }
 
+        // Save user data to Firebase
+        function saveUserData() {
+            database.ref('users/' + userId).set({
+                balance: balance,
+                isFarming: isFarming,
+                farmingStartTime: farmingStartTime,
+                farmingEndTime: farmingEndTime,
+                telegramUser: telegramUser,
+                walletAddress: walletAddressText.textContent || null,
+                totalFriends: totalFriends.textContent,
+                totalEarned: totalEarned.textContent,
+                farmingHours: farmingHours.textContent,
+                level: profileLevel.textContent
+            });
+        }
+
+        // Save wallet address to Firebase
+        function saveWalletAddress(address) {
+            database.ref('users/' + userId + '/walletAddress').set(address);
+        }
+
+        // Update balance display
+        function updateBalance() {
+            balanceAmount.textContent = balance.toFixed(3);
+            totalBalance.textContent = balance.toFixed(3);
+            updateLevel();
+        }
+
+        // Update user level based on balance
+        function updateLevel() {
+            let level = 'Bronze';
+            let levelClass = 'level-bronze';
+            
+            if (balance >= 50000) {
+                level = 'Diamond';
+                levelClass = 'level-diamond';
+            } else if (balance >= 10000) {
+                level = 'Gold';
+                levelClass = 'level-gold';
+            }
+            
+            profileLevel.textContent = level;
+            profileLevel.className = 'profile-level ' + levelClass;
+        }
+
+        // Update profile statistics
+        function updateProfileStats() {
+            // These would normally be calculated from the user's data
+            // For now, we'll use placeholder values
+            totalFriends.textContent = '0';
+            totalEarned.textContent = balance.toFixed(3);
+            
+            // Calculate farming hours (placeholder)
+            farmingHours.textContent = '0';
+        }
+
+        // Start farming
+        function startFarming() {
+            if (isFarming) return;
+            
+            isFarming = true;
+            farmingStartTime = new Date().getTime();
+            farmingEndTime = farmingStartTime + (12 * 60 * 60 * 1000); // 12 hours
+            
+            startFarmingBtn.textContent = 'Farming...';
+            startFarmingBtn.disabled = true;
+            farmingAnimation.classList.add('active');
+            tokenAnimation.classList.add('active');
+            farmingTimer.classList.add('active');
+            
+            // Start the farming timer
+            updateFarmingTimer();
+            farmingInterval = setInterval(updateFarmingTimer, 1000);
+            
+            // Start adding tokens
+            const tokenInterval = setInterval(() => {
+                if (!isFarming) {
+                    clearInterval(tokenInterval);
+                    return;
+                }
+                
+                balance += 0.001;
+                updateBalance();
+                saveUserData();
+                
+                // Show token animation
+                tokenAnimation.style.animation = 'none';
+                setTimeout(() => {
+                    tokenAnimation.style.animation = 'floatUp 2s infinite';
+                }, 10);
+            }, 1000);
+            
+            saveUserData();
+            showToast('Farming started! You will earn 0.001 TRM per second for 12 hours.');
+        }
+
+        // Start farming from saved state
+        function startFarmingFromSavedState() {
+            isFarming = true;
+            startFarmingBtn.textContent = 'Farming...';
+            startFarmingBtn.disabled = true;
+            farmingAnimation.classList.add('active');
+            tokenAnimation.classList.add('active');
+            farmingTimer.classList.add('active');
+            
+            // Start the farming timer
+            updateFarmingTimer();
+            farmingInterval = setInterval(updateFarmingTimer, 1000);
+            
+            // Start adding tokens
+            const tokenInterval = setInterval(() => {
+                if (!isFarming) {
+                    clearInterval(tokenInterval);
+                    return;
+                }
+                
+                balance += 0.001;
+                updateBalance();
+                saveUserData();
+                
+                // Show token animation
+                tokenAnimation.style.animation = 'none';
+                setTimeout(() => {
+                    tokenAnimation.style.animation = 'floatUp 2s infinite';
+                }, 10);
+            }, 1000);
+        }
+
+        // Update farming timer
+        function updateFarmingTimer() {
+            if (!isFarming || !farmingEndTime) return;
+            
+            const now = new Date().getTime();
+            const distance = farmingEndTime - now;
+            
+            if (distance < 0) {
+                // Farming ended
+                endFarming();
+                return;
+            }
+            
+            // Calculate hours, minutes, and seconds
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            // Display the timer
+            farmingTimer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // End farming
+        function endFarming() {
+            isFarming = false;
+            farmingStartTime = null;
+            farmingEndTime = null;
+            
+            startFarmingBtn.textContent = 'Start Farming';
+            startFarmingBtn.disabled = false;
+            farmingAnimation.classList.remove('active');
+            tokenAnimation.classList.remove('active');
+            farmingTimer.classList.remove('active');
+            
+            clearInterval(farmingInterval);
+            
+            saveUserData();
+            showToast('Farming completed! You can start farming again.');
+        }
+
+        // Load tasks from Firebase
+        function loadTasks() {
+            database.ref('tasks').once('value').then((snapshot) => {
+                const tasks = snapshot.val();
+                tasksList.innerHTML = '';
+                
                 if (tasks) {
                     Object.keys(tasks).forEach(taskId => {
                         const task = tasks[taskId];
-                        createTaskCard(task, taskId);
+                        const taskCard = createTaskCard(taskId, task);
+                        tasksList.appendChild(taskCard);
                     });
+                } else {
+                    tasksList.innerHTML = '<p style="text-align: center; padding: 20px;">No tasks available at the moment.</p>';
                 }
             });
         }
 
-        function createTaskCard(task, taskId) {
-            const tasksList = document.getElementById('tasksList');
-            
+        // Create task card element
+        function createTaskCard(taskId, task) {
             const taskCard = document.createElement('div');
             taskCard.className = 'task-card';
-            taskCard.innerHTML = `
-                <div class="task-header">
-                    <img src="${task.photo || 'https://i.postimg.cc/fTQktNmX/maincoin.png'}" alt="${task.name}" class="task-icon">
-                    <div class="task-info">
-                        <div class="task-name">${task.name}</div>
-                        <div class="task-reward">Reward: ${task.reward} TRM</div>
-                    </div>
-                </div>
-                <div class="task-description">${task.description}</div>
-                <button class="task-button" onclick="completeTask('${taskId}', '${task.link}', ${task.reward})">OPEN</button>
-            `;
             
-            tasksList.appendChild(taskCard);
-        }
-
-        async function completeTask(taskId, link, reward) {
-            if (!userData) return;
-
-            // Check if task already completed
-            if (userData.tasksCompleted && userData.tasksCompleted.includes(taskId)) {
-                window.open(link, '_blank');
-                return;
-            }
-
-            const button = event.target;
-            button.textContent = 'PROCESSING';
-            button.className = 'task-button processing';
-            button.disabled = true;
-
-            // Open link
-            window.open(link, '_blank');
-
-            // Simulate processing time
-            setTimeout(async () => {
-                // Add reward to balance
-                userData.balance += reward;
-                userData.totalEarned += reward;
+            // Check if user has completed this task
+            database.ref('users/' + userId + '/completedTasks/' + taskId).once('value').then((snapshot) => {
+                const isCompleted = snapshot.val();
                 
-                if (!userData.tasksCompleted) {
-                    userData.tasksCompleted = [];
-                }
-                userData.tasksCompleted.push(taskId);
-
-                // Update database
-                const userRef = database.ref('users/' + userData.id);
-                await userRef.update({
-                    balance: userData.balance,
-                    totalEarned: userData.totalEarned,
-                    tasksCompleted: userData.tasksCompleted
-                });
-
-                // Update button
-                button.textContent = 'COMPLETED';
-                button.className = 'task-button completed';
-                button.disabled = false;
-
-                // Update UI
-                updateUI();
-                
-                showToast(`Task completed! +${reward} TRM`, 'success');
-            }, 10000);
+                taskCard.innerHTML = `
+                    <img src="${task.photo || 'https://picsum.photos/seed/task' + taskId + '/200/200.jpg'}" alt="${task.name}" class="task-icon">
+                    <div class="task-info">
+                        <h3 class="task-name">${task.name}</h3>
+                        <p class="task-description">${task.description}</p>
+                        <div class="task-reward">
+                            <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" class="task-reward-icon">
+                            <span>${task.reward} TRM</span>
+                        </div>
+                    </div>
+                    <button class="task-btn ${isCompleted ? 'completed' : ''}" data-task-id="${taskId}" data-task-reward="${task.reward}" data-task-link="${task.link}">
+                        ${isCompleted ? 'Completed' : 'Open'}
+                    </button>
+                `;
+            });
+            
+            return taskCard;
         }
 
-        // Watch Ad Function
-        function watchAd() {
-            const button = event.target;
-            button.textContent = 'WATCHING...';
-            button.disabled = true;
-
-            // Show Monetag ad (this is a placeholder - actual implementation would depend on Monetag SDK)
-            if (typeof show_10290264 !== 'undefined') {
-                show_10290264();
-            }
-
-            setTimeout(async () => {
-                if (userData) {
-                    userData.balance += 1;
-                    userData.totalEarned += 1;
-
-                    const userRef = database.ref('users/' + userData.id);
-                    await userRef.update({
-                        balance: userData.balance,
-                        totalEarned: userData.totalEarned
-                    });
-
-                    updateUI();
-                    showToast('Ad watched! +1 TRM', 'success');
+        // Load leaderboard from Firebase
+        function loadLeaderboard(period) {
+            // Update active tab
+            document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.period === period) {
+                    tab.classList.add('active');
                 }
-
-                button.textContent = 'OPEN';
-                button.disabled = false;
-            }, 3000);
-        }
-
-        // Leaderboard Functions
-        async function loadLeaderboard() {
-            const usersRef = database.ref('users');
-            usersRef.orderByChild('balance').limitToLast(25).on('value', (snapshot) => {
-                const users = snapshot.val();
-                const leaderboardList = document.getElementById('leaderboardList');
+            });
+            
+            // Get leaderboard data from Firebase
+            database.ref('leaderboard/' + period).limitToFirst(25).once('value').then((snapshot) => {
+                const leaderboard = snapshot.val();
                 leaderboardList.innerHTML = '';
-
-                if (users) {
-                    const sortedUsers = Object.values(users).sort((a, b) => b.balance - a.balance);
+                
+                if (leaderboard) {
+                    // Convert to array and sort by balance
+                    const leaderboardArray = Object.keys(leaderboard).map(key => ({
+                        id: key,
+                        ...leaderboard[key]
+                    })).sort((a, b) => b.balance - a.balance);
                     
-                    sortedUsers.forEach((user, index) => {
-                        createLeaderboardItem(user, index + 1);
+                    // Create leaderboard items
+                    leaderboardArray.forEach((user, index) => {
+                        const leaderboardItem = createLeaderboardItem(index + 1, user);
+                        leaderboardList.appendChild(leaderboardItem);
                     });
+                } else {
+                    leaderboardList.innerHTML = '<p style="text-align: center; padding: 20px;">Leaderboard is empty at the moment.</p>';
                 }
             });
         }
 
-        function createLeaderboardItem(user, rank) {
-            const leaderboardList = document.getElementById('leaderboardList');
-            
-            const item = document.createElement('div');
-            item.className = 'leaderboard-item';
+        // Create leaderboard item element
+        function createLeaderboardItem(rank, user) {
+            const leaderboardItem = document.createElement('div');
+            leaderboardItem.className = 'leaderboard-item';
             
             let levelClass = 'level-bronze';
-            if (user.balance >= 50000) levelClass = 'level-diamond';
-            else if (user.balance >= 10000) levelClass = 'level-gold';
-
-            item.innerHTML = `
-                <div class="rank-number rank-${rank <= 3 ? rank : ''}">${rank}</div>
-                <img src="${user.photoUrl || 'https://i.postimg.cc/fTQktNmX/maincoin.png'}" alt="${user.firstName}" class="user-avatar">
-                <div class="user-info">
-                    <div class="user-name">${user.firstName} ${user.lastName}</div>
-                    <div class="user-balance">${user.balance.toFixed(3)} TRM</div>
+            if (user.balance >= 50000) {
+                levelClass = 'level-diamond';
+            } else if (user.balance >= 10000) {
+                levelClass = 'level-gold';
+            }
+            
+            leaderboardItem.innerHTML = `
+                <div class="leaderboard-rank ${rank <= 3 ? 'rank-' + rank : ''}">${rank}</div>
+                <img src="${user.photo || 'https://picsum.photos/seed/user' + user.id + '/200/200.jpg'}" alt="${user.name}" class="leaderboard-avatar">
+                <div class="leaderboard-info">
+                    <div class="leaderboard-name">${user.name}</div>
+                    <div class="leaderboard-level ${levelClass}">${user.level || 'Bronze'}</div>
                 </div>
-                <div class="user-level ${levelClass}">${(user.level || 'Bronze').toUpperCase()}</div>
+                <div class="leaderboard-balance">
+                    <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" class="leaderboard-balance-icon">
+                    <span>${user.balance.toFixed(3)}</span>
+                </div>
             `;
             
-            leaderboardList.appendChild(item);
+            return leaderboardItem;
         }
 
-        // Friends Functions
-        async function loadReferrals() {
-            if (!userData) return;
-
-            const referralListRef = database.ref('users/' + userData.id + '/referralList');
-            referralListRef.on('value', (snapshot) => {
+        // Load referrals from Firebase
+        function loadReferrals() {
+            database.ref('users/' + userId + '/referrals').once('value').then((snapshot) => {
                 const referrals = snapshot.val();
-                const referralsList = document.getElementById('referralsList');
                 referralsList.innerHTML = '';
-
+                
                 if (referrals) {
-                    Object.values(referrals).forEach(async (referral) => {
-                        const referredUserRef = database.ref('users/' + referral.referredUserId);
-                        const referredUserSnapshot = await referredUserRef.once('value');
-                        const referredUser = referredUserSnapshot.val();
-
-                        if (referredUser) {
-                            createReferralItem(referredUser);
-                        }
+                    const referralIds = Object.keys(referrals);
+                    totalReferrals.textContent = referralIds.length;
+                    
+                    let totalEarnedFromReferrals = 0;
+                    
+                    referralIds.forEach(referralId => {
+                        const referral = referrals[referralId];
+                        totalEarnedFromReferrals += referral.earned || 0;
+                        
+                        const referralItem = createReferralItem(referral);
+                        referralsList.appendChild(referralItem);
                     });
+                    
+                    referralEarned.textContent = totalEarnedFromReferrals.toFixed(3);
+                } else {
+                    totalReferrals.textContent = '0';
+                    referralEarned.textContent = '0';
+                    referralsList.innerHTML = '<p style="text-align: center; padding: 20px;">You have no referrals yet.</p>';
                 }
             });
         }
 
-        function createReferralItem(user) {
-            const referralsList = document.getElementById('referralsList');
+        // Create referral item element
+        function createReferralItem(referral) {
+            const referralItem = document.createElement('div');
+            referralItem.className = 'referral-item';
             
-            const item = document.createElement('div');
-            item.className = 'referral-item';
-            item.innerHTML = `
-                <img src="${user.photoUrl || 'https://i.postimg.cc/fTQktNmX/maincoin.png'}" alt="${user.firstName}" class="user-avatar">
-                <div class="user-info">
-                    <div class="user-name">${user.firstName} ${user.lastName}</div>
-                    <div class="user-balance">Balance: ${user.balance.toFixed(3)} TRM</div>
-                    <div class="user-id">ID: ${user.id}</div>
+            referralItem.innerHTML = `
+                <img src="${referral.photo || 'https://picsum.photos/seed/user' + referral.id + '/200/200.jpg'}" alt="${referral.name}" class="referral-avatar">
+                <div class="referral-info">
+                    <div class="referral-name">${referral.name}</div>
+                    <div class="referral-id">ID: ${referral.id}</div>
+                    <div class="referral-earned">
+                        <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" class="referral-earned-icon">
+                        <span>${(referral.earned || 0).toFixed(3)} TRM</span>
+                    </div>
                 </div>
             `;
             
-            referralsList.appendChild(item);
+            return referralItem;
         }
 
-        function copyReferralLink() {
-            const referralLink = document.getElementById('referralLink');
-            referralLink.select();
-            document.execCommand('copy');
-            showToast('Referral link copied!', 'success');
-        }
-
-        // Wallet Functions
-        async function connectWallet() {
-            try {
-                // Initialize TON Connect UI
-                if (!tonConnect) {
-                    tonConnect = new TON_CONNECT_UI.TonConnectUI({
-                        manifestUrl: 'https://trimint.vercel.app/tonconnect-manifest.json',
-                        buttonRootId: null
-                    });
-                }
-
-                const wallet = await tonConnect.connectWallet();
-                
-                if (wallet) {
-                    const address = wallet.account.address;
-                    const formattedAddress = formatTonAddress(address);
+        // Handle referral
+        function handleReferral(referrerId) {
+            if (referrerId === userId) return; // Can't refer yourself
+            
+            // Show referral message
+            referralMessage.textContent = `You were invited by a friend!`;
+            
+            // Check if this is a new referral
+            database.ref('users/' + referrerId + '/referrals/' + userId).once('value').then((snapshot) => {
+                if (!snapshot.val()) {
+                    // New referral
+                    const referralData = {
+                        id: userId,
+                        name: profileName.textContent,
+                        photo: profileAvatar.src,
+                        earned: 5000,
+                        timestamp: new Date().getTime()
+                    };
                     
-                    userData.walletAddress = formattedAddress;
+                    // Add referral to referrer's data
+                    database.ref('users/' + referrerId + '/referrals/' + userId).set(referralData);
                     
-                    const userRef = database.ref('users/' + userData.id);
-                    await userRef.update({
-                        walletAddress: formattedAddress
+                    // Add reward to referrer's balance
+                    database.ref('users/' + referrerId + '/balance').once('value').then((snapshot) => {
+                        const referrerBalance = snapshot.val() || 0;
+                        database.ref('users/' + referrerId + '/balance').set(referrerBalance + 5000);
                     });
-
-                    updateProfile();
-                    showToast('Wallet connected successfully!', 'success');
+                    
+                    // Add reward to new user's balance
+                    balance += 5000;
+                    updateBalance();
+                    saveUserData();
+                    
+                    showToast('Welcome! You received 5000 TRM from the referral bonus!');
                 }
-            } catch (error) {
-                showToast('Failed to connect wallet', 'error');
-                console.error('Wallet connection error:', error);
-            }
-        }
-
-        function formatTonAddress(address) {
-            return address.slice(0, 6) + '...' + address.slice(-4);
-        }
-
-        function copyWalletAddress() {
-            if (userData.walletAddress) {
-                navigator.clipboard.writeText(userData.walletAddress);
-                showToast('Wallet address copied!', 'success');
-            }
-        }
-
-        async function disconnectWallet() {
-            if (tonConnect) {
-                await tonConnect.disconnect();
-            }
-
-            userData.walletAddress = null;
-            
-            const userRef = database.ref('users/' + userData.id);
-            await userRef.update({
-                walletAddress: null
             });
-
-            updateProfile();
-            showToast('Wallet disconnected', 'success');
         }
 
-        // Settings Functions
-        async function toggleSetting(settingName) {
-            if (!userData) return;
-
-            const toggle = event.currentTarget;
-            toggle.classList.toggle('active');
-
-            if (!userData.settings) {
-                userData.settings = {};
-            }
-
-            userData.settings[settingName] = !userData.settings[settingName];
-
-            const userRef = database.ref('users/' + userData.id);
-            await userRef.update({
-                settings: userData.settings
-            });
-
-            showToast(`${settingName} ${userData.settings[settingName] ? 'enabled' : 'disabled'}`, 'success');
-        }
-
-        // Theme Toggle
-        document.getElementById('themeToggle').addEventListener('click', function() {
-            const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            
-            body.setAttribute('data-theme', newTheme);
-            this.textContent = newTheme === 'light' ? '🌙' : '☀️';
-            
-            // Save theme preference
-            if (userData) {
-                const userRef = database.ref('users/' + userData.id);
-                userRef.update({
-                    theme: newTheme
-                });
-            }
-        });
-
-        // Toast Notification
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
+        // Show toast notification
+        function showToast(message) {
             toast.textContent = message;
-            toast.className = `toast ${type} show`;
-
+            toast.classList.add('show');
+            
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
         }
 
-        // Initialize App
-        window.addEventListener('DOMContentLoaded', function() {
+        // Copy text to clipboard
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast('Copied to clipboard!');
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Telegram Web App
             initTelegramWebApp();
-
-            // Listen for balance changes
-            if (currentUser) {
-                const userId = currentUser.id.toString();
-                const userRef = database.ref('users/' + userId);
+            
+            // Initialize TON Connect
+            initTonConnect();
+            
+            // Theme toggle
+            themeToggle.addEventListener('click', () => {
+                isDarkMode = !isDarkMode;
+                document.body.classList.toggle('dark-mode');
                 
-                userRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    if (data && data !== userData) {
-                        userData = data;
-                        updateUI();
-                    }
-                });
-            }
-        });
-
-        // Prevent context menu on mobile
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-
-        // Handle visibility change (app in background)
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) {
-                // App is in background
-                if (farmingInterval) {
-                    // Farming continues in background with Firebase
+                if (isDarkMode) {
+                    themeIcon.className = 'fas fa-sun';
+                } else {
+                    themeIcon.className = 'fas fa-moon';
                 }
-            } else {
-                // App is visible again
-                if (userData && userData.isFarming && userData.farmingEndTime) {
-                    const now = Date.now();
-                    if (now < userData.farmingEndTime) {
-                        // Resume farming display
-                        updateFarmingTimer();
+            });
+            
+            // Start farming button
+            startFarmingBtn.addEventListener('click', startFarming);
+            
+            // Connect wallet button
+            connectWalletBtn.addEventListener('click', () => {
+                if (tonConnectUI) {
+                    tonConnectUI.openModal();
+                }
+            });
+            
+            // Copy wallet address button
+            copyAddressBtn.addEventListener('click', () => {
+                copyToClipboard(walletAddressText.textContent);
+            });
+            
+            // Disconnect wallet button
+            disconnectWalletBtn.addEventListener('click', () => {
+                if (tonConnectUI) {
+                    tonConnectUI.disconnect();
+                }
+            });
+            
+            // Settings toggles
+            notificationsToggle.addEventListener('click', () => {
+                notificationsToggle.classList.toggle('active');
+                showToast(notificationsToggle.classList.contains('active') ? 'Notifications enabled' : 'Notifications disabled');
+            });
+            
+            soundToggle.addEventListener('click', () => {
+                soundToggle.classList.toggle('active');
+                showToast(soundToggle.classList.contains('active') ? 'Sound effects enabled' : 'Sound effects disabled');
+            });
+            
+            autoFarmingToggle.addEventListener('click', () => {
+                autoFarmingToggle.classList.toggle('active');
+                showToast(autoFarmingToggle.classList.contains('active') ? 'Auto farming enabled' : 'Auto farming disabled');
+            });
+            
+            // Watch ads button
+            watchAdsBtn.addEventListener('click', () => {
+                // Show Monetag ad
+                if (window.show_10290264) {
+                    window.show_10290264();
+                    
+                    // Add reward after ad is shown
+                    balance += 1;
+                    updateBalance();
+                    saveUserData();
+                    showToast('You earned 1 TRM from watching the ad!');
+                } else {
+                    showToast('Ad loading failed. Please try again later.');
+                }
+            });
+            
+            // Tasks list event delegation
+            tasksList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('task-btn')) {
+                    const taskId = e.target.dataset.taskId;
+                    const taskReward = parseFloat(e.target.dataset.taskReward);
+                    const taskLink = e.target.dataset.taskLink;
+                    
+                    if (e.target.classList.contains('completed')) {
+                        // Redirect to link even if completed
+                        window.open(taskLink, '_blank');
+                    } else if (e.target.classList.contains('processing')) {
+                        // Already processing, do nothing
+                        return;
                     } else {
-                        // Farming completed while app was in background
-                        stopFarming();
+                        // Start processing
+                        e.target.classList.add('processing');
+                        e.target.textContent = 'Processing...';
+                        
+                        // Open task link
+                        window.open(taskLink, '_blank');
+                        
+                        // Simulate task completion after 10 seconds
+                        setTimeout(() => {
+                            e.target.classList.remove('processing');
+                            e.target.classList.add('completed');
+                            e.target.textContent = 'Completed';
+                            
+                            // Add reward to balance
+                            balance += taskReward;
+                            updateBalance();
+                            saveUserData();
+                            
+                            // Mark task as completed in Firebase
+                            database.ref('users/' + userId + '/completedTasks/' + taskId).set(true);
+                            
+                            showToast(`Task completed! You earned ${taskReward} TRM.`);
+                        }, 10000);
                     }
                 }
-            }
+            });
+            
+            // Leaderboard tabs
+            document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    loadLeaderboard(tab.dataset.period);
+                });
+            });
+            
+            // Copy referral link button
+            copyReferralBtn.addEventListener('click', () => {
+                copyToClipboard(referralLink.textContent);
+            });
+            
+            // Bottom navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active button
+                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Show corresponding section
+                    const sectionId = btn.dataset.section;
+                    document.querySelectorAll('.section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    document.getElementById(sectionId).classList.add('active');
+                });
+            });
         });
     </script>
 </body>
