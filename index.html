@@ -1090,6 +1090,8 @@
             soundEffects: true,
             autoFarming: false
         };
+        let lastSavedBalance = 0;
+        let balanceSaveInterval = null;
         
         // DOM Elements
         const loadingScreen = document.getElementById('loadingScreen');
@@ -1245,6 +1247,7 @@
                 if (doc.exists) {
                     const userData = doc.data();
                     balance = userData.balance || 0;
+                    lastSavedBalance = balance;
                     isFarming = userData.isFarming || false;
                     farmingEndTime = userData.farmingEndTime || null;
                     settings = userData.settings || settings;
@@ -1253,6 +1256,9 @@
                     updateBalance();
                     updateLevel();
                     updateSettings();
+                    
+                    // Start periodic balance save
+                    startBalanceSaveInterval();
                     
                     // Check if farming was in progress
                     if (isFarming && farmingEndTime) {
@@ -1292,6 +1298,9 @@
                         settings: settings,
                         createdAt: new Date()
                     });
+                    
+                    // Start periodic balance save
+                    startBalanceSaveInterval();
                 }
                 
                 // Load tasks
@@ -1302,6 +1311,35 @@
                 
                 // Load referrals
                 loadReferrals();
+            });
+        }
+        
+        // Start periodic balance save
+        function startBalanceSaveInterval() {
+            // Clear any existing interval
+            if (balanceSaveInterval) {
+                clearInterval(balanceSaveInterval);
+            }
+            
+            // Save balance every 30 seconds
+            balanceSaveInterval = setInterval(() => {
+                if (currentUser && Math.abs(balance - lastSavedBalance) > 0.001) {
+                    saveBalance();
+                }
+            }, 30000);
+        }
+        
+        // Save balance to Firebase
+        function saveBalance() {
+            if (!currentUser) return;
+            
+            const userRef = db.collection('users').doc(currentUser.id.toString());
+            userRef.update({
+                balance: balance
+            }).then(() => {
+                lastSavedBalance = balance;
+            }).catch(error => {
+                console.error('Error saving balance:', error);
             });
         }
         
@@ -1385,9 +1423,7 @@
                     
                     // Update in Firebase every 10 seconds
                     if (Math.floor(balance * 1000) % 10 === 0) {
-                        db.collection('users').doc(currentUser.id.toString()).update({
-                            balance: balance
-                        });
+                        saveBalance();
                     }
                     
                     // Check if farming is complete
@@ -1416,12 +1452,14 @@
                 farmingInterval = null;
             }
             
+            // Save balance before stopping
+            saveBalance();
+            
             // Update in Firebase
             if (currentUser) {
                 db.collection('users').doc(currentUser.id.toString()).update({
                     isFarming: false,
-                    farmingEndTime: null,
-                    balance: balance
+                    farmingEndTime: null
                 });
             }
         }
@@ -1505,30 +1543,47 @@
                     taskElement.className = 'task-item';
                     
                     // Check if user has completed this task
-                    const isCompleted = currentUser && 
+                    if (currentUser) {
                         db.collection('users').doc(currentUser.id.toString()).collection('completedTasks').doc(task.id).get().then((taskDoc) => {
-                            return taskDoc.exists;
+                            const isCompleted = taskDoc.exists;
+                            
+                            taskElement.innerHTML = `
+                                <img src="${task.icon || 'https://picsum.photos/seed/task/50/50.jpg'}" alt="${task.name}" class="task-icon">
+                                <div class="task-info">
+                                    <div class="task-name">${task.name}</div>
+                                    <div class="task-reward">
+                                        <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" style="width: 16px; height: 16px;">
+                                        ${task.reward} TRM
+                                    </div>
+                                </div>
+                                <button class="task-button ${isCompleted ? 'completed' : ''}" data-task-id="${task.id}" data-task-link="${task.link}" data-task-reward="${task.reward}">${isCompleted ? 'COMPLETED' : 'OPEN'}</button>
+                            `;
+                            
+                            tasksList.appendChild(taskElement);
+                            
+                            // Add event listener to task button
+                            const button = taskElement.querySelector('.task-button');
+                            button.addEventListener('click', handleTaskClick);
                         });
-                    
-                    // We'll handle the button state in a separate function
-                    taskElement.innerHTML = `
-                        <img src="${task.icon || 'https://picsum.photos/seed/task/50/50.jpg'}" alt="${task.name}" class="task-icon">
-                        <div class="task-info">
-                            <div class="task-name">${task.name}</div>
-                            <div class="task-reward">
-                                <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" style="width: 16px; height: 16px;">
-                                ${task.reward} TRM
+                    } else {
+                        taskElement.innerHTML = `
+                            <img src="${task.icon || 'https://picsum.photos/seed/task/50/50.jpg'}" alt="${task.name}" class="task-icon">
+                            <div class="task-info">
+                                <div class="task-name">${task.name}</div>
+                                <div class="task-reward">
+                                    <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" style="width: 16px; height: 16px;">
+                                    ${task.reward} TRM
+                                </div>
                             </div>
-                        </div>
-                        <button class="task-button" data-task-id="${task.id}" data-task-link="${task.link}" data-task-reward="${task.reward}">OPEN</button>
-                    `;
-                    
-                    tasksList.appendChild(taskElement);
-                });
-                
-                // Add event listeners to task buttons
-                document.querySelectorAll('.task-button').forEach(button => {
-                    button.addEventListener('click', handleTaskClick);
+                            <button class="task-button" data-task-id="${task.id}" data-task-link="${task.link}" data-task-reward="${task.reward}">OPEN</button>
+                        `;
+                        
+                        tasksList.appendChild(taskElement);
+                        
+                        // Add event listener to task button
+                        const button = taskElement.querySelector('.task-button');
+                        button.addEventListener('click', handleTaskClick);
+                    }
                 });
             });
         }
@@ -1569,10 +1624,12 @@
                 updateBalance();
                 updateLevel();
                 
+                // Save balance
+                saveBalance();
+                
                 // Update in Firebase
                 if (currentUser) {
                     db.collection('users').doc(currentUser.id.toString()).update({
-                        balance: balance,
                         totalTasks: firebase.firestore.FieldValue.increment(1)
                     });
                     
@@ -1874,12 +1931,8 @@
                     updateBalance();
                     updateLevel();
                     
-                    // Update in Firebase
-                    if (currentUser) {
-                        db.collection('users').doc(currentUser.id.toString()).update({
-                            balance: balance
-                        });
-                    }
+                    // Save balance
+                    saveBalance();
                     
                     // Show notification
                     showNotification('Ad Watched', 'You earned 1 TRM!');
@@ -1890,15 +1943,58 @@
                 updateBalance();
                 updateLevel();
                 
-                // Update in Firebase
-                if (currentUser) {
-                    db.collection('users').doc(currentUser.id.toString()).update({
-                        balance: balance
-                    });
-                }
+                // Save balance
+                saveBalance();
                 
                 // Show notification
                 showNotification('Ad Watched', 'You earned 1 TRM!');
+            }
+        });
+        
+        // Handle page visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Page is hidden, save current state
+                if (currentUser) {
+                    saveBalance();
+                    
+                    if (isFarming) {
+                        db.collection('users').doc(currentUser.id.toString()).update({
+                            isFarming: isFarming,
+                            farmingEndTime: farmingEndTime
+                        });
+                    }
+                }
+            } else {
+                // Page is visible again, check if farming should continue
+                if (currentUser && isFarming && farmingEndTime) {
+                    const now = new Date().getTime();
+                    const endTime = new Date(farmingEndTime).getTime();
+                    
+                    if (now < endTime) {
+                        // Continue farming
+                        startFarming(true);
+                    } else {
+                        // Farming ended while page was hidden
+                        stopFarming();
+                        showNotification('Farming Complete', 'You have successfully farmed for 12 hours!');
+                    }
+                }
+            }
+        });
+        
+        // Handle beforeunload event
+        window.addEventListener('beforeunload', () => {
+            // Save data before leaving
+            if (currentUser) {
+                saveBalance();
+                
+                if (isFarming) {
+                    db.collection('users').doc(currentUser.id.toString()).update({
+                        isFarming: isFarming,
+                        farmingEndTime: farmingEndTime
+                    });
+                }
             }
         });
         
