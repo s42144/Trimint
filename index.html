@@ -1302,6 +1302,9 @@
                 
                 // Load referrals
                 loadReferrals();
+            }).catch((error) => {
+                console.error("Error loading user data:", error);
+                showNotification("Error", "Failed to load user data. Please try again.");
             });
         }
         
@@ -1309,6 +1312,15 @@
         function updateBalance() {
             userBalance.textContent = `${balance.toFixed(3)} TRM`;
             totalBalance.textContent = balance.toFixed(3);
+            
+            // Store balance in Firebase
+            if (currentUser) {
+                db.collection('users').doc(currentUser.id.toString()).update({
+                    balance: balance
+                }).catch((error) => {
+                    console.error("Error updating balance:", error);
+                });
+            }
         }
         
         // Update user level based on balance
@@ -1331,6 +1343,8 @@
             if (currentUser) {
                 db.collection('users').doc(currentUser.id.toString()).update({
                     level: level
+                }).catch((error) => {
+                    console.error("Error updating level:", error);
                 });
             }
         }
@@ -1361,11 +1375,15 @@
                 db.collection('users').doc(currentUser.id.toString()).update({
                     isFarming: true,
                     farmingEndTime: farmingEndTime
+                }).catch((error) => {
+                    console.error("Error starting farming:", error);
                 });
                 
                 // Update total farming count
                 db.collection('users').doc(currentUser.id.toString()).update({
                     totalFarming: firebase.firestore.FieldValue.increment(1)
+                }).catch((error) => {
+                    console.error("Error updating farming count:", error);
                 });
             }
             
@@ -1382,13 +1400,6 @@
                     
                     // Show token animation
                     showTokenAnimation();
-                    
-                    // Update in Firebase every 10 seconds
-                    if (Math.floor(balance * 1000) % 10 === 0) {
-                        db.collection('users').doc(currentUser.id.toString()).update({
-                            balance: balance
-                        });
-                    }
                     
                     // Check if farming is complete
                     const now = new Date().getTime();
@@ -1422,6 +1433,8 @@
                     isFarming: false,
                     farmingEndTime: null,
                     balance: balance
+                }).catch((error) => {
+                    console.error("Error stopping farming:", error);
                 });
             }
         }
@@ -1480,12 +1493,16 @@
                         referralEarnings: referralEarnings,
                         referrals: referrals,
                         totalFriends: firebase.firestore.FieldValue.increment(1)
+                    }).catch((error) => {
+                        console.error("Error processing referral:", error);
                     });
                     
                     // Show referral info on loading screen
                     document.getElementById('referralName').textContent = referrerData.name;
                     document.getElementById('referralInfo').style.display = 'block';
                 }
+            }).catch((error) => {
+                console.error("Error processing referral:", error);
             });
         }
         
@@ -1505,31 +1522,48 @@
                     taskElement.className = 'task-item';
                     
                     // Check if user has completed this task
-                    const isCompleted = currentUser && 
+                    if (currentUser) {
                         db.collection('users').doc(currentUser.id.toString()).collection('completedTasks').doc(task.id).get().then((taskDoc) => {
-                            return taskDoc.exists;
+                            const isCompleted = taskDoc.exists;
+                            
+                            taskElement.innerHTML = `
+                                <img src="${task.icon || 'https://picsum.photos/seed/task/50/50.jpg'}" alt="${task.name}" class="task-icon">
+                                <div class="task-info">
+                                    <div class="task-name">${task.name}</div>
+                                    <div class="task-reward">
+                                        <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" style="width: 16px; height: 16px;">
+                                        ${task.reward} TRM
+                                    </div>
+                                </div>
+                                <button class="task-button ${isCompleted ? 'completed' : ''}" data-task-id="${task.id}" data-task-link="${task.link}" data-task-reward="${task.reward}">${isCompleted ? 'COMPLETED' : 'OPEN'}</button>
+                            `;
+                            
+                            tasksList.appendChild(taskElement);
                         });
-                    
-                    // We'll handle the button state in a separate function
-                    taskElement.innerHTML = `
-                        <img src="${task.icon || 'https://picsum.photos/seed/task/50/50.jpg'}" alt="${task.name}" class="task-icon">
-                        <div class="task-info">
-                            <div class="task-name">${task.name}</div>
-                            <div class="task-reward">
-                                <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" style="width: 16px; height: 16px;">
-                                ${task.reward} TRM
+                    } else {
+                        taskElement.innerHTML = `
+                            <img src="${task.icon || 'https://picsum.photos/seed/task/50/50.jpg'}" alt="${task.name}" class="task-icon">
+                            <div class="task-info">
+                                <div class="task-name">${task.name}</div>
+                                <div class="task-reward">
+                                    <img src="https://i.postimg.cc/fTQktNmX/maincoin.png" alt="TRM" style="width: 16px; height: 16px;">
+                                    ${task.reward} TRM
+                                </div>
                             </div>
-                        </div>
-                        <button class="task-button" data-task-id="${task.id}" data-task-link="${task.link}" data-task-reward="${task.reward}">OPEN</button>
-                    `;
-                    
-                    tasksList.appendChild(taskElement);
+                            <button class="task-button" data-task-id="${task.id}" data-task-link="${task.link}" data-task-reward="${task.reward}">OPEN</button>
+                        `;
+                        
+                        tasksList.appendChild(taskElement);
+                    }
                 });
                 
                 // Add event listeners to task buttons
                 document.querySelectorAll('.task-button').forEach(button => {
                     button.addEventListener('click', handleTaskClick);
                 });
+            }).catch((error) => {
+                console.error("Error loading tasks:", error);
+                showNotification("Error", "Failed to load tasks. Please try again.");
             });
         }
         
@@ -1574,11 +1608,15 @@
                     db.collection('users').doc(currentUser.id.toString()).update({
                         balance: balance,
                         totalTasks: firebase.firestore.FieldValue.increment(1)
+                    }).catch((error) => {
+                        console.error("Error updating task completion:", error);
                     });
                     
                     // Mark task as completed
                     db.collection('users').doc(currentUser.id.toString()).collection('completedTasks').doc(taskId).set({
                         completedAt: new Date()
+                    }).catch((error) => {
+                        console.error("Error marking task as completed:", error);
                     });
                     
                     // Show notification
@@ -1622,6 +1660,9 @@
                     
                     leaderboardList.appendChild(leaderboardItem);
                 });
+            }).catch((error) => {
+                console.error("Error loading leaderboard:", error);
+                showNotification("Error", "Failed to load leaderboard. Please try again.");
             });
         }
         
@@ -1639,7 +1680,7 @@
                     
                     // Update referral stats
                     totalReferrals.textContent = referrals.length;
-                    referralEarnings.textContent = `${referralEarnings} TRM`;
+                    document.getElementById('referralEarnings').textContent = `${referralEarnings} TRM`;
                     
                     // Update referrals list
                     referralsList.innerHTML = '';
@@ -1662,6 +1703,9 @@
                         referralsList.appendChild(referralItem);
                     });
                 }
+            }).catch((error) => {
+                console.error("Error loading referrals:", error);
+                showNotification("Error", "Failed to load referrals. Please try again.");
             });
         }
         
@@ -1686,6 +1730,8 @@
                     if (currentUser) {
                         db.collection('users').doc(currentUser.id.toString()).update({
                             walletAddress: address
+                        }).catch((error) => {
+                            console.error("Error updating wallet address:", error);
                         });
                     }
                 } else {
@@ -1698,6 +1744,8 @@
                     if (currentUser) {
                         db.collection('users').doc(currentUser.id.toString()).update({
                             walletAddress: null
+                        }).catch((error) => {
+                            console.error("Error disconnecting wallet:", error);
                         });
                     }
                 }
@@ -1809,6 +1857,9 @@
             const address = walletAddress.textContent;
             navigator.clipboard.writeText(address).then(() => {
                 showNotification('Copied', 'Wallet address copied to clipboard');
+            }).catch((error) => {
+                console.error("Error copying address:", error);
+                showNotification("Error", "Failed to copy address");
             });
         });
         
@@ -1824,6 +1875,9 @@
             const link = referralLink.textContent;
             navigator.clipboard.writeText(link).then(() => {
                 showNotification('Copied', 'Referral link copied to clipboard');
+            }).catch((error) => {
+                console.error("Error copying referral link:", error);
+                showNotification("Error", "Failed to copy referral link");
             });
         });
         
@@ -1836,6 +1890,8 @@
             if (currentUser) {
                 db.collection('users').doc(currentUser.id.toString()).update({
                     settings: settings
+                }).catch((error) => {
+                    console.error("Error updating notification settings:", error);
                 });
             }
         });
@@ -1848,6 +1904,8 @@
             if (currentUser) {
                 db.collection('users').doc(currentUser.id.toString()).update({
                     settings: settings
+                }).catch((error) => {
+                    console.error("Error updating sound settings:", error);
                 });
             }
         });
@@ -1860,6 +1918,8 @@
             if (currentUser) {
                 db.collection('users').doc(currentUser.id.toString()).update({
                     settings: settings
+                }).catch((error) => {
+                    console.error("Error updating auto farming settings:", error);
                 });
             }
         });
@@ -1874,13 +1934,6 @@
                     updateBalance();
                     updateLevel();
                     
-                    // Update in Firebase
-                    if (currentUser) {
-                        db.collection('users').doc(currentUser.id.toString()).update({
-                            balance: balance
-                        });
-                    }
-                    
                     // Show notification
                     showNotification('Ad Watched', 'You earned 1 TRM!');
                 });
@@ -1889,13 +1942,6 @@
                 balance += 1;
                 updateBalance();
                 updateLevel();
-                
-                // Update in Firebase
-                if (currentUser) {
-                    db.collection('users').doc(currentUser.id.toString()).update({
-                        balance: balance
-                    });
-                }
                 
                 // Show notification
                 showNotification('Ad Watched', 'You earned 1 TRM!');
