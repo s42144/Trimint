@@ -1713,69 +1713,6 @@
       color: var(--text-primary);
     }
     
-    /* Professional Icon Styles */
-    .icon-farming {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      background-image: url('https://i.postimg.cc/15y9Qk7q/farming-icon.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-    }
-    
-    .icon-claim {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      background-image: url('https://i.postimg.cc/8CGv2X6q/claim-icon.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-    }
-    
-    .icon-friends {
-      display: inline-block;
-      width: 48px;
-      height: 48px;
-      background-image: url('https://i.postimg.cc/7YF7mQzV/friends-icon.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-    }
-    
-    .icon-welcome {
-      display: inline-block;
-      width: 64px;
-      height: 64px;
-      background-image: url('https://i.postimg.cc/QN3VJvM9/welcome-icon.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-    }
-    
-    .icon-ton {
-      display: inline-block;
-      width: 28px;
-      height: 28px;
-      background-image: url('https://i.postimg.cc/XYL3N2w6/ton-icon.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      filter: brightness(0) invert(1);
-    }
-    
-    .icon-lock {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      background-image: url('https://i.postimg.cc/hvD5K8G2/lock-icon.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      filter: brightness(0) invert(1);
-    }
-    
     /* Responsive Design */
     @media (max-width: 360px) {
       .balance-amount {
@@ -1822,7 +1759,7 @@
   <!-- Referral Welcome Screen -->
   <div id="referral-welcome">
     <div class="welcome-card">
-      <div class="welcome-icon icon-welcome"></div>
+      <div class="welcome-icon">🎉</div>
       <div class="welcome-title">Welcome!</div>
       <div class="welcome-message">You've been invited to join Trimint</div>
       <div class="referrer-info">
@@ -1909,22 +1846,20 @@
     tg.expand();
     tg.ready();
     
-    // Firebase Configuration - Updated with new credentials
+    // Firebase Configuration
     const firebaseConfig = {
-      apiKey: "AIzaSyAt9PRbvok0g5XL4187btrPvGx6VjfurJU",
-      authDomain: "msc-by-shawon.firebaseapp.com",
-      projectId: "msc-by-shawon",
-      storageBucket: "msc-by-shawon.firebasestorage.app",
-      messagingSenderId: "432753389120",
-      appId: "1:432753389120:web:dcbb46ca39408a405579a5",
-      measurementId: "G-8LHGLJSSEE",
-      databaseURL: "https://msc-by-shawon-default-rtdb.firebaseio.com/"
+      apiKey: "AIzaSyAHofuS76xf2oGPaJqEtopmcxdoJzjkDL4",
+      authDomain: "zmex-investments.firebaseapp.com",
+      databaseURL: "https://zmex-investments-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "zmex-investments",
+      storageBucket: "zmex-investments.appspot.com",
+      messagingSenderId: "971623941364",
+      appId: "1:971623941364:web:6c65604fc45c3f64e74aa1",
+      measurementId: "G-KQ1LYP77JF"
     };
     
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const analytics = firebase.analytics();
     
     // Global State
     let userId = null;
@@ -1950,7 +1885,6 @@
     let referralListener = null;
     let pendingTaskRewards = {};
     let totalReferralCommission = 0;
-    let tasks = []; // Tasks from admin panel
     
     // NEW: Farming state
     let farmingActive = false;
@@ -2025,7 +1959,7 @@
         if (user.photo_url) {
           userAvatar = user.photo_url;
         } else {
-          userAvatar = "https://i.postimg.cc/15y9Qk7q/default-avatar.png";
+          userAvatar = "https://github.com/akhterefti-del/Shark/blob/76091d5ce35c6707100f0269223352d0b5c1a163/Gemini_Generated_Image_ad2lr0ad2lr0ad2l.png?raw=true";
         }
         
         console.log('Telegram User ID:', userId);
@@ -2036,88 +1970,8 @@
       console.warn('Running outside Telegram environment - using test user');
       userId = 'test_' + Math.floor(10000 + Math.random() * 89999).toString();
       userName = 'Test User';
-      userAvatar = "https://i.postimg.cc/15y9Qk7q/default-avatar.png";
+      userAvatar = "https://github.com/akhterefti-del/Shark/blob/76091d5ce35c6707100f0269223352d0b5c1a163/Gemini_Generated_Image_ad2lr0ad2lr0ad2l.png?raw=true";
       return true;
-    }
-    
-    // Load tasks from admin panel
-    function loadTasks() {
-      return db.ref('tasks').once('value').then(snapshot => {
-        const tasksData = snapshot.val() || {};
-        tasks = [];
-        
-        Object.keys(tasksData).forEach(taskId => {
-          if (tasksData[taskId].active !== false) {
-            tasks.push({
-              id: taskId,
-              name: tasksData[taskId].name,
-              description: tasksData[taskId].description,
-              reward: tasksData[taskId].reward || 0,
-              url: tasksData[taskId].url,
-              image: tasksData[taskId].image || 'https://i.postimg.cc/XYL3N2w6/task-default.png',
-              type: tasksData[taskId].type || 'external'
-            });
-          }
-        });
-        
-        // Sort tasks by reward (highest first)
-        tasks.sort((a, b) => b.reward - a.reward);
-        
-        console.log('Loaded tasks:', tasks);
-        return tasks;
-      }).catch(error => {
-        console.error('Error loading tasks:', error);
-        return [];
-      });
-    }
-    
-    // Complete task function
-    function completeTask(taskId) {
-      const task = tasks.find(t => t.id === taskId);
-      if (!task) {
-        notify('Task not found', 3000);
-        return;
-      }
-      
-      if (userData.completedTasks && userData.completedTasks[taskId]) {
-        notify('Task already completed', 3000);
-        return;
-      }
-      
-      // Open task URL
-      if (task.url) {
-        window.open(task.url, '_blank');
-      }
-      
-      // Award reward after delay (simulating task completion)
-      setTimeout(() => {
-        if (!userData.completedTasks) {
-          userData.completedTasks = {};
-        }
-        
-        userData.completedTasks[taskId] = {
-          completed: true,
-          completedAt: now(),
-          reward: task.reward
-        };
-        
-        coinsEarned += task.reward;
-        
-        awardReferralCommission(task.reward);
-        
-        updateUserData({
-          completedTasks: userData.completedTasks,
-          balance: coinsEarned
-        });
-        
-        notify(`Task completed! Earned ${task.reward} TRM`, 3000);
-        
-        // Refresh earn section
-        const activeTab = document.querySelector('.nav-btn.active');
-        if (activeTab && activeTab.dataset.tab === 'earn') {
-          renderEarn();
-        }
-      }, 3000); // 3 second delay to simulate task completion
     }
     
     function awardReferralCommission(earnedAmount) {
@@ -2158,7 +2012,7 @@
           amount: commission,
           earnedAmount: earnedAmount,
           timestamp: now(),
-          type: 'task_earning'
+          type: 'ad_earning'
         });
       }).catch((error) => {
         console.error('Error awarding commission:', error);
@@ -2776,19 +2630,12 @@
         }
         totalReferralCommission = userData.totalReferralCommission;
         
-        if (!userData.completedTasks) {
-          userData.completedTasks = {};
-        }
-        
         resetAdStatsIfNeeded();
         
         setupReferralListener();
         setupBalanceListener();
         
-        // Load tasks before initializing TonConnect
-        loadTasks().then(() => {
-          initializeTonConnect();
-        });
+        initializeTonConnect();
         
         // Resume farming if it was active
         if (farmingActive && now() < farmingEndTime) {
@@ -2836,9 +2683,6 @@
           
           showTab('home');
         });
-      }).catch(error => {
-        console.error('Error loading user data:', error);
-        notify('Failed to load user data. Please refresh.', 5000);
       });
     }
     
@@ -2892,11 +2736,11 @@
           <div class="farming-earnings" id="farmingEarnings"></div>
           
           <button class="farming-button" id="farmingBtn">
-            <span class="icon-farming"></span> Start Farming
+            🌱 Start Farming
           </button>
           
           <button class="claim-button" id="claimBtn" style="display: none;">
-            <span class="icon-claim"></span> Claim Rewards
+            💰 Claim Rewards
           </button>
           
           <div class="stats-grid">
@@ -2936,7 +2780,7 @@
           </div>
           
           <div class="referral-card">
-            <div class="referral-icon icon-friends"></div>
+            <div class="referral-icon">👥</div>
             <div class="referral-title">Invite Friends</div>
             <div class="referral-desc">
               Share your referral link with friends and earn 5000 TRM for each new user who joins!
@@ -2980,37 +2824,6 @@
     function renderEarn() {
       resetAdStatsIfNeeded();
       
-      // Generate tasks HTML
-      let tasksHTML = '';
-      if (tasks && tasks.length > 0) {
-        tasks.forEach(task => {
-          const isCompleted = userData.completedTasks && userData.completedTasks[task.id];
-          tasksHTML += `
-            <div class="task-card">
-              <img src="${task.image}" class="task-image" alt="${task.name}" />
-              <div class="task-info">
-                <div class="task-name">${task.name}</div>
-                <div class="task-reward">+${task.reward} TRM</div>
-              </div>
-              <button class="task-btn ${isCompleted ? 'completed' : ''}" 
-                      data-task="${task.id}"
-                      ${isCompleted ? 'disabled' : ''}>
-                ${isCompleted ? 'Completed' : 'Start'}
-              </button>
-            </div>
-          `;
-        });
-      } else {
-        tasksHTML = `
-          <div class="task-card">
-            <div class="task-info" style="text-align: center; width: 100%;">
-              <div class="task-name">No tasks available</div>
-              <div class="task-reward">Check back later for new tasks</div>
-            </div>
-          </div>
-        `;
-      }
-      
       const html = `
         <div class="earn-main">
           <div class="section-header">
@@ -3018,17 +2831,15 @@
           </div>
           
           <div class="task-card" style="background: var(--card-bg); border: 1px solid var(--card-border);">
-            <img src="https://i.postimg.cc/XYL3N2w6/ton-icon.png" class="task-image" alt="Verify" />
+            <img src="https://i.postimg.cc/QdZdzbZY/ton-1.png" class="task-image" alt="Verify" />
             <div class="task-info">
               <div class="task-name">Verify For Mining</div>
-              <div class="task-reward">+${userData.miningVerified ? 'Verified' : 'Unlock Mining Features'}</div>
+              <div class="task-reward">+${userData.miningVerified ? '✓ Verified' : 'Unlock Mining Features'}</div>
             </div>
             <button class="task-btn ${userData.miningVerified ? 'completed' : ''}" data-task="verify">
               ${userData.miningVerified ? 'Verified' : 'Verify'}
             </button>
           </div>
-          
-          ${tasksHTML}
           
           <div class="ad-card">
             <div class="ad-title">Watch Advertisement</div>
@@ -3102,14 +2913,6 @@
         }
       });
       
-      // Add event listeners for task buttons
-      document.querySelectorAll('[data-task]:not([data-task="verify"])').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const taskId = btn.dataset.task;
-          completeTask(taskId);
-        });
-      });
-      
       document.querySelector('[data-task="verify"]').addEventListener('click', () => {
         if (userData.miningVerified) {
           notify('You are already verified for mining!', 3000);
@@ -3147,7 +2950,7 @@
                     <div class="referral-list-name">${referredUser.name || 'Unknown'}</div>
                     <div class="referral-list-id">ID: ${referredUserId}</div>
                     <div class="referral-list-balance">${referredUser.balance || 0} TRM</div>
-                    <div class="referral-commission">Commission: ${commissionFromUser} TRM</div>
+                    <div class="referral-commission">🤝 Commission: ${commissionFromUser} TRM</div>
                   </div>
                 </div>
               `;
@@ -3155,10 +2958,6 @@
             content.innerHTML = html;
           }
           
-          modal.style.display = 'flex';
-        }).catch(error => {
-          console.error('Error loading referral list:', error);
-          content.innerHTML = '<div class="referral-list-empty">Error loading referral list. Please try again.</div>';
           modal.style.display = 'flex';
         });
     }
@@ -3196,7 +2995,7 @@
           
           <div class="ton-wallet-card">
             <div class="ton-wallet-header">
-              <div class="ton-wallet-icon icon-ton"></div>
+              <div class="ton-wallet-icon">₮</div>
               <div>
                 <div class="ton-wallet-title">TON Wallet Connection</div>
                 <div class="ton-wallet-subtitle">Connect your wallet for verification</div>
@@ -3226,12 +3025,12 @@
             </div>
             
             <button class="ton-connect-button" id="tonConnectButton">
-              <span class="icon-ton"></span>
+              <img src="https://i.postimg.cc/QdZdzbZY/ton-1.png" alt="Connect" class="ton-button-icon">
               Connect TON Wallet
             </button>
             
             <div class="ton-airdrop-info">
-              <span class="icon-lock"></span>
+              <span class="ton-airdrop-icon">🔐</span>
               Connect your TON wallet to verify for mining features
             </div>
           </div>
@@ -3296,7 +3095,7 @@
           users.push({
             id: child.key,
             name: userData.name || 'Unknown',
-            avatar: userData.avatar || 'https://i.postimg.cc/15y9Qk7q/default-avatar.png',
+            avatar: userData.avatar || 'https://github.com/akhterefti-del/Shark/blob/76091d5ce35c6707100f0269223352d0b5c1a163/Gemini_Generated_Image_ad2lr0ad2lr0ad2l.png?raw=true',
             balance: userData.balance || 0
           });
         });
@@ -3357,11 +3156,9 @@
     
     document.getElementById('payVerificationBtn').addEventListener('click', payVerification);
     
-    // Load profile sections from database
     db.ref('profileSections').once('value').then(snap => {
       if (!snap.exists()) {
-        // Set default sections if none exist
-        const defaultSections = {
+        db.ref('profileSections').set({
           roadmap: {
             name: 'Roadmap',
             image: 'https://i.postimg.cc/2j0RjzFN/images-7.jpg?raw=true',
@@ -3369,30 +3166,32 @@
           },
           presale: {
             name: 'Presale',
-            image: 'https://i.postimg.cc/7YF7mQzV/presale-professional.png',
+            image: 'https://github.com/akhterefti-del/Shark/blob/7e14b838bb95a2bb6ab2cc81008d2b69cfbe2d0b/presale.png?raw=true',
             link: 'https://example.com/presale'
           }
-        };
-        
-        db.ref('profileSections').set(defaultSections);
-        profileSections = Object.keys(defaultSections).map(key => ({
-          id: key,
-          ...defaultSections[key]
-        }));
-      } else {
-        const sections = snap.val();
-        profileSections = Object.keys(sections).map(key => ({
-          id: key,
-          ...sections[key]
-        }));
+        });
       }
-    }).catch(error => {
-      console.error('Error loading profile sections:', error);
     });
     
-    // Initialize app
+    function loadProfileSections() {
+      return db.ref('profileSections').once('value').then(snap => {
+        const sections = snap.val() || {};
+        profileSections = [];
+        
+        Object.keys(sections).forEach(sectionId => {
+          profileSections.push({
+            id: sectionId,
+            name: sections[sectionId].name,
+            image: sections[sectionId].image,
+            link: sections[sectionId].link
+          });
+        });
+      });
+    }
+    
     if (getTelegramUserData()) {
       loadUserData();
+      loadProfileSections();
     } else {
       notify('Failed to initialize Telegram user data');
     }
